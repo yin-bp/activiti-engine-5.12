@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<properties>
+
+  <property name="processEngineConfiguration" class="org.activiti.engine.impl.cfg.StandaloneProcessEngineConfiguration">
+  
+<!--     <property name="jdbcUrl" value="jdbc:h2:mem:activiti;DB_CLOSE_DELAY=1000" /> -->
+<!--     <property name="jdbcDriver" value="org.h2.Driver" /> -->
+<!--     <property name="jdbcUsername" value="sa" /> -->
+<!--     <property name="jdbcPassword" value="" /> -->
+    <property name="dataSource" factory-class="com.frameworkset.common.poolman.util.SQLManager" factory-method="getTXDatasourceByDBName">
+    	<construction>
+    		<property value="mysql" />
+    	</construction>
+    </property>
+    <!-- Database configurations -->
+    <property name="databaseSchemaUpdate" value="true" />
+    
+    <!-- job executor configurations -->
+    <property name="jobExecutorActivate" value="false" />
+    
+    <!-- mail server configurations -->
+    <property name="mailServerPort" value="5025" />    
+    <property name="history" value="full" />
+    <property name="idGenerator" class="org.activiti.engine.impl.persistence.StrongUuidGenerator"/>
+  </property>
+  <property name="beanFactory" factory-class="org.frameworkset.spi.DefaultApplicationContext" 
+			  factory-method="getApplicationContext">
+			  <construction>
+			  <property value="beans.xml"/>
+			  </construction>
+	</property>
+</properties>

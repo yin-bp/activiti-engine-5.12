@@ -1,0 +1,128 @@
+<project name="bboss persistent" default="default" basedir=".">
+	<description>
+		activiti bboss build file
+	</description>
+	<tstamp prefix="start" />
+
+	<tstamp>
+		<format property="compile.timestamp" pattern="yyyy-MM-dd HH.mm.ss" />
+	</tstamp>
+
+
+	<typedef resource="net/sf/antcontrib/antlib.xml" classpath="ant-contrib-1.0b3.jar" />
+	<!-- set global properties for this build -->
+	<property file="build.properties" />
+	<target name="init" description="create timestamp and directories">
+		<echo>Init...</echo>
+
+		<tstamp />
+		<delete dir="classes-bboss-Activiti" />
+		<delete dir="classes-bboss-Activiti-test" />
+		<delete dir="distrib" />
+		<mkdir dir="classes-bboss-Activiti" />
+		<mkdir dir="classes-bboss-Activiti-test" />			
+		<mkdir dir="distrib" />
+	</target>
+	<target name="default" depends="complete" description="default = build distribution package" />
+
+	<!--
+		       ==========================
+		        Distribution jar package
+		       ==========================
+		  -->
+	<target name="distrib" depends="init,jar-Activiti,jar-activiti-engine-5.9-sources,copy-depends-liberary" description="copy jar file to distribution directory">
+		<echo>Construct the distribution package...</echo>
+	</target>
+
+	<target name="compile-Activiti" description="compile the activiti-engine source ">
+		<echo>compile the Activiti-pool source ...</echo>
+		<javac destdir="classes-bboss-Activiti" 
+			
+			target="1.5" source="1.5" deprecation="true" debug="${debug}" optimize="${optimize}" memorymaximumsize="256M" fork="true" verbose="yes">
+			<src path="src/main/java" />			
+			
+			<classpath id="cp-classes-bboss-Activiti">
+				<fileset dir="lib/" includes="**/*.jar *.zip" />	
+				<fileset dir="libs-test/" includes="**/*.jar *.zip" />			
+				<fileset dir="lib-log/" includes="**/*.jar *.zip" />				
+			</classpath>
+		</javac>
+		<copy todir="classes-bboss-Activiti" >
+				<fileset dir="src/main/java" excludes="**/*.java" />
+				<fileset dir="src/main/resources" includes="**/*.*" />
+		</copy>	
+	</target>
+	<target name="jar-Activiti" depends="compile-Activiti" description="generate the bboss-peristent library Activiti">
+			<echo>Generate the activiti-engine library .jar ...</echo>
+			<jar jarfile="distrib/activiti-engine-5.12.jar" basedir="classes-bboss-Activiti" includes="**/*">
+				<manifest>					
+					<attribute name="Implementation-Version" value="${impl.version}" />
+					<attribute name="Specification-Version" value="${revision}" />
+					<attribute name="Implementation-Vendor" value="${impl.vendor}" />
+					<attribute name="Implementation-ProductID" value="${impl.productID}" />
+					<attribute name="Compile-Timestamp" value="${compile.timestamp}" />
+					<attribute name="Compile-User" value="${username}" />
+				</manifest>
+			</jar>
+		</target>	
+	
+	<target name="compile-Activiti-test" depends="jar-Activiti" description="compile the activiti-engine-test source ">
+			<echo>compile the activiti-engine-5.10-test source ...</echo>
+			<javac destdir="classes-bboss-Activiti-test" target="1.5" source="1.5" 
+				deprecation="true" debug="${debug}" optimize="${optimize}" 
+				memorymaximumsize="256M" fork="true" verbose="yes">				
+				<src path="src/test/java" />	
+				<classpath id="cp-classes-bboss-Activiti-test">
+					<fileset dir="lib/" includes="**/*.jar *.zip" />	
+					<fileset dir="libs-test/" includes="**/*.jar *.zip" />	
+					<fileset dir="lib-log/" includes="**/*.jar *.zip" />	
+					<fileset dir="distrib/" includes="**/*.jar *.zip" />
+				</classpath>
+			</javac>
+		</target>
+	<target name="jar-Activiti-test" depends="compile-Activiti-test" description="generate the bboss-peristent library .jar">
+		<echo>Generate the activiti-engine library -test.jar ...</echo>
+		<jar jarfile="distrib/activiti-engine-test.jar" basedir="classes-bboss-Activiti-test" includes="**/*">
+			<manifest>				
+				<attribute name="Implementation-Version" value="${impl.version}" />
+				<attribute name="Specification-Version" value="${revision}" />
+				<attribute name="Implementation-Vendor" value="${impl.vendor}" />
+				<attribute name="Implementation-ProductID" value="${impl.productID}" />
+				<attribute name="Compile-Timestamp" value="${compile.timestamp}" />
+				<attribute name="Compile-User" value="${username}" />
+			</manifest>
+		</jar>
+	</target>	
+		
+	<target name="copy-depends-liberary" description="copy depends liberarys">
+				<echo>copy depends liberarys ...</echo>
+				<copy todir="distrib/dependlibs">
+					<fileset dir="lib" includes="**/*" />
+				</copy>
+				<copy todir="distrib/resouces">
+					<fileset dir="src/test/resources/" includes="activiti.cfg.xml,log4j.properties,poolman.xml" />
+				</copy>	
+
+	</target>
+	<target name="jar-activiti-engine-5.9-sources" description="jar-activiti-engine-5.9-sources">
+			<echo>Generate the activiti-engine library -test.jar ...</echo>
+			<jar jarfile="distrib/activiti-engine-5.12-sources.jar" basedir="src/main/java" includes="**/*">
+				<manifest>				
+					<attribute name="Implementation-Version" value="${impl.version}" />
+					<attribute name="Specification-Version" value="${revision}" />
+					<attribute name="Implementation-Vendor" value="${impl.vendor}" />
+					<attribute name="Implementation-ProductID" value="${impl.productID}" />
+					<attribute name="Compile-Timestamp" value="${compile.timestamp}" />
+					<attribute name="Compile-User" value="${username}" />
+				</manifest>
+			</jar>
+		</target>
+	
+	
+	
+	<target name="complete" depends="distrib" description="copy depends liberarys">
+		<delete dir="classes-bboss-Activiti" />	
+		<delete dir="classes-bboss-Activiti-test" />	
+	</target>
+
+</project>
