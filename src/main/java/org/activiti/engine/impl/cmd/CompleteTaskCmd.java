@@ -25,10 +25,17 @@ public class CompleteTaskCmd extends NeedsActiveTaskCmd<Void> {
       
   private static final long serialVersionUID = 1L;
   protected Map<String, Object> variables;
+  protected String destinationTaskKey;
   
   public CompleteTaskCmd(String taskId, Map<String, Object> variables) {
     super(taskId);
     this.variables = variables;
+  }
+  
+  public CompleteTaskCmd(String taskId, Map<String, Object> variables,String destinationTaskKey) {
+    super(taskId);
+    this.variables = variables;
+    this.destinationTaskKey = destinationTaskKey;
   }
   
   protected Void execute(CommandContext commandContext, TaskEntity task) {

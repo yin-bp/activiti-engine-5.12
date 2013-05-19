@@ -141,6 +141,15 @@ public interface TaskService {
   void complete(String taskId);
   
   /**
+   * Called when the task is successfully executed.
+   * @param taskId the id of the task to complete, cannot be null.
+   * @param destinationTaskKey the  destination taskKey of the task where trans to, if be null see method complete(String taskId).
+   * @throws ActivitiObjectNotFoundException when no task exists with the given id.
+   * @throws ActivitiException when this task is {@link DelegationState#PENDING} delegation.
+   */
+  void complete(String taskId,String destinationTaskKey);
+  
+  /**
    * Delegates the task to another user. This means that the assignee is set 
    * and the delegation state is set to {@link DelegationState#PENDING}.
    * If no owner is set on the task, the owner is set to the current assignee
@@ -168,6 +177,28 @@ public interface TaskService {
    * @throws ActivitiObjectNotFoundException when no task exists with the given id.
    */
   void complete(String taskId, Map<String, Object> variables);
+  
+  /**
+   * Called when the task is successfully executed, 
+   * and the required task parameters are given by the end-user.
+   * 如果下一个任务是多实例任务，
+   * 那么可以通过流程变量在运行式设置多实例任务执行的方式为串行还是并行
+   * 变量的命名规范为：
+   * taskkey.bpmn.behavior.multiInstance.mode
+   * 取值范围为：
+   * 	parallel
+   * 	sequential
+   * 说明：taskkey为对应的任务的定义id
+   * 
+   * 这个变量可以在设计流程时统一配置，可以启动流程实例时动态修改，也可以在上个活动任务完成时修改
+   * 
+   * 在任务完成时，可以通过变量destinationTaskKey动态指定流程跳转的目标地址
+   * @param taskId the id of the task to complete, cannot be null.
+   * @param variables task parameters. May be null or empty.
+   * @param destinationTaskKey the  destination taskKey of the task where trans to, if be null see method complete(String taskId).
+   * @throws ActivitiObjectNotFoundException when no task exists with the given id.
+   */
+  void complete(String taskId, Map<String, Object> variables,String destinationTaskKey);
 
   /**
    * Changes the assignee of the given task to the given userId.
