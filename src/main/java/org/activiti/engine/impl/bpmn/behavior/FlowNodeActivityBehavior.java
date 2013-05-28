@@ -44,11 +44,21 @@ public abstract class FlowNodeActivityBehavior implements SignallableActivityBeh
     bpmnActivityBehavior.performDefaultOutgoingBehavior(execution);
   }
   
+  protected void leave(ActivityExecution execution,String destinationTaskKey)
+  {
+	  bpmnActivityBehavior.performDefaultOutgoingBehavior(execution, destinationTaskKey);
+  }
+  
   protected void leaveIgnoreConditions(ActivityExecution activityContext) {
     bpmnActivityBehavior.performIgnoreConditionsOutgoingBehavior(activityContext);
   }
 
   public void signal(ActivityExecution execution, String signalName, Object signalData) throws Exception {
+    // concrete activity behaviours that do accept signals should override this method;
+    throw new ActivitiException("this activity doesn't accept signals");
+  }
+  
+  public void signal(ActivityExecution execution, String signalName, Object signalData,String destinationTaskKey) throws Exception {
     // concrete activity behaviours that do accept signals should override this method;
     throw new ActivitiException("this activity doesn't accept signals");
   }

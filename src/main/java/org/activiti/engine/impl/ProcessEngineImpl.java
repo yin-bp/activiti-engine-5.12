@@ -28,6 +28,8 @@ import org.activiti.engine.impl.cfg.TransactionContextFactory;
 import org.activiti.engine.impl.db.DbSqlSession;
 import org.activiti.engine.impl.db.DbSqlSessionFactory;
 import org.activiti.engine.impl.el.ExpressionManager;
+import org.activiti.engine.impl.identity.UserInfoMap;
+import org.activiti.engine.impl.identity.UserInfoMapImpl;
 import org.activiti.engine.impl.interceptor.CommandExecutor;
 import org.activiti.engine.impl.interceptor.SessionFactory;
 import org.activiti.engine.impl.jobexecutor.JobExecutor;
@@ -56,6 +58,10 @@ public class ProcessEngineImpl implements ProcessEngine {
   protected ExpressionManager expressionManager;
   protected TransactionContextFactory transactionContextFactory;
   protected ProcessEngineConfigurationImpl processEngineConfiguration;
+  /**
+   * 用来获取用户账号和账号实名之间的映射关系
+   */
+  protected UserInfoMap userInfoMap ;
 
   public ProcessEngineImpl(ProcessEngineConfigurationImpl processEngineConfiguration) {
     this.processEngineConfiguration = processEngineConfiguration;
@@ -72,7 +78,7 @@ public class ProcessEngineImpl implements ProcessEngine {
     this.commandExecutor = processEngineConfiguration.getCommandExecutorTxRequired();
     this.sessionFactories = processEngineConfiguration.getSessionFactories();
     this.transactionContextFactory = processEngineConfiguration.getTransactionContextFactory();
-    
+    this.userInfoMap = processEngineConfiguration.getUserInfoMap();
     commandExecutor.execute(new SchemaOperationsProcessEngineBuild());
 
     if (name == null) {

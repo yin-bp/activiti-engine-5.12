@@ -102,6 +102,10 @@ public abstract class MultiInstanceActivityBehavior extends FlowNodeActivityBeha
     innerActivityBehavior.signal(execution, signalName, signalData);
   }
   
+  public void signal(ActivityExecution execution, String signalName, Object signalData,String destinationTaskKey) throws Exception {
+    innerActivityBehavior.signal(execution, signalName, signalData, destinationTaskKey);
+  }
+  
   // required for supporting embedded subprocesses
   public void lastExecutionEnded(ActivityExecution execution) {
     ScopeUtil.createEventScopeExecution((ExecutionEntity) execution);

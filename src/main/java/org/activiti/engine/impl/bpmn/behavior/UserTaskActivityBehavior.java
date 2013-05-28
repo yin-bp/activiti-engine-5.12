@@ -95,6 +95,10 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
   public void signal(ActivityExecution execution, String signalName, Object signalData) throws Exception {
     leave(execution);
   }
+  
+  public void signal(ActivityExecution execution, String signalName, Object signalData,String destinationTaskKey) throws Exception {
+	    leave(execution,destinationTaskKey);
+  }
 
   @SuppressWarnings({ "unchecked", "rawtypes" })
   protected void handleAssignments(TaskEntity task, ActivityExecution execution) {

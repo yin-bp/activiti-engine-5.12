@@ -115,6 +115,8 @@ import org.activiti.engine.impl.history.parse.FlowNodeHistoryParseHandler;
 import org.activiti.engine.impl.history.parse.ProcessHistoryParseHandler;
 import org.activiti.engine.impl.history.parse.StartEventHistoryParseHandler;
 import org.activiti.engine.impl.history.parse.UserTaskHistoryParseHandler;
+import org.activiti.engine.impl.identity.UserInfoMap;
+import org.activiti.engine.impl.identity.UserInfoMapImpl;
 import org.activiti.engine.impl.interceptor.CommandContextFactory;
 import org.activiti.engine.impl.interceptor.CommandExecutor;
 import org.activiti.engine.impl.interceptor.CommandExecutorImpl;
@@ -227,6 +229,10 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   protected TaskService taskService = new TaskServiceImpl();
   protected FormService formService = new FormServiceImpl();
   protected ManagementService managementService = new ManagementServiceImpl();
+  /**
+   * 用来获取用户账号和账号实名之间的映射关系
+   */
+  protected UserInfoMap userInfoMap = new UserInfoMapImpl();
   
   // COMMAND EXECUTORS ////////////////////////////////////////////////////////
   
@@ -1950,5 +1956,14 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   public void setEnableSafeBpmnXml(boolean enableSafeBpmnXml) {
     this.enableSafeBpmnXml = enableSafeBpmnXml;
   }
+
+	public UserInfoMap getUserInfoMap() {
+		// TODO Auto-generated method stub
+		return userInfoMap;
+	}
+
+	public void setUserInfoMap(UserInfoMap userInfoMap) {
+		this.userInfoMap = userInfoMap;
+	}
   
 }

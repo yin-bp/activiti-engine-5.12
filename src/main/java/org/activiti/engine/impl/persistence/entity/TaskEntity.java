@@ -49,8 +49,10 @@ import org.activiti.engine.task.Task;
  */ 
 public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask, Serializable, PersistentObject, HasRevision {
 
-  public static final String DELETE_REASON_COMPLETED = "completed";
-  public static final String DELETE_REASON_DELETED = "deleted";
+//  public static final String DELETE_REASON_COMPLETED = "completed";
+//  public static final String DELETE_REASON_DELETED = "deleted";
+  public static final String DELETE_REASON_COMPLETED = "完成";
+  public static final String DELETE_REASON_DELETED = "删除";
 
   private static final long serialVersionUID = 1L;
 
@@ -140,21 +142,72 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
   }
 
   public void complete() {
+//    fireEvent(TaskListener.EVENTNAME_COMPLETE);
+//
+//    if (Authentication.getAuthenticatedUserId() != null && processInstanceId != null) {
+//      getProcessInstance().involveUser(Authentication.getAuthenticatedUserId(), IdentityLinkType.PARTICIPANT);
+//    }
+//    
+//    Context
+//      .getCommandContext()
+//      .getTaskEntityManager()
+//      .deleteTask(this, TaskEntity.DELETE_REASON_COMPLETED, false);
+//    
+//    if (executionId!=null) {
+//      ExecutionEntity execution = getExecution();
+//      execution.removeTask(this);
+//      execution.signal(null, null);
+//    }
+	  complete(null );
+  }
+  /**
+   * 任务完成时特定的跳转目标地址
+   */
+  private String destinationTaskKey;
+  public void complete(String destinationTaskKey ) {
+	this.destinationTaskKey = destinationTaskKey;
     fireEvent(TaskListener.EVENTNAME_COMPLETE);
 
     if (Authentication.getAuthenticatedUserId() != null && processInstanceId != null) {
       getProcessInstance().involveUser(Authentication.getAuthenticatedUserId(), IdentityLinkType.PARTICIPANT);
     }
-    
+    boolean customDTask = (destinationTaskKey != null && !destinationTaskKey.equals(""));
+    String dtaskName = customDTask ?(String)execution.getActivity().getProcessDefinition().findActivity(destinationTaskKey).getProperty("name"):null;
+    String deleteReason = !customDTask ?TaskEntity.DELETE_REASON_COMPLETED:"转到节点["+dtaskName + "]";//转到即自由跳转的意思
+    if(this.assignee != null && !this.assignee.equals(""))
+    {
+    	String userName = Context.getProcessEngineConfiguration().getUserInfoMap().getUserName(this.assignee);
+    	if(userName == null)
+    	{
+    		userName = assignee;
+    	}
+    	if(!userName.equals(assignee))
+    		userName = userName + "-" + this.assignee; 
+		deleteReason = "任务被[" + userName + "]" +deleteReason;
+    }
     Context
       .getCommandContext()
       .getTaskEntityManager()
-      .deleteTask(this, TaskEntity.DELETE_REASON_COMPLETED, false);
-    
+      .deleteTask(this, deleteReason, false);
+    /**
+     * 什么情况下executionId为null？
+     */
     if (executionId!=null) {
       ExecutionEntity execution = getExecution();
+      if(customDTask)
+      {
+    	  execution.setDeleteReason(deleteReason);
+      }
       execution.removeTask(this);
-      execution.signal(null, null);
+//      execution.signal(null, null);
+      if(destinationTaskKey == null || "".equals(destinationTaskKey))
+      {
+    	  execution.signal(null, null);
+      }
+      else
+      {
+    	  execution.signal(null, null,destinationTaskKey);
+      }
     }
   }
   
@@ -700,4 +753,8 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
   public boolean isSuspended() {
     return suspensionState == SuspensionState.SUSPENDED.getStateCode();
   }
+
+public String getDestinationTaskKey() {
+	return destinationTaskKey;
+}
 }

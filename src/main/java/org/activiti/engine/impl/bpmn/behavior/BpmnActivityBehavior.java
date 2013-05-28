@@ -23,6 +23,8 @@ import org.activiti.engine.impl.Condition;
 import org.activiti.engine.impl.bpmn.parser.BpmnParse;
 import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
+import org.activiti.engine.impl.pvm.process.ActivityImpl;
+import org.activiti.engine.impl.pvm.process.TransitionImpl;
 import org.activiti.engine.impl.pvm.runtime.InterpretableExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +55,11 @@ public class BpmnActivityBehavior implements Serializable {
   public void performDefaultOutgoingBehavior(ActivityExecution activityExceution) {
     performOutgoingBehavior(activityExceution, true, false, null);
   }
-
+  
+  
+  public void performDefaultOutgoingBehavior(ActivityExecution activityExceution,String destinationTaskKey) {
+	    performOutgoingBehavior(activityExceution, true, false, null,destinationTaskKey);
+	  }
   /**
    * Performs the default outgoing BPMN 2.0 behavior (@see
    * {@link #performDefaultOutgoingBehavior(ActivityExecution)}), but without
@@ -81,71 +87,94 @@ public class BpmnActivityBehavior implements Serializable {
    *          transition could be found to leave the activity.
    */
   protected void performOutgoingBehavior(ActivityExecution execution, 
-          boolean checkConditions, boolean throwExceptionIfExecutionStuck, List<ActivityExecution> reusableExecutions) {
+          boolean checkConditions, boolean throwExceptionIfExecutionStuck, List<ActivityExecution> reusableExecutions)
+  {
+	  performOutgoingBehavior(execution, 
+	          checkConditions, throwExceptionIfExecutionStuck, reusableExecutions,null);
+  }
+  /**
+   * added by biaoping.yin
+   * @param execution
+   * @param checkConditions
+   * @param throwExceptionIfExecutionStuck
+   * @param reusableExecutions
+   * @param destinationTaskKey
+   */
+  protected void performOutgoingBehavior(ActivityExecution execution, 
+          boolean checkConditions, boolean throwExceptionIfExecutionStuck, List<ActivityExecution> reusableExecutions,String destinationTaskKey) {
 
     if (log.isDebugEnabled()) {
       log.debug("Leaving activity '{}'", execution.getActivity().getId());
     }
-
-    String defaultSequenceFlow = (String) execution.getActivity().getProperty("default");
-    List<PvmTransition> transitionsToTake = new ArrayList<PvmTransition>();
-
-    List<PvmTransition> outgoingTransitions = execution.getActivity().getOutgoingTransitions();
-    for (PvmTransition outgoingTransition : outgoingTransitions) {
-      if (defaultSequenceFlow == null || !outgoingTransition.getId().equals(defaultSequenceFlow)) {
-        Condition condition = (Condition) outgoingTransition.getProperty(BpmnParse.PROPERTYNAME_CONDITION);
-        if (condition == null || !checkConditions || condition.evaluate(execution)) {
-          transitionsToTake.add(outgoingTransition);
-        }
-      }
+    if(destinationTaskKey != null)
+    {
+//    	System.out.println();
+    	TransitionImpl transition = ((ActivityImpl)execution.getActivity()).createCustomOutgoingTransition(null, destinationTaskKey);    	
+    	execution.take(transition);
     }
-
-    if (transitionsToTake.size() == 1) {
-      
-      execution.take(transitionsToTake.get(0));
-
-    } else if (transitionsToTake.size() >= 1) {
-
-      execution.inactivate();
-      if (reusableExecutions == null || reusableExecutions.isEmpty()) {
-        execution.takeAll(transitionsToTake, Arrays.asList(execution));
-      } else {
-        execution.takeAll(transitionsToTake, reusableExecutions);
-      }
-
-    } else {
-
-      if (defaultSequenceFlow != null) {
-        PvmTransition defaultTransition = execution.getActivity().findOutgoingTransition(defaultSequenceFlow);
-        if (defaultTransition != null) {
-          execution.take(defaultTransition);
-        } else {
-          throw new ActivitiException("Default sequence flow '" + defaultSequenceFlow + "' could not be not found");
-        }
-      } else {
-        
-        Object isForCompensation = execution.getActivity().getProperty(BpmnParse.PROPERTYNAME_IS_FOR_COMPENSATION);
-        if(isForCompensation != null && (Boolean) isForCompensation) {
-          
-          InterpretableExecution parentExecution = (InterpretableExecution) execution.getParent();
-          ((InterpretableExecution)execution).remove();
-          parentExecution.signal("compensationDone", null);            
-          
-        } else {
-          
-          if (log.isDebugEnabled()) {
-            log.debug("No outgoing sequence flow found for {}. Ending execution.", execution.getActivity().getId());
-          }
-          execution.end();
-          
-          if (throwExceptionIfExecutionStuck) {
-            throw new ActivitiException("No outgoing sequence flow of the inclusive gateway '" + execution.getActivity().getId()
-                  + "' could be selected for continuing the process");
-          }
-        }
-        
-      }
+    else
+    {
+	    String defaultSequenceFlow = (String) execution.getActivity().getProperty("default");
+	    List<PvmTransition> transitionsToTake = new ArrayList<PvmTransition>();
+	
+	    List<PvmTransition> outgoingTransitions = execution.getActivity().getOutgoingTransitions();
+	    for (PvmTransition outgoingTransition : outgoingTransitions) {
+	      if (defaultSequenceFlow == null || !outgoingTransition.getId().equals(defaultSequenceFlow)) {
+	        Condition condition = (Condition) outgoingTransition.getProperty(BpmnParse.PROPERTYNAME_CONDITION);
+	        if (condition == null || !checkConditions || condition.evaluate(execution)) {
+	          transitionsToTake.add(outgoingTransition);
+	        }
+	      }
+	    }
+	
+	    if (transitionsToTake.size() == 1) {
+	      
+	      execution.take(transitionsToTake.get(0));
+	
+	    } else if (transitionsToTake.size() >= 1) {
+	
+	      execution.inactivate();
+	      if (reusableExecutions == null || reusableExecutions.isEmpty()) {
+	        execution.takeAll(transitionsToTake, Arrays.asList(execution));
+	      } else {
+	        execution.takeAll(transitionsToTake, reusableExecutions);
+	      }
+	
+	    } else {
+	
+	      if (defaultSequenceFlow != null) {
+	        PvmTransition defaultTransition = execution.getActivity().findOutgoingTransition(defaultSequenceFlow);
+	        if (defaultTransition != null) {
+	          execution.take(defaultTransition);
+	        } else {
+	          throw new ActivitiException("Default sequence flow '" + defaultSequenceFlow + "' could not be not found");
+	        }
+	      } else {
+	        
+	        Object isForCompensation = execution.getActivity().getProperty(BpmnParse.PROPERTYNAME_IS_FOR_COMPENSATION);
+	        if(isForCompensation != null && (Boolean) isForCompensation) {
+	          
+	          InterpretableExecution parentExecution = (InterpretableExecution) execution.getParent();
+	          ((InterpretableExecution)execution).remove();
+	          parentExecution.signal("compensationDone", null);            
+	          
+	        } else {
+	          
+	          if (log.isDebugEnabled()) {
+	            log.debug("No outgoing sequence flow found for {}. Ending execution.", execution.getActivity().getId());
+	          }
+	          execution.end();
+	          
+	          if (throwExceptionIfExecutionStuck) {
+	            throw new ActivitiException("No outgoing sequence flow of the inclusive gateway '" + execution.getActivity().getId()
+	                  + "' could be selected for continuing the process");
+	          }
+	        }
+	        
+	      }
+	    }
     }
+    
   }
 
 }

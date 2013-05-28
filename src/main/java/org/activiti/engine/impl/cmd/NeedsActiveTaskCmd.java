@@ -34,9 +34,18 @@ public abstract class NeedsActiveTaskCmd<T> implements Command<T>, Serializable 
   private static final long serialVersionUID = 1L;
   
   protected String taskId;
-  
+  protected String destinationTaskKey;
   public NeedsActiveTaskCmd(String taskId) {
     this.taskId = taskId;
+  }
+  /**
+   * added by biaoping.yin 
+   * @param taskId
+   * @param destinationTaskKey
+   */
+  public NeedsActiveTaskCmd(String taskId,String destinationTaskKey) {
+	    this.taskId = taskId;
+	    this.destinationTaskKey = destinationTaskKey;
   }
   
   public T execute(CommandContext commandContext) {

@@ -48,6 +48,11 @@ public class TransitionImpl extends ProcessElementImpl implements PvmTransition 
     destination.getIncomingTransitions().add(this);
   }
   
+  public void setCustomDestination(ActivityImpl destination) {
+    this.destination = destination;
+//    destination.getIncomingTransitions().add(this);
+  }
+  
   public void addExecutionListener(ExecutionListener executionListener) {
     if (executionListeners==null) {
       executionListeners = new ArrayList<ExecutionListener>();

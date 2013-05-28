@@ -13,6 +13,7 @@
 package org.activiti.engine.impl;
 
 import java.io.InputStream;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -60,6 +61,9 @@ import org.activiti.engine.task.IdentityLinkType;
 import org.activiti.engine.task.NativeTaskQuery;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskQuery;
+
+import com.frameworkset.common.poolman.SQLExecutor;
+import com.frameworkset.util.StringUtil;
 
 
 /**
@@ -348,6 +352,35 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
 
   public List<Task> getSubTasks(String parentTaskId) {
     return commandExecutor.execute(new GetSubTasksCmd(parentTaskId));
+  }
+  private String rejecttoPretaskSQL = "select TASK_DEF_KEY_/**,END_TIME_*/ from ACT_HI_TASKINST a inner join  (select PROC_INST_ID_,id_ from ACT_HI_TASKINST where id_ = ?)  d on a.PROC_INST_ID_ = d.PROC_INST_ID_ where d.id_ <> a.ID_ order by a.END_TIME_ desc";
+  /**
+   * 将当前任务驳回到上一个任务处理人处，并更新流程变量参数
+   * 如果需要改变处理人，可以通过指定变量的的方式设置
+   * @param taskId
+   * @param variables
+   */
+  public void rejecttoPreTask(String taskId, Map<String, Object> variables)
+  {
+	  try {
+			String pretaskKey = SQLExecutor.queryObject(String.class,rejecttoPretaskSQL, taskId);
+			if(pretaskKey == null)
+			{
+				throw new ActivitiException("驳回任务失败：taskId="+taskId +" 之前的任务不存在.");
+			}
+			this.complete(taskId, variables,pretaskKey);
+		} catch (SQLException e) {
+			throw new ActivitiException(StringUtil.formatException(e));
+		}
+  }
+  
+  /**
+   * 将当前任务驳回到上一个任务处理人处
+   * @param taskId
+   */
+  public void rejecttoPreTask(String taskId)
+  {
+	  rejecttoPreTask(taskId,(Map<String, Object>)null);
   }
 
 }

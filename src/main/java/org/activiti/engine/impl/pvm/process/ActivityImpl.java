@@ -52,6 +52,30 @@ public class ActivityImpl extends ScopeImpl implements PvmActivity, HasDIBounds 
   public TransitionImpl createOutgoingTransition() {
     return createOutgoingTransition(null);
   }
+  /**
+   * 创建流程临时迁移路径，在运行时为流程实例增加额外的执行路径，用来实现自由流功能
+   * @param transitionId
+   * @param destinationTaskKey
+   * @return
+   */
+  public TransitionImpl createCustomOutgoingTransition(String transitionId, String destinationTaskKey ) {
+	  TransitionImpl transition = new TransitionImpl(transitionId, processDefinition);
+	    transition.setSource(this);
+	    ActivityImpl destinationTask = processDefinition.findActivity(destinationTaskKey);
+	    if(destinationTask == null)
+	    	throw new PvmException("Create Custom OutgoingTransition for activity '"+id+"' with transitionId '"+transitionId+"' and destinationTaskKey '"+destinationTaskKey+"' failed: activity[" + destinationTaskKey +"] not found in process[" + processDefinition.getId() +"]");
+	    transition.setCustomDestination(destinationTask);
+//	    outgoingTransitions.add(transition);
+//	    
+//	    if (transitionId!=null) {
+//	      if (namedOutgoingTransitions.containsKey(transitionId)) {
+//	        throw new PvmException("activity '"+id+" has duplicate transition '"+transitionId+"'");
+//	      }
+//	      namedOutgoingTransitions.put(transitionId, transition);
+//	    }
+	    
+	    return transition;
+  }
 
   public TransitionImpl createOutgoingTransition(String transitionId) {
     TransitionImpl transition = new TransitionImpl(transitionId, processDefinition);

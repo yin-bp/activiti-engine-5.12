@@ -40,15 +40,39 @@ public class AbstractBpmnActivityBehavior extends FlowNodeActivityBehavior {
    * and delegate to the behavior if this is the case.
    */
   protected void leave(ActivityExecution execution) {
-    if(hasCompensationHandler(execution)) {
-      createCompensateEventSubscription(execution);
-    }
-    if (!hasLoopCharacteristics()) {
-      super.leave(execution);
-    } else if (hasMultiInstanceCharacteristics()){
-      multiInstanceActivityBehavior.leave(execution);
-    }
+//    if(hasCompensationHandler(execution)) {
+//      createCompensateEventSubscription(execution);
+//    }
+//    if (!hasLoopCharacteristics()) {
+//      super.leave(execution);
+//    } else if (hasMultiInstanceCharacteristics()){
+//      multiInstanceActivityBehavior.leave(execution);
+//    }
+	  leave(execution,null);
   }
+  
+  /**
+   * added by biaoping.yin
+   * @param execution
+   * @param destinationTaskKey
+   */
+  protected void leave(ActivityExecution execution,String destinationTaskKey) {
+	    if(hasCompensationHandler(execution)) {
+	      createCompensateEventSubscription(execution);
+	    }
+	    if (!hasLoopCharacteristics()) {
+	    	if(destinationTaskKey == null || "".equals(destinationTaskKey))
+	    		super.leave(execution);
+	    	else
+	    		super.leave(execution,destinationTaskKey);
+	    } else if (hasMultiInstanceCharacteristics()){
+	    	if(destinationTaskKey == null || "".equals(destinationTaskKey))
+	    		multiInstanceActivityBehavior.leave(execution);
+	    	else
+	    		multiInstanceActivityBehavior.leave(execution,destinationTaskKey);
+	      
+	    }
+	  }
   
   protected boolean hasCompensationHandler(ActivityExecution execution) {
     return execution.getActivity().getProperty(BpmnParse.PROPERTYNAME_COMPENSATION_HANDLER_ID) != null;

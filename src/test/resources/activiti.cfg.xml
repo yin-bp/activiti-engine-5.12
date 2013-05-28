@@ -23,6 +23,8 @@
     <property name="mailServerPort" value="5025" />    
     <property name="history" value="full" />
     <property name="idGenerator" class="org.activiti.engine.impl.persistence.StrongUuidGenerator"/>
+    <property name="userInfoMap" class="org.activiti.engine.impl.identity.UserInfoMapImpl"/>
+    
   </property>
   <property name="beanFactory" factory-class="org.frameworkset.spi.DefaultApplicationContext" 
 			  factory-method="getApplicationContext">

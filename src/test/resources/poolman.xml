@@ -6,7 +6,7 @@
 
   <datasource>
 
-    <dbname>mysql</dbname>
+    <dbname>bspf</dbname>
 	<loadmetadata>false</loadmetadata>
     <jndiName>jdbc/mysql-ds</jndiName>
     <driver>com.mysql.jdbc.Driver</driver>

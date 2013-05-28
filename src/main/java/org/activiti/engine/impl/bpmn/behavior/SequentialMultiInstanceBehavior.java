@@ -55,7 +55,14 @@ public class SequentialMultiInstanceBehavior extends MultiInstanceActivityBehavi
    * {@link AbstractBpmnActivityBehavior#leave(ActivityExecution)} method.
    * Handles the completion of one instance, and executes the logic for the sequential behavior.    
    */
-  public void leave(ActivityExecution execution) {
+  public void leave(ActivityExecution execution)
+  {
+	  leave(execution,null);
+  }
+  /**
+   * added by biaoping.yin
+   */
+  public void leave(ActivityExecution execution,String destinationTaskKey) {
     callActivityEndListeners(execution);
     
     int loopCounter = getLoopVariable(execution, LOOP_COUNTER) + 1;
@@ -66,9 +73,9 @@ public class SequentialMultiInstanceBehavior extends MultiInstanceActivityBehavi
     setLoopVariable(execution, LOOP_COUNTER, loopCounter);
     setLoopVariable(execution, NUMBER_OF_COMPLETED_INSTANCES, nrOfCompletedInstances);
     logLoopDetails(execution, "instance completed", loopCounter, nrOfCompletedInstances, nrOfActiveInstances, nrOfInstances);
-    
-    if (loopCounter == nrOfInstances || completionConditionSatisfied(execution)) {
-      super.leave(execution);
+    boolean reject = destinationTaskKey != null && !destinationTaskKey.equals("");
+    if (loopCounter == nrOfInstances || completionConditionSatisfied(execution) || reject) {
+      super.leave(execution,destinationTaskKey);
     } else {
       try {
         executeOriginalBehavior(execution, loopCounter);

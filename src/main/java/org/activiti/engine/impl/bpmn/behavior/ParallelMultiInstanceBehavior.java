@@ -99,6 +99,13 @@ public class ParallelMultiInstanceBehavior extends MultiInstanceActivityBehavior
    * Handles the completion of one of the parallel instances
    */
   public void leave(ActivityExecution execution) {
+	   leave(execution,null); 
+  }
+  
+  /**
+   * added by biaoping.yin
+   */
+  public void leave(ActivityExecution execution,String destinationTaskKey) {
     callActivityEndListeners(execution);
     
     int loopCounter = getLoopVariable(execution, LOOP_COUNTER);
@@ -116,29 +123,45 @@ public class ParallelMultiInstanceBehavior extends MultiInstanceActivityBehavior
     setLoopVariable(execution.getParent(), NUMBER_OF_COMPLETED_INSTANCES, nrOfCompletedInstances);
     setLoopVariable(execution.getParent(), NUMBER_OF_ACTIVE_INSTANCES, nrOfActiveInstances);
     logLoopDetails(execution, "instance completed", loopCounter, nrOfCompletedInstances, nrOfActiveInstances, nrOfInstances);
-    
+   
     ExecutionEntity executionEntity = (ExecutionEntity) execution;
+    boolean customDTask = (destinationTaskKey != null && !destinationTaskKey.equals(""));
+    String deleteReason = executionEntity.getDeleteReason();
+   
+    
     executionEntity.inactivate();
     executionEntity.getParent().forceUpdate();
+   
     
-    List<ActivityExecution> joinedExecutions = executionEntity.findInactiveConcurrentExecutions(execution.getActivity());
-    if (joinedExecutions.size() == nrOfInstances || completionConditionSatisfied(execution)) {
+    List<ActivityExecution> joinedExecutions = executionEntity.findInactiveConcurrentExecutions(execution.getActivity(),customDTask);
+//    List<ActivityExecution> joinedExecutions = executionEntity.findInactiveConcurrentExecutions(execution.getActivity());
+    
+    if (joinedExecutions.size() == nrOfInstances || completionConditionSatisfied(execution) || customDTask) {
       
       // Removing all active child executions (ie because completionCondition is true)
       List<ExecutionEntity> executionsToRemove = new ArrayList<ExecutionEntity>();
-      for (ActivityExecution childExecution : executionEntity.getParent().getExecutions()) {
-        if (childExecution.isActive()) {
-          executionsToRemove.add((ExecutionEntity) childExecution);
-        }
+//      if(!customDTask)
+      {
+	      for (ActivityExecution childExecution : executionEntity.getParent().getExecutions()) {
+	        if (childExecution.isActive()) {
+	          executionsToRemove.add((ExecutionEntity) childExecution);
+	        }
+	      }
       }
       for (ExecutionEntity executionToRemove : executionsToRemove) {
         if (LOGGER.isDebugEnabled()) {
           LOGGER.debug("Execution {} still active, but multi-instance is completed. Removing this execution.", executionToRemove);
         }
         executionToRemove.inactivate();
-        executionToRemove.deleteCascade("multi-instance completed");
+        if(!customDTask)
+        	executionToRemove.deleteCascade("multi-instance completed");
+        else
+        {
+        	
+        	executionToRemove.deleteCascade(deleteReason);
+        }
       }
-      executionEntity.takeAll(executionEntity.getActivity().getOutgoingTransitions(), joinedExecutions);
+      executionEntity.takeAll(executionEntity.getActivity().getOutgoingTransitions(), joinedExecutions,destinationTaskKey);
     } 
   }
 

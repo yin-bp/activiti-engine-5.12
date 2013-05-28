@@ -155,4 +155,6 @@ public interface DelegateTask extends VariableScope {
    * @return set of {@link IdentityLink}s of type {@link IdentityLinkType#CANDIDATE}.
    */
   Set<IdentityLink> getCandidates();
+  
+  String getDestinationTaskKey();
 }

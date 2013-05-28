@@ -199,6 +199,20 @@ public interface TaskService {
    * @throws ActivitiObjectNotFoundException when no task exists with the given id.
    */
   void complete(String taskId, Map<String, Object> variables,String destinationTaskKey);
+  
+  
+  /**
+   * 将当前任务驳回到上一个任务处理人处，并更新流程变量参数
+   * @param taskId
+   * @param variables
+   */
+  void rejecttoPreTask(String taskId, Map<String, Object> variables);
+  
+  /**
+   * 将当前任务驳回到上一个任务处理人处
+   * @param taskId
+   */
+  void rejecttoPreTask(String taskId);
 
   /**
    * Changes the assignee of the given task to the given userId.

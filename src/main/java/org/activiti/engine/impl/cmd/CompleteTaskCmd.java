@@ -25,25 +25,37 @@ public class CompleteTaskCmd extends NeedsActiveTaskCmd<Void> {
       
   private static final long serialVersionUID = 1L;
   protected Map<String, Object> variables;
-  protected String destinationTaskKey;
+  
   
   public CompleteTaskCmd(String taskId, Map<String, Object> variables) {
     super(taskId);
     this.variables = variables;
   }
-  
+  /**
+   * 完成任务指定跳转目标节点
+   * added by biaoping.yin
+   * @param taskId
+   * @param variables
+   * @param destinationTaskKey
+   */
   public CompleteTaskCmd(String taskId, Map<String, Object> variables,String destinationTaskKey) {
-    super(taskId);
+    super(taskId,destinationTaskKey);
     this.variables = variables;
-    this.destinationTaskKey = destinationTaskKey;
+    
   }
   
   protected Void execute(CommandContext commandContext, TaskEntity task) {
     if (variables!=null) {
       task.setExecutionVariables(variables);
     }
-    
-    task.complete();
+    //task.complete();
+    /**
+     * modified by biaoping.yin
+     */
+    if(this.destinationTaskKey == null || this.destinationTaskKey.equals(""))
+    	task.complete();
+    else
+    	task.complete(this.destinationTaskKey);
     return null;
   }
   
