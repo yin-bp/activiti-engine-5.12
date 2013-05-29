@@ -18,6 +18,7 @@ import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.FlowNode;
 import org.activiti.bpmn.model.MultiInstanceLoopCharacteristics;
 import org.activiti.engine.impl.bpmn.behavior.AbstractBpmnActivityBehavior;
+import org.activiti.engine.impl.bpmn.behavior.MixMultiInstanceActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.MultiInstanceActivityBehavior;
 import org.activiti.engine.impl.bpmn.parser.BpmnParse;
 import org.activiti.engine.impl.el.ExpressionManager;
@@ -46,22 +47,33 @@ public abstract class AbstractActivityBpmnParseHandler<T extends FlowNode> exten
     
     // Activity Behavior
     MultiInstanceActivityBehavior miActivityBehavior = null;
+    MultiInstanceActivityBehavior miParallelActivityBehavior = null;
+    MultiInstanceActivityBehavior miSequentialActivityBehavior = null;
     ActivityImpl activity = bpmnParse.getCurrentScope().findActivity(modelActivity.getId());
     if (activity == null) {
       bpmnParse.getBpmnModel().addProblem("Activity " + modelActivity.getId() + " needed for multi instance cannot bv found", modelActivity);
     }
-            
-    if (loopCharacteristics.isSequential()) {
-      miActivityBehavior = bpmnParse.getActivityBehaviorFactory().createSequentialMultiInstanceBehavior(
-              activity, (AbstractBpmnActivityBehavior) activity.getActivityBehavior()); 
-    } else {
-      miActivityBehavior = bpmnParse.getActivityBehaviorFactory().createParallelMultiInstanceBehavior(
-              activity, (AbstractBpmnActivityBehavior) activity.getActivityBehavior());
-    }
+    AbstractBpmnActivityBehavior bpmnActivityBehavior = (AbstractBpmnActivityBehavior) activity.getActivityBehavior();
+    miParallelActivityBehavior = bpmnParse.getActivityBehaviorFactory().createParallelMultiInstanceBehavior(
+            activity, bpmnActivityBehavior);
+    miSequentialActivityBehavior = bpmnParse.getActivityBehaviorFactory().createSequentialMultiInstanceBehavior(
+            activity, bpmnActivityBehavior);
+    miActivityBehavior = new MixMultiInstanceActivityBehavior(activity, 
+    		miParallelActivityBehavior, 
+    		miSequentialActivityBehavior, 
+    		loopCharacteristics.isSequential()?MultiInstanceActivityBehavior.multiInstanceMode_sequential : MultiInstanceActivityBehavior.multiInstanceMode_parallel);
+    miActivityBehavior.setInnerActivityBehavior(bpmnActivityBehavior);
+//    if (loopCharacteristics.isSequential()) {
+//      miActivityBehavior = bpmnParse.getActivityBehaviorFactory().createSequentialMultiInstanceBehavior(
+//              activity, (AbstractBpmnActivityBehavior) activity.getActivityBehavior()); 
+//    } else {
+//      miActivityBehavior = bpmnParse.getActivityBehaviorFactory().createParallelMultiInstanceBehavior(
+//              activity, (AbstractBpmnActivityBehavior) activity.getActivityBehavior());
+//    }
     
     // ActivityImpl settings
     activity.setScope(true);
-    activity.setProperty("multiInstance", loopCharacteristics.isSequential() ? "sequential" : "parallel");
+    activity.setProperty("multiInstance", loopCharacteristics.isSequential() ? MultiInstanceActivityBehavior.multiInstanceMode_sequential : MultiInstanceActivityBehavior.multiInstanceMode_parallel);
     activity.setActivityBehavior(miActivityBehavior);
     
     ExpressionManager expressionManager = bpmnParse.getExpressionManager();

@@ -85,7 +85,7 @@ public class ProcessDiagramCanvas {
   
   // Fonts
 //  protected static Font LABEL_FONT = new Font("Arial", Font.ITALIC, 10);
-  protected static Font LABEL_FONT = new Font("ËÎÌå", Font.ITALIC, 10);
+  protected static Font LABEL_FONT = new Font("å®‹ä½“", Font.ITALIC, 10);
   // Strokes
   protected static Stroke THICK_TASK_BORDER_STROKE = new BasicStroke(3.0f);
   protected static Stroke GATEWAY_TYPE_STROKE = new BasicStroke(3.0f);
@@ -140,7 +140,7 @@ public class ProcessDiagramCanvas {
   protected FontMetrics fontMetrics;
   protected boolean closed;
 //  protected String activityFontName = "Arial";
-  protected String activityFontName = "ËÎÌå";
+  protected String activityFontName = "å®‹ä½“";
 
   /**
    * Creates an empty canvas with given width and height.

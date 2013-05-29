@@ -71,7 +71,13 @@ public abstract class MultiInstanceActivityBehavior extends FlowNodeActivityBeha
   protected Expression collectionExpression;
   protected String collectionVariable;
   protected String collectionElementVariable;
-  
+  public static final String multiInstanceMode_variable_const = ".bpmn.behavior.multiInstance.mode";
+	public static final String multiInstanceMode_parallel = "parallel";
+	public static final String multiInstanceMode_sequential = "sequential";
+  public MultiInstanceActivityBehavior()
+  {
+	  
+  }
   /**
    * @param innerActivityBehavior The original {@link ActivityBehavior} of the activity 
    *                         that will be wrapped inside this behavior.

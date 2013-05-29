@@ -36,8 +36,7 @@
 
 	<target name="compile-Activiti" description="compile the activiti-engine source ">
 		<echo>compile the Activiti-pool source ...</echo>
-		<javac destdir="classes-bboss-Activiti" 
-			
+		<javac destdir="classes-bboss-Activiti" encoding="UTF-8"
 			target="1.5" source="1.5" deprecation="true" debug="${debug}" optimize="${optimize}" memorymaximumsize="256M" fork="true" verbose="yes">
 			<src path="src/main/java" />			
 			
@@ -68,7 +67,7 @@
 	
 	<target name="compile-Activiti-test" depends="jar-Activiti" description="compile the activiti-engine-test source ">
 			<echo>compile the activiti-engine-5.10-test source ...</echo>
-			<javac destdir="classes-bboss-Activiti-test" target="1.5" source="1.5" 
+			<javac destdir="classes-bboss-Activiti-test" target="1.5" source="1.5" encoding="UTF-8"
 				deprecation="true" debug="${debug}" optimize="${optimize}" 
 				memorymaximumsize="256M" fork="true" verbose="yes">				
 				<src path="src/test/java" />	
@@ -97,8 +96,13 @@
 	<target name="copy-depends-liberary" description="copy depends liberarys">
 				<echo>copy depends liberarys ...</echo>
 				<copy todir="distrib/dependlibs">
-					<fileset dir="lib" includes="**/*" />
+					<fileset dir="lib" includes="**/*.jar" />
 				</copy>
+				<echo>copy depends lib-test liberarys ...</echo>
+				<copy todir="distrib/dependlibs">
+					<fileset dir="libs-test" includes="activiti-bpmn-converter-5.12.jar,activiti-bpmn-layout-5.12.jar,activiti-bpmn-model-5.12.jar,java-uuid-generator-3.1.2.jar" />
+				</copy>
+				<echo>copy depends src/test/resources/ liberarys ...</echo>
 				<copy todir="distrib/resouces">
 					<fileset dir="src/test/resources/" includes="activiti.cfg.xml,log4j.properties,poolman.xml" />
 				</copy>	
@@ -121,8 +125,10 @@
 	
 	
 	<target name="complete" depends="distrib" description="copy depends liberarys">
+		<echo>delete dir classes-bboss-Activiti...</echo>
 		<delete dir="classes-bboss-Activiti" />	
 		<delete dir="classes-bboss-Activiti-test" />	
+		<echo>delete dir classes-bboss-Activiti-test...</echo>
 	</target>
 
 </project>

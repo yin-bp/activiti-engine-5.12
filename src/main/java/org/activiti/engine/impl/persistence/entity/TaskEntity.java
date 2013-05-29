@@ -173,7 +173,7 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
     }
     boolean customDTask = (destinationTaskKey != null && !destinationTaskKey.equals(""));
     String dtaskName = customDTask ?(String)execution.getActivity().getProcessDefinition().findActivity(destinationTaskKey).getProperty("name"):null;
-    String deleteReason = !customDTask ?TaskEntity.DELETE_REASON_COMPLETED:"转到节点["+dtaskName + "]";//转到即自由跳转的意思
+    String deleteReason = !customDTask ?TaskEntity.DELETE_REASON_COMPLETED:"转到节点["+dtaskName + "-" + destinationTaskKey + "]";//转到即自由跳转的意思
     if(this.assignee != null && !this.assignee.equals(""))
     {
     	String userName = Context.getProcessEngineConfiguration().getUserInfoMap().getUserName(this.assignee);
@@ -184,6 +184,11 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
     	if(!userName.equals(assignee))
     		userName = userName + "-" + this.assignee; 
 		deleteReason = "任务被[" + userName + "]" +deleteReason;
+    }
+    if(this.taskDefinitionKey != null)
+    {
+    	String taskName = (String)execution.getActivity().getProperty("name");
+    	deleteReason = "[" +taskName +"-"+ this.taskDefinitionKey+ "]" +deleteReason;
     }
     Context
       .getCommandContext()
