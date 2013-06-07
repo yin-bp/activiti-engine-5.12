@@ -109,6 +109,7 @@ import org.activiti.engine.impl.form.FormTypes;
 import org.activiti.engine.impl.form.JuelFormEngine;
 import org.activiti.engine.impl.form.LongFormType;
 import org.activiti.engine.impl.form.StringFormType;
+import org.activiti.engine.impl.form.UserFormType;
 import org.activiti.engine.impl.history.HistoryLevel;
 import org.activiti.engine.impl.history.HistoryManager;
 import org.activiti.engine.impl.history.parse.FlowNodeHistoryParseHandler;
@@ -1032,6 +1033,7 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
       formTypes.addFormType(new LongFormType());
       formTypes.addFormType(new DateFormType("dd/MM/yyyy"));
       formTypes.addFormType(new BooleanFormType());
+      formTypes.addFormType(new UserFormType());
     }
     if (customFormTypes!=null) {
       for (AbstractFormType customFormType: customFormTypes) {

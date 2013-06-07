@@ -434,7 +434,8 @@ public class BpmnParse implements BpmnXMLConstants {
           flowsWithoutCondition.add(flow);
         }
         if (hasConditon && isDefaultFlow) {
-          bpmnModel.addProblem("Exclusive Gateway '" + activity.getId() + "' has outgoing sequence flow '" + flow.getId()
+          //change addProblem to addWarning by biaoping.yin 2013.0603 兼容5.11之前的版本
+          bpmnModel.addWarning("Exclusive Gateway '" + activity.getId() + "' has outgoing sequence flow '" + flow.getId()
                   + "' which is the default flow but has a condition too.", exclusiveGateway);
         }
       }

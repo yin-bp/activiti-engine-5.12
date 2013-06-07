@@ -172,7 +172,9 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
       getProcessInstance().involveUser(Authentication.getAuthenticatedUserId(), IdentityLinkType.PARTICIPANT);
     }
     boolean customDTask = (destinationTaskKey != null && !destinationTaskKey.equals(""));
-    String dtaskName = customDTask ?(String)execution.getActivity().getProcessDefinition().findActivity(destinationTaskKey).getProperty("name"):null;
+    if (executionId!=null) 
+        execution = getExecution();
+    String dtaskName = customDTask && execution != null ?(String)execution.getActivity().getProcessDefinition().findActivity(destinationTaskKey).getProperty("name"):null;
     String deleteReason = !customDTask ?TaskEntity.DELETE_REASON_COMPLETED:"转到节点["+dtaskName + "-" + destinationTaskKey + "]";//转到即自由跳转的意思
     if(this.assignee != null && !this.assignee.equals(""))
     {
@@ -185,10 +187,17 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
     		userName = userName + "-" + this.assignee; 
 		deleteReason = "任务被[" + userName + "]" +deleteReason;
     }
+    ExecutionEntity execution = null;
+   
     if(this.taskDefinitionKey != null)
     {
-    	String taskName = (String)execution.getActivity().getProperty("name");
-    	deleteReason = "[" +taskName +"-"+ this.taskDefinitionKey+ "]" +deleteReason;
+    	if(execution != null)
+    	{
+	    	String taskName = (String)execution.getActivity().getProperty("name");
+	    	deleteReason = "[" +taskName +"-"+ this.taskDefinitionKey+ "]" +deleteReason;
+    	}
+    	else
+    		deleteReason = "[" + this.taskDefinitionKey+ "]" +deleteReason;
     }
     Context
       .getCommandContext()
@@ -197,8 +206,8 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
     /**
      * 什么情况下executionId为null？
      */
-    if (executionId!=null) {
-      ExecutionEntity execution = getExecution();
+    if (execution!=null) {
+       execution = getExecution();
       if(customDTask)
       {
     	  execution.setDeleteReason(deleteReason);

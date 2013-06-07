@@ -64,7 +64,7 @@ org.activiti.engine.impl.bpmn.behavior.BpmnActivityBehavior
 自动驳回到上一个处理环节
 配置流程处理环节
 会签串并行改造  
-	如果下流程中存在多实例任务，那么可以通过流程变量在运行时或者在发起流程的时候设置相关多实例任务执行的方式为串行还是并行
+	如果流程中存在多实例任务，那么可以通过流程变量在运行时或者在发起流程的时候设置相关多实例任务执行的方式为串行还是并行
    * 变量的命名规范为：
    * taskkey.bpmn.behavior.multiInstance.mode
    * 取值范围为：
