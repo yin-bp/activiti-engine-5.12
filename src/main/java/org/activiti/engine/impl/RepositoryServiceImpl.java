@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.engine.RepositoryService;
+import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.engine.impl.cmd.ActivateProcessDefinitionCmd;
 import org.activiti.engine.impl.cmd.AddEditorSourceExtraForModelCmd;
 import org.activiti.engine.impl.cmd.AddEditorSourceForModelCmd;
@@ -41,6 +42,7 @@ import org.activiti.engine.impl.cmd.GetModelEditorSourceCmd;
 import org.activiti.engine.impl.cmd.GetModelEditorSourceExtraCmd;
 import org.activiti.engine.impl.cmd.SaveModelCmd;
 import org.activiti.engine.impl.cmd.SuspendProcessDefinitionCmd;
+import org.activiti.engine.impl.db.upgrade.InstanceUpgrade;
 import org.activiti.engine.impl.persistence.entity.ModelEntity;
 import org.activiti.engine.impl.pvm.ReadOnlyProcessDefinition;
 import org.activiti.engine.impl.repository.DeploymentBuilderImpl;
@@ -54,6 +56,8 @@ import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.repository.ProcessDefinitionQuery;
 import org.activiti.engine.task.IdentityLink;
 
+import com.frameworkset.orm.transaction.TransactionManager;
+
 
 /**
  * @author Tom Baeyens
@@ -61,13 +65,37 @@ import org.activiti.engine.task.IdentityLink;
  * @author Joram Barrez
  */
 public class RepositoryServiceImpl extends ServiceImpl implements RepositoryService {
-
+  protected ProcessEngineConfigurationImpl processEngineConfigurationImpl; 
   public DeploymentBuilder createDeployment() {
     return new DeploymentBuilderImpl(this);
   }
 
   public Deployment deploy(DeploymentBuilderImpl deploymentBuilder) {
-    return commandExecutor.execute(new DeployCmd<Deployment>(deploymentBuilder));
+	TransactionManager tm = new TransactionManager();
+	try
+	{
+		tm.begin();
+		InstanceUpgrade instanceUpgrade = this.processEngineConfigurationImpl.getInstanceUpgrade();  
+		Deployment deployment = commandExecutor.execute(new DeployCmd<Deployment>(deploymentBuilder));
+		if(deploymentBuilder.getDeployPolicy() == DeploymentBuilder.Deploy_policy_upgrade)
+		{
+			instanceUpgrade.instanceUpgrade(deployment);
+		}
+		else if(deploymentBuilder.getDeployPolicy() == DeploymentBuilder.Deploy_policy_delete)
+		{
+			instanceUpgrade.instanceDelete(deployment);
+		}
+		tm.commit();
+		return deployment;
+	} catch (RuntimeException e) {
+		throw e;
+	} catch (Exception e) {
+		throw new RuntimeException(e);
+	}
+	finally
+	{
+		tm.release();
+	}
   }
 
   public void deleteDeployment(String deploymentId) {
@@ -210,5 +238,14 @@ public class RepositoryServiceImpl extends ServiceImpl implements RepositoryServ
   public List<IdentityLink> getIdentityLinksForProcessDefinition(String processDefinitionId) {
     return commandExecutor.execute(new GetIdentityLinksForProcessDefinitionCmd(processDefinitionId));
   }
+
+public ProcessEngineConfigurationImpl getProcessEngineConfigurationImpl() {
+	return processEngineConfigurationImpl;
+}
+
+public void setProcessEngineConfigurationImpl(
+		ProcessEngineConfigurationImpl processEngineConfigurationImpl) {
+	this.processEngineConfigurationImpl = processEngineConfigurationImpl;
+}
 
 }

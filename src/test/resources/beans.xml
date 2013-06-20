@@ -1,0 +1,4 @@
+<properties>
+<property name="taskAssigneeAssignment" class="org.activiti.examples.bpmn.tasklistener.AssigneeAssignment"/>
+<property name="taskCompleteListener" class="org.activiti.examples.bpmn.tasklistener.TaskCompleteListener"/>
+</properties>

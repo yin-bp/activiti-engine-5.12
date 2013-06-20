@@ -147,7 +147,7 @@ public interface TaskService {
    * @throws ActivitiObjectNotFoundException when no task exists with the given id.
    * @throws ActivitiException when this task is {@link DelegationState#PENDING} delegation.
    */
-  void complete(String taskId,String destinationTaskKey);
+  void completeWithDest(String taskId,String destinationTaskKey);
   
   /**
    * Delegates the task to another user. This means that the assignee is set 

@@ -23,6 +23,7 @@ import java.util.Map;
 import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.db.PersistentObject;
 import org.activiti.engine.repository.Deployment;
+import org.activiti.engine.repository.DeploymentBuilder;
 
 
 /**
@@ -38,6 +39,7 @@ public class DeploymentEntity implements Serializable, Deployment, PersistentObj
   protected Map<String, ResourceEntity> resources;
   protected Date deploymentTime;
   protected boolean isNew;
+  protected int deployPolicy = DeploymentBuilder.Deploy_policy_default;
   
   /**
    * Will only be used during actual deployment to pass deployed artifacts (eg process definitions).
@@ -145,4 +147,12 @@ public class DeploymentEntity implements Serializable, Deployment, PersistentObj
   public void setCategory(String category) {
     this.category = category;
   }
+
+public int getDeployPolicy() {
+	return deployPolicy;
+}
+
+public void setDeployPolicy(int deployPolicy) {
+	this.deployPolicy = deployPolicy;
+}
 }

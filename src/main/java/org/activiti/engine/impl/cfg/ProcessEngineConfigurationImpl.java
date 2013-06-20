@@ -96,6 +96,7 @@ import org.activiti.engine.impl.cfg.standalone.StandaloneMybatisTransactionConte
 import org.activiti.engine.impl.db.DbIdGenerator;
 import org.activiti.engine.impl.db.DbSqlSessionFactory;
 import org.activiti.engine.impl.db.IbatisVariableTypeHandler;
+import org.activiti.engine.impl.db.upgrade.InstanceUpgrade;
 import org.activiti.engine.impl.delegate.DefaultDelegateInterceptor;
 import org.activiti.engine.impl.el.ExpressionManager;
 import org.activiti.engine.impl.event.CompensationEventHandler;
@@ -205,6 +206,8 @@ import org.apache.ibatis.transaction.managed.ManagedTransactionFactory;
 import org.apache.ibatis.type.JdbcType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.frameworkset.common.poolman.ConfigSQLExecutor;
 
 
 /**
@@ -371,6 +374,7 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   protected String databaseSchema = null;
   
   protected boolean isCreateDiagramOnDeploy = true;
+  protected InstanceUpgrade instanceUpgrade;
   
   // buildProcessEngine ///////////////////////////////////////////////////////
   
@@ -405,6 +409,18 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
     initDelegateInterceptor();
     initEventHandlers();
     initFailedJobCommandFactory();
+    initInstanceUpgrade();
+  }
+  protected void initInstanceUpgrade()
+  {
+	  if(instanceUpgrade == null)
+	  {
+		  instanceUpgrade = new InstanceUpgrade();
+		  instanceUpgrade.setExecutor(new ConfigSQLExecutor("org/activiti/engine/impl/db/upgrade/upgradesql.xml"));
+		  
+	  }
+	  instanceUpgrade.setTaskService(this.taskService);
+	  instanceUpgrade.setRuntimeService(this.runtimeService);
   }
 
   // failedJobCommandFactory ////////////////////////////////////////////////////////
@@ -488,6 +504,7 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   
   protected void initServices() {
     initService(repositoryService);
+    repositoryService.setProcessEngineConfigurationImpl(this);
     initService(runtimeService);
     initService(historyService);
     initService(identityService);
@@ -1966,6 +1983,10 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
 
 	public void setUserInfoMap(UserInfoMap userInfoMap) {
 		this.userInfoMap = userInfoMap;
+	}
+
+	public InstanceUpgrade getInstanceUpgrade() {
+		return instanceUpgrade;
 	}
   
 }

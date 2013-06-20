@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.activiti.bpmn.model.BpmnModel;
+import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.engine.repository.DeploymentBuilder;
 import org.activiti.engine.repository.DeploymentQuery;
 import org.activiti.engine.repository.DiagramLayout;
@@ -329,5 +330,8 @@ public interface RepositoryService {
    * is authorized for a certain process definition
    */
   List<IdentityLink> getIdentityLinksForProcessDefinition(String processDefinitionId);
+  public ProcessEngineConfigurationImpl getProcessEngineConfigurationImpl() ;
 
+	public void setProcessEngineConfigurationImpl(
+			ProcessEngineConfigurationImpl processEngineConfigurationImpl) ;
 }

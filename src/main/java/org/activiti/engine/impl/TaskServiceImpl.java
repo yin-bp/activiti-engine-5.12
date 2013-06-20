@@ -171,7 +171,7 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
    * @throws ActivitiObjectNotFoundException when no task exists with the given id.
    * @throws ActivitiException when this task is {@link DelegationState#PENDING} delegation.
    */
-  public void complete(String taskId,String destinationTaskKey)
+  public void completeWithDest(String taskId,String destinationTaskKey)
   {
 	  commandExecutor.execute(new CompleteTaskCmd(taskId, null,destinationTaskKey));
   }

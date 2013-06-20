@@ -64,7 +64,7 @@ org.activiti.engine.impl.bpmn.behavior.BpmnActivityBehavior
 自动驳回到上一个处理环节
 配置流程处理环节
 会签串并行改造  
-	如果流程中存在多实例任务，那么可以通过流程变量在运行时或者在发起流程的时候设置相关多实例任务执行的方式为串行还是并行
+	如果下流程中存在多实例任务，那么可以通过流程变量在运行时或者在发起流程的时候设置相关多实例任务执行的方式为串行还是并行
    * 变量的命名规范为：
    * taskkey.bpmn.behavior.multiInstance.mode
    * 取值范围为：
@@ -74,3 +74,17 @@ org.activiti.engine.impl.bpmn.behavior.BpmnActivityBehavior
    * 
    * 这个变量可以在设计流程时统一配置，可以启动流程实例时动态修改，也可以在上个活动任务完成时修改
 增加UserInfoMap组件，用来在流程引擎中获取用户相关属性（根据userAccount或者根据用户ID获取用户属性）
+
+流程实例和任务升级改造要点：
+需要修改的表结构：
+act_ru_task
+act_ru_job
+act_ru_identitylink
+act_ru_execution
+act_hi_taskinst
+act_hi_procinst
+act_hi_actinst
+
+主要是对这些表中的流程定义id进行统一的变更，对于定时任务的处理以及内存中的缓存数据的处理，还需要时间进一步检验
+变更完成后需要刷新缓存数据
+子流程删除，父流程的处理

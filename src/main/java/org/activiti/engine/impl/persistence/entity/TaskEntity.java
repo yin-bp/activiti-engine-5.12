@@ -171,14 +171,50 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
     if (Authentication.getAuthenticatedUserId() != null && processInstanceId != null) {
       getProcessInstance().involveUser(Authentication.getAuthenticatedUserId(), IdentityLinkType.PARTICIPANT);
     }
-    boolean customDTask = (destinationTaskKey != null && !destinationTaskKey.equals(""));
+    ExecutionEntity execution = null;
+    /**
+     * 什么情况下executionId为null？
+     */
     if (executionId!=null) 
         execution = getExecution();
-    String dtaskName = customDTask && execution != null ?(String)execution.getActivity().getProcessDefinition().findActivity(destinationTaskKey).getProperty("name"):null;
-    String deleteReason = !customDTask ?TaskEntity.DELETE_REASON_COMPLETED:"转到节点["+dtaskName + "-" + destinationTaskKey + "]";//转到即自由跳转的意思
+    boolean customDTask = (destinationTaskKey != null && !destinationTaskKey.equals(""));
+    String dtaskName = null;
+    try
+    {
+    	dtaskName = customDTask && execution != null ?(String)execution.getActivity().getProcessDefinition().findActivity(destinationTaskKey).getProperty("name"):null;
+    }
+    catch(Exception e)
+    {
+//    	e.printStackTrace();
+    }
+    String deleteReason = null;
+    if(!customDTask)
+	{
+    	deleteReason = TaskEntity.DELETE_REASON_COMPLETED; 
+	}
+    else
+    {
+    	if(dtaskName != null)
+    	{
+    		deleteReason = "转到节点["+dtaskName + "-" + destinationTaskKey + "]";//转到即自由跳转的意思
+    	}
+    	else
+    	{
+    		deleteReason = "转到节点[" + destinationTaskKey + "]";//转到即自由跳转的意思
+    	}
+    }
     if(this.assignee != null && !this.assignee.equals(""))
     {
-    	String userName = Context.getProcessEngineConfiguration().getUserInfoMap().getUserName(this.assignee);
+    	String userName = null;
+    	try
+    	{
+    		userName = Context.getProcessEngineConfiguration().getUserInfoMap().getUserName(this.assignee);
+    	}
+    	catch(Exception e)
+    	{
+//    		e.printStackTrace();
+    	}
+    	
     	if(userName == null)
     	{
     		userName = assignee;
@@ -187,27 +223,32 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
     		userName = userName + "-" + this.assignee; 
 		deleteReason = "任务被[" + userName + "]" +deleteReason;
     }
-    ExecutionEntity execution = null;
-   
+    
     if(this.taskDefinitionKey != null)
     {
+    	String taskName = null;
     	if(execution != null)
     	{
-	    	String taskName = (String)execution.getActivity().getProperty("name");
-	    	deleteReason = "[" +taskName +"-"+ this.taskDefinitionKey+ "]" +deleteReason;
+    		
+	    	taskName = (String)execution.getActivity().getProperty("name");
+	    	
+    	}
+    	if(taskName != null)
+    	{
+    		deleteReason = "[" +taskName +"-"+ this.taskDefinitionKey+ "]" +deleteReason;
     	}
     	else
-    		deleteReason = "[" + this.taskDefinitionKey+ "]" +deleteReason;
+    	{
+    		deleteReason = "["+this.taskDefinitionKey+ "]" +deleteReason;
+    	}
     }
     Context
       .getCommandContext()
       .getTaskEntityManager()
       .deleteTask(this, deleteReason, false);
-    /**
-     * 什么情况下executionId为null？
-     */
+    
     if (execution!=null) {
-       execution = getExecution();
+//      execution = getExecution();
       if(customDTask)
       {
     	  execution.setDeleteReason(deleteReason);

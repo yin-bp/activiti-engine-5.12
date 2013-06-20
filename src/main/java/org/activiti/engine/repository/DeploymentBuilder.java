@@ -33,7 +33,9 @@ import org.activiti.bpmn.model.BpmnModel;
  * @author Joram Barrez
  */
 public interface DeploymentBuilder {
-  
+	 public static final int Deploy_policy_default = 0;
+	  public static final int Deploy_policy_upgrade = 1;
+	  public static final int Deploy_policy_delete = 2;
   DeploymentBuilder addInputStream(String resourceName, InputStream inputStream);
   DeploymentBuilder addClasspathResource(String resource);
   DeploymentBuilder addString(String resourceName, String text);
@@ -68,5 +70,10 @@ public interface DeploymentBuilder {
    * Deploys all provided sources to the Activiti engine.
    */
   Deployment deploy();
+  /**
+   * Deploys all provided sources to the Activiti engine.
+   */
+  Deployment deploy(int deploypolicy);
+  int getDeployPolicy();
   
 }

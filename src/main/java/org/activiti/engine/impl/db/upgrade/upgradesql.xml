@@ -1,0 +1,94 @@
+<properties>
+	<!--根据流程部署id查找对应的所有流程定义-->
+	<property name="queryProcdefsByDeployment" >
+		 <![CDATA[
+			select     ID_,
+		    REV_,
+		    CATEGORY_,
+		    NAME_,
+		    KEY_,
+		    VERSION_,
+		    DEPLOYMENT_ID_,
+		    RESOURCE_NAME_,
+		    DGRM_RESOURCE_NAME_,
+		    DESCRIPTION_,
+		    HAS_START_FORM_KEY_,
+		    SUSPENSION_STATE_ from act_re_procdef where DEPLOYMENT_ID_ = ?
+		]]>
+	</property>
+	<!--根据流程key查找流程所有旧版本定义信息-->
+	<property name="queryAllProcdefsByKey" >
+		 <![CDATA[
+			select id_ from act_re_procdef where key_ = ? and 
+			 version_ < (select version_  from act_re_procdef where key_ = ? and  DEPLOYMENT_ID_ = ?) 
+		]]>
+	</property>
+	<!--将流程所有活动任务对应的流程版本更新到最新的版本-->
+	<property name="updateRunTasks" >
+		 <![CDATA[
+			update act_ru_task set PROC_DEF_ID_ = ? 
+			 	where PROC_DEF_ID_ in (select id_ from act_re_procdef where key_ = ? and version_ < ?)
+		]]>
+	</property>
+	<!--将流程所有活动任务对应的流程版本更新到最新的版本-->
+	<property name="updateExecutes" >
+		 <![CDATA[
+			update act_ru_execution set PROC_DEF_ID_ = ? 
+			 	where PROC_DEF_ID_ in (select id_ from act_re_procdef where key_ = ? and version_ < ?)
+		]]>
+	</property>
+	<!--将流程所有活动任务对应的流程版本更新到最新的版本-->
+	<property name="updateJobs" >
+		 <![CDATA[
+			update act_ru_job set PROC_DEF_ID_ = ? 
+			 	where PROC_DEF_ID_ in (select id_ from act_re_procdef where key_ = ? and version_ < ?)
+		]]>
+	</property>
+	<!--将流程所有活动任务对应的流程版本更新到最新的版本-->
+	<property name="updateIdentitylinks" >
+		 <![CDATA[
+			update act_ru_identitylink set PROC_DEF_ID_ = ? 
+			 	where PROC_DEF_ID_ in (select id_ from act_re_procdef where key_ = ? and version_ < ?)
+		]]>
+	</property>
+	<!--将流程所有活动任务对应的流程版本更新到最新的版本-->
+	<property name="updateTaskinsts" >
+		 <![CDATA[
+			update act_hi_taskinst set PROC_DEF_ID_ = ? 
+			 	where PROC_DEF_ID_ in (select id_ from act_re_procdef where key_ = ? and version_ < ?)
+			 		  and END_TIME_ is null
+		]]>
+	</property>
+	<!--将流程所有活动任务对应的流程版本更新到最新的版本-->
+	<property name="updateProcinsts" >
+		 <![CDATA[
+			update act_hi_procinst set PROC_DEF_ID_ = ? 
+			 	where PROC_DEF_ID_ in (select id_ from act_re_procdef where key_ = ? and version_ < ?)
+			 and END_TIME_ is null
+		]]></property>
+	<!--将流程所有活动任务对应的流程版本更新到最新的版本-->
+	<property name="updateActinsts" >
+		 <![CDATA[
+			update act_hi_actinst set PROC_DEF_ID_ = ? 
+			 	where PROC_DEF_ID_ in (select id_ from act_re_procdef where key_ = ? and version_ < ?)
+			 and END_TIME_ is null
+		]]>	</property>
+	<!--查询对应流程版本旧版本的所有活动的流程实例-->
+	<property name="queryProcinsts" >
+		 <![CDATA[
+			select  ID_,
+    PROC_INST_ID_,
+    BUSINESS_KEY_,
+    PROC_DEF_ID_,
+    START_TIME_,
+    END_TIME_,
+    DURATION_,
+    START_USER_ID_,
+    START_ACT_ID_,
+    END_ACT_ID_,
+    SUPER_PROCESS_INSTANCE_ID_,
+    DELETE_REASON_ from act_hi_procinst  where PROC_DEF_ID_ in (select id_ from act_re_procdef where key_ = ? and version_ < ?)
+			 		  and END_TIME_ is null
+		]]>
+	</property>
+</properties>

@@ -43,6 +43,8 @@ public class DeploymentBuilderImpl implements DeploymentBuilder, Serializable {
   protected DeploymentEntity deployment = new DeploymentEntity();
   protected boolean isDuplicateFilterEnabled = false;
   protected Date processDefinitionsActivationDate;
+  protected int deployPolicy = DeploymentBuilder.Deploy_policy_default;
+ 
 
   public DeploymentBuilderImpl(RepositoryServiceImpl repositoryService) {
     this.repositoryService = repositoryService;
@@ -133,6 +135,19 @@ public class DeploymentBuilderImpl implements DeploymentBuilder, Serializable {
   public Deployment deploy() {
     return repositoryService.deploy(this);
   }
+  /**
+   * 
+   * @param policy 部署策略
+   *   	DeploymentBuilder.Deploy_policy_default 默认策略 未完成的任务和流程实例还是按照旧的版本执行
+  		DeploymentBuilder.Deploy_policy_upgrade 升级未完成的任务和流程实例，全部按照新的版本执行 
+  		DeploymentBuilder.Deploy_policy_delete  删除未完成的任务和流程实例
+   * @return
+   */
+  public Deployment deploy(int deployPolicy) {
+	  	this.deployPolicy = deployPolicy;
+	  	this.deployment.setDeployPolicy(deployPolicy);
+	    return repositoryService.deploy(this);
+	  }
   
   // getters and setters //////////////////////////////////////////////////////
   
@@ -145,5 +160,9 @@ public class DeploymentBuilderImpl implements DeploymentBuilder, Serializable {
   public Date getProcessDefinitionsActivationDate() {
     return processDefinitionsActivationDate;
   }
+
+public int getDeployPolicy() {
+	return deployPolicy;
+}
   
 }
