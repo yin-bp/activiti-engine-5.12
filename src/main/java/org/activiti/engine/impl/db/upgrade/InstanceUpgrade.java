@@ -15,7 +15,6 @@
  */
 package org.activiti.engine.impl.db.upgrade;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 
@@ -24,6 +23,8 @@ import org.activiti.engine.TaskService;
 import org.activiti.engine.repository.Deployment;
 
 import com.frameworkset.common.poolman.ConfigSQLExecutor;
+import com.frameworkset.common.poolman.Record;
+import com.frameworkset.common.poolman.handle.RowHandler;
 
 /**
  * <p>Title: InstanceUpgrade.java</p>
@@ -49,13 +50,23 @@ public class InstanceUpgrade {
 	public void instanceUpgrade(Deployment deployment) throws Exception
 	{
 		String deploymentId = deployment.getId();
-		List<HashMap> procdefs = executor.queryList(HashMap.class, "queryProcdefsByDeployment", deploymentId);
+		List<HashMap> procdefs = executor.queryListByRowHandler(new RowHandler<HashMap>(){
+
+			@Override
+			public void handleRow(HashMap arg0, Record arg1) throws Exception {
+				arg0.put("ID_", arg1.getString("ID_"));
+				arg0.put("KEY_", arg1.getString("KEY_"));
+				arg0.put("VERSION_", arg1.getInt("VERSION_"));
+				arg0.put("DEPLOYMENT_ID_", arg1.getString("DEPLOYMENT_ID_"));
+			}
+			
+		}, HashMap.class, "queryProcdefsByDeployment", deploymentId);
 		for(int i = 0; procdefs != null && i < procdefs.size(); i ++)
 		{
 			HashMap procdef = procdefs.get(i);
 			String KEY_ = (String)procdef.get("KEY_");
-			Number VERSION_O = (Number)procdef.get("VERSION_");
-			int ver = ((Number)VERSION_O).intValue();
+			
+			int ver = (Integer)procdef.get("VERSION_");
 			String DEPLOYMENT_ID_ = (String)procdef.get("DEPLOYMENT_ID_");
 			String ID_ = (String)procdef.get("ID_");
 			executor.update("updateRunTasks", ID_,KEY_,ver );
@@ -84,13 +95,22 @@ act_hi_actinst
 	public void instanceDelete(Deployment deployment)  throws Exception
 	{
 		String deploymentId = deployment.getId();
-		List<HashMap> procdefs = executor.queryList(HashMap.class, "queryProcdefsByDeployment", deploymentId);
+		List<HashMap> procdefs = executor.queryListByRowHandler(new RowHandler<HashMap>(){
+
+			@Override
+			public void handleRow(HashMap arg0, Record arg1) throws Exception {
+				arg0.put("ID_", arg1.getString("ID_"));
+				arg0.put("KEY_", arg1.getString("KEY_"));
+				arg0.put("VERSION_", arg1.getInt("VERSION_"));
+				arg0.put("DEPLOYMENT_ID_", arg1.getString("DEPLOYMENT_ID_"));
+			}
+			
+		},HashMap.class, "queryProcdefsByDeployment", deploymentId);
 		for(int i = 0; procdefs != null && i < procdefs.size(); i ++)
 		{
 			HashMap procdef = procdefs.get(i);
 			String KEY_ = (String)procdef.get("KEY_");
-			Number VERSION_O = (Number)procdef.get("VERSION_");
-			int ver = ((Number)VERSION_O).intValue();
+			int ver = (Integer)procdef.get("VERSION_");
 			String DEPLOYMENT_ID_ = (String)procdef.get("DEPLOYMENT_ID_");
 			String ID_ = (String)procdef.get("ID_");
 			List<HashMap> procinsts = executor.queryList(HashMap.class, "queryProcinsts", KEY_,ver);
