@@ -204,6 +204,7 @@ import org.apache.ibatis.transaction.TransactionFactory;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.apache.ibatis.transaction.managed.ManagedTransactionFactory;
 import org.apache.ibatis.type.JdbcType;
+import org.frameworkset.spi.BaseApplicationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -380,7 +381,16 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   
   public ProcessEngine buildProcessEngine() {
     init();
-    return new ProcessEngineImpl(this);
+    final ProcessEngine processEngine = new ProcessEngineImpl(this);
+    BaseApplicationContext.addShutdownHook(new Runnable(){
+
+		@Override
+		public void run() {
+			processEngine.close();
+		}
+		
+	});
+    return processEngine;
   }
   
   // init /////////////////////////////////////////////////////////////////////
