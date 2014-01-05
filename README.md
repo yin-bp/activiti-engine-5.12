@@ -1,3 +1,5 @@
+更新bboss版本
+优化引擎资源管理机制，防止流程卸载时资源泄露问题
 
 Create a new repository on the command line
 

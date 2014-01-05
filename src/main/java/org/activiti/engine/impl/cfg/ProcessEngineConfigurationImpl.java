@@ -381,15 +381,8 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   
   public ProcessEngine buildProcessEngine() {
     init();
-    final ProcessEngine processEngine = new ProcessEngineImpl(this);
-    BaseApplicationContext.addShutdownHook(new Runnable(){
-
-		@Override
-		public void run() {
-			processEngine.close();
-		}
-		
-	});
+    ProcessEngine processEngine = new ProcessEngineImpl(this);
+    
     return processEngine;
   }
   
