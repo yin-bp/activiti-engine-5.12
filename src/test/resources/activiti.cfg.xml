@@ -24,7 +24,8 @@
     <property name="history" value="full" />
     <property name="idGenerator" class="org.activiti.engine.impl.persistence.StrongUuidGenerator"/>
     <property name="userInfoMap" class="org.activiti.engine.impl.identity.UserInfoMapImpl"/>
-    
+    <!-- 在特殊情况下需要制定数据库的schema -->
+<!--     <property name="databaseSchema" class="PDP"/> -->
   </property>
   <property name="beanFactory" factory-class="org.frameworkset.spi.DefaultApplicationContext" 
 			  factory-method="getApplicationContext">

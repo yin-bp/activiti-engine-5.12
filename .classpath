@@ -13,7 +13,7 @@
 	<classpathentry kind="lib" path="lib/commons-email-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang-2.4.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging-1.1.1.jar"/>
-	<classpathentry kind="lib" path="lib/frameworkset-pool.jar"/>
+	<classpathentry kind="lib" path="lib/frameworkset-pool.jar" sourcepath="lib/frameworkset-pool-sources.jar"/>
 	<classpathentry kind="lib" path="lib/frameworkset-util.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta-oro-2.0.8.jar"/>
 	<classpathentry kind="lib" path="lib/joda-time-2.1.jar"/>
