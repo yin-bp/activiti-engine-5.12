@@ -204,7 +204,6 @@ import org.apache.ibatis.transaction.TransactionFactory;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.apache.ibatis.transaction.managed.ManagedTransactionFactory;
 import org.apache.ibatis.type.JdbcType;
-import org.frameworkset.spi.BaseApplicationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -381,9 +380,7 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   
   public ProcessEngine buildProcessEngine() {
     init();
-    ProcessEngine processEngine = new ProcessEngineImpl(this);
-    
-    return processEngine;
+    return new ProcessEngineImpl(this);
   }
   
   // init /////////////////////////////////////////////////////////////////////
@@ -424,6 +421,7 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
 	  }
 	  instanceUpgrade.setTaskService(this.taskService);
 	  instanceUpgrade.setRuntimeService(this.runtimeService);
+	  instanceUpgrade.init();
   }
 
   // failedJobCommandFactory ////////////////////////////////////////////////////////

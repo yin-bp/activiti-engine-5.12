@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src/test/resources"/>
+	<classpathentry kind="src" path="src/test/java"/>
 	<classpathentry kind="src" path="activiti-bpmn-layout-5.12-sources"/>
 	<classpathentry kind="src" path="activiti-bpmn-converter-5.12-sources"/>
 	<classpathentry kind="src" path="activiti-bpmn-model-5.12-sources"/>

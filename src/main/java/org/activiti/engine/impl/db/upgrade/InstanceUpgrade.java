@@ -15,15 +15,22 @@
  */
 package org.activiti.engine.impl.db.upgrade;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
+import org.activiti.engine.impl.cfg.BeansConfigurationHelper;
 import org.activiti.engine.repository.Deployment;
+import org.apache.log4j.Logger;
+import org.frameworkset.spi.BaseApplicationContext;
+import org.frameworkset.spi.assemble.Pro;
+import org.frameworkset.spi.assemble.ProList;
 
 import com.frameworkset.common.poolman.ConfigSQLExecutor;
 import com.frameworkset.common.poolman.Record;
+import com.frameworkset.common.poolman.SQLExecutor;
 import com.frameworkset.common.poolman.handle.RowHandler;
 
 /**
@@ -42,6 +49,8 @@ public class InstanceUpgrade {
 	private ConfigSQLExecutor executor;
 	private TaskService taskService;
 	private RuntimeService runtimeService;
+	private List<DeployPolicyBean> deployPolicyBeans;
+	private static Logger log = Logger.getLogger(InstanceUpgrade.class);
 	/**
 	 * 升级对应部署包中对应的流程旧版本任务实例
 	 * @param deployment
@@ -61,6 +70,7 @@ public class InstanceUpgrade {
 			}
 			
 		}, HashMap.class, "queryProcdefsByDeployment", deploymentId);
+		
 		for(int i = 0; procdefs != null && i < procdefs.size(); i ++)
 		{
 			HashMap procdef = procdefs.get(i);
@@ -76,6 +86,22 @@ public class InstanceUpgrade {
 			executor.update("updateTaskinsts", ID_,KEY_,ver );
 			executor.update("updateProcinsts", ID_,KEY_,ver );
 			executor.update("updateActinsts", ID_,KEY_,ver );
+			String likekey = KEY_ + ":%";
+			//更新业务表中记录的流程定义id的记录为最新版本
+			
+			for(int j =0; deployPolicyBeans != null && j < deployPolicyBeans.size();j ++)
+			{
+				DeployPolicyBean pro = deployPolicyBeans.get(j);
+				if(pro.getUpdatesql() != null )
+				{
+					
+					SQLExecutor.update(pro.getUpdatesql(), ID_,likekey);
+				}
+				if(pro.getUpgradeCallback() != null)
+				{
+					pro.getUpgradeCallback().update(procdef);
+				}
+			}
 		}
 		
 		/**
@@ -120,6 +146,15 @@ act_hi_actinst
 				runtimeService.deleteProcessInstance((String)procinst.get("PROC_INST_ID_"), "流程部署"+deployment.getName()+"使用删除历史版本未完成任务策略.");
 			}
 			
+			for(int j =0; deployPolicyBeans != null && j < deployPolicyBeans.size();j ++)
+			{
+				DeployPolicyBean pro = deployPolicyBeans.get(j);				
+				if(pro.getUpgradeCallback() != null)
+				{
+					pro.getUpgradeCallback().update(procdef);
+				}
+			}
+			
 		}
 	}
 	public ConfigSQLExecutor getExecutor() {
@@ -134,6 +169,48 @@ act_hi_actinst
 	}
 	public void setRuntimeService(RuntimeService runtimeService) {
 		this.runtimeService = runtimeService;
+		
+	}
+	public void init() {
+		BaseApplicationContext context = BeansConfigurationHelper.getConfigBeanFactory();
+		deployPolicyBeans = new ArrayList<DeployPolicyBean>();
+		ProList proList=null;
+		try {
+			proList = context.getListProperty("deployPolicy");
+		} catch (Exception e1) {
+			log.error("流程配置文件部署策略配置信息加载失败：",e1);
+		}
+		StringBuffer sql = new StringBuffer();
+		for(int j =0; proList != null && j < proList.size();j ++)
+		{
+			DeployPolicyBean policyBean = new DeployPolicyBean();			
+			Pro pro = (Pro)proList.get(j);
+			String table = pro.getStringExtendAttribute("table");
+			policyBean.setTable(table);
+			String processdefcolumn = pro.getStringExtendAttribute("processdefcolumn");
+			policyBean.setProdefcolumn(processdefcolumn);
+			if(table != null && processdefcolumn != null)
+			{
+				
+				sql.append("update ").append(table)
+					.append(" set ").append(processdefcolumn).append("=?")
+					.append(" where ").append(processdefcolumn).append(" like ?");
+				policyBean.setUpdatesql(sql.toString());
+				sql.setLength(0);
+			}
+			String callback = pro.getStringExtendAttribute("upgradecallback");
+			if(callback != null)
+			{				
+				try {
+					Class<UpgradeCallback> clazz = (Class<UpgradeCallback>) Class.forName(callback);				
+					UpgradeCallback upgradeCallback = clazz.newInstance();
+					policyBean.setUpgradeCallback(upgradeCallback);
+				} catch (Exception e) {
+					log.error("", e);
+				}
+			}
+			deployPolicyBeans.add(policyBean);
+		}
 		
 	}
 

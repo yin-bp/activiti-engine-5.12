@@ -24,8 +24,14 @@ import org.frameworkset.spi.DefaultApplicationContext;
  * @author Tom Baeyens
  */
 public class BeansConfigurationHelper {
+	private static BaseApplicationContext  configBeanFactory = null; 
 
-//  public static ProcessEngineConfiguration parseProcessEngineConfiguration(Resource springResource, String beanName) {
+	public static BaseApplicationContext getConfigBeanFactory() {
+		return configBeanFactory;
+	}
+
+
+	//  public static ProcessEngineConfiguration parseProcessEngineConfiguration(Resource springResource, String beanName) {
 //    DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 //    XmlBeanDefinitionReader xmlBeanDefinitionReader = new XmlBeanDefinitionReader(beanFactory);
 //    xmlBeanDefinitionReader.setValidationMode(XmlBeanDefinitionReader.VALIDATION_XSD);
@@ -40,7 +46,7 @@ public class BeansConfigurationHelper {
 //	    xmlBeanDefinitionReader.setValidationMode(XmlBeanDefinitionReader.VALIDATION_XSD);
 //	    xmlBeanDefinitionReader.loadBeanDefinitions(springResource);
 		DefaultApplicationContext  beanFactory = DefaultApplicationContext.getApplicationContext(bbossResource);
-		
+		configBeanFactory = beanFactory;
 	    ProcessEngineConfigurationImpl processEngineConfiguration = (ProcessEngineConfigurationImpl) beanFactory.getBeanObject(beanName);
 	    BaseApplicationContext beanFactory_ =  beanFactory.getTBeanObject("beanFactory", BaseApplicationContext.class);
 	    if(beanFactory_ != null)    

@@ -10,7 +10,7 @@
 <!--     <property name="jdbcPassword" value="" /> -->
     <property name="dataSource" factory-class="com.frameworkset.common.poolman.util.SQLManager" factory-method="getTXDatasourceByDBName">
     	<construction>
-    		<property value="mysql" />
+    		<property value="bspf" />
     	</construction>
     </property>
     <!-- Database configurations -->
@@ -24,13 +24,26 @@
     <property name="history" value="full" />
     <property name="idGenerator" class="org.activiti.engine.impl.persistence.StrongUuidGenerator"/>
     <property name="userInfoMap" class="org.activiti.engine.impl.identity.UserInfoMapImpl"/>
-    <!-- 在特殊情况下需要制定数据库的schema -->
-<!--     <property name="databaseSchema" class="PDP"/> -->
+    
   </property>
   <property name="beanFactory" factory-class="org.frameworkset.spi.DefaultApplicationContext" 
 			  factory-method="getApplicationContext">
 			  <construction>
 			  <property value="beans.xml"/>
 			  </construction>
+	</property>
+	<property name="deployPolicy">
+		<list>
+			<!-- 
+			指定流程实例升级到最新版本时需要更新的业务表及业务表中对应的流程定义id字段名称
+			可以通过property元素指定多个业务表 
+			-->
+<!--			<property table="tpp_plan" processdefcolumn="pd_id"/>-->
+			<!-- 
+			指定部署流程版本时，升级流程实例或者删除流程实例回调处理函数，可以与指定的表和表字段一起使用
+			可以指定多个回调处理函数
+			 -->
+			<property upgradecallback="bboss.TestUpgradeCallback"/>			
+		</list>
 	</property>
 </properties>
