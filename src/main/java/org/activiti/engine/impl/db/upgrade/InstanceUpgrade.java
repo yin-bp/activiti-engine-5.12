@@ -52,6 +52,61 @@ public class InstanceUpgrade {
 	private List<DeployPolicyBean> deployPolicyBeans;
 	private static Logger log = Logger.getLogger(InstanceUpgrade.class);
 	/**
+	 * 流程实例版本升级
+	 * @param processKey 要升级的流程
+	 * @param oldversions 旧的流程实例版本 号数组
+	 * @param toversion 要升级到的流程版本号
+	 * @throws Exception
+	 */
+	public void upgradeInstances(String processKey) throws Exception
+	{
+		HashMap procdef = executor.queryObjectByRowHandler(new RowHandler<HashMap>(){
+
+			@Override
+			public void handleRow(HashMap arg0, Record arg1) throws Exception {
+				arg0.put("ID_", arg1.getString("ID_"));
+				arg0.put("KEY_", arg1.getString("KEY_"));
+				arg0.put("VERSION_", arg1.getInt("VERSION_"));
+				arg0.put("DEPLOYMENT_ID_", arg1.getString("DEPLOYMENT_ID_"));
+			}
+			
+		}, HashMap.class, "queryLastVersionProcdefByKey", processKey);
+		_upgradeProcessInstances(procdef);
+	}
+	
+	private void _upgradeProcessInstances(HashMap procdef) throws Exception
+	{
+		String KEY_ = (String)procdef.get("KEY_");
+		
+		int ver = (Integer)procdef.get("VERSION_");
+		String DEPLOYMENT_ID_ = (String)procdef.get("DEPLOYMENT_ID_");
+		String ID_ = (String)procdef.get("ID_");
+		executor.update("updateRunTasks", ID_,KEY_,ver );
+		executor.update("updateExecutes", ID_,KEY_,ver );
+		executor.update("updateJobs", ID_,KEY_,ver );
+		executor.update("updateIdentitylinks", ID_,KEY_,ver );
+		executor.update("updateTaskinsts", ID_,KEY_,ver );
+		executor.update("updateProcinsts", ID_,KEY_,ver );
+		executor.update("updateActinsts", ID_,KEY_,ver );
+		String likekey = KEY_ + ":%";
+		//更新业务表中记录的流程定义id的记录为最新版本
+		
+		for(int j =0; deployPolicyBeans != null && j < deployPolicyBeans.size();j ++)
+		{
+			DeployPolicyBean pro = deployPolicyBeans.get(j);
+			if(pro.getUpdatesql() != null )
+			{
+				
+				SQLExecutor.update(pro.getUpdatesql(), ID_,likekey);
+			}
+			if(pro.getUpgradeCallback() != null)
+			{
+				pro.getUpgradeCallback().update(procdef);
+			}
+		}
+	}
+	
+	/**
 	 * 升级对应部署包中对应的流程旧版本任务实例
 	 * @param deployment
 	 * @throws Exception 
@@ -74,34 +129,7 @@ public class InstanceUpgrade {
 		for(int i = 0; procdefs != null && i < procdefs.size(); i ++)
 		{
 			HashMap procdef = procdefs.get(i);
-			String KEY_ = (String)procdef.get("KEY_");
-			
-			int ver = (Integer)procdef.get("VERSION_");
-			String DEPLOYMENT_ID_ = (String)procdef.get("DEPLOYMENT_ID_");
-			String ID_ = (String)procdef.get("ID_");
-			executor.update("updateRunTasks", ID_,KEY_,ver );
-			executor.update("updateExecutes", ID_,KEY_,ver );
-			executor.update("updateJobs", ID_,KEY_,ver );
-			executor.update("updateIdentitylinks", ID_,KEY_,ver );
-			executor.update("updateTaskinsts", ID_,KEY_,ver );
-			executor.update("updateProcinsts", ID_,KEY_,ver );
-			executor.update("updateActinsts", ID_,KEY_,ver );
-			String likekey = KEY_ + ":%";
-			//更新业务表中记录的流程定义id的记录为最新版本
-			
-			for(int j =0; deployPolicyBeans != null && j < deployPolicyBeans.size();j ++)
-			{
-				DeployPolicyBean pro = deployPolicyBeans.get(j);
-				if(pro.getUpdatesql() != null )
-				{
-					
-					SQLExecutor.update(pro.getUpdatesql(), ID_,likekey);
-				}
-				if(pro.getUpgradeCallback() != null)
-				{
-					pro.getUpgradeCallback().update(procdef);
-				}
-			}
+			_upgradeProcessInstances(procdef);
 		}
 		
 		/**
@@ -151,7 +179,7 @@ act_hi_actinst
 				DeployPolicyBean pro = deployPolicyBeans.get(j);				
 				if(pro.getUpgradeCallback() != null)
 				{
-					pro.getUpgradeCallback().update(procdef);
+					pro.getUpgradeCallback().delete(procdef);
 				}
 			}
 			

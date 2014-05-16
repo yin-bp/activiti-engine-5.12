@@ -98,12 +98,8 @@ public class ProcessEngineImpl implements ProcessEngine {
       processEngineConfiguration.getProcessEngineLifecycleListener().onProcessEngineBuilt(this);
     }
   }
-  private boolean closed = false;
+  
   public void close() {
-	if(closed)
-	{
-		return;
-	}
     ProcessEngines.unregister(this);
     if ((jobExecutor != null) && (jobExecutor.isActive())) {
       jobExecutor.shutdown();
@@ -115,7 +111,6 @@ public class ProcessEngineImpl implements ProcessEngine {
     {
       processEngineConfiguration.getProcessEngineLifecycleListener().onProcessEngineClosed(this);
     }
-    closed = true;
   }
 
   public DbSqlSessionFactory getDbSqlSessionFactory() {

@@ -26,13 +26,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.activiti.engine.impl.ProcessEngineInfoImpl;
 import org.activiti.engine.impl.util.IoUtil;
 import org.activiti.engine.impl.util.ReflectUtil;
-import org.frameworkset.spi.BaseApplicationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,49 +69,6 @@ public abstract class ProcessEngines {
   protected static Map<String, ProcessEngineInfo> processEngineInfosByName = new HashMap<String, ProcessEngineInfo>();
   protected static Map<String, ProcessEngineInfo> processEngineInfosByResourceUrl = new HashMap<String, ProcessEngineInfo>();
   protected static List<ProcessEngineInfo> processEngineInfos = new ArrayList<ProcessEngineInfo>();
-  static 
-  {
-	  BaseApplicationContext.addShutdownHook(new Runnable(){
-
-			@Override
-			public void run() {
-				if(processEngines != null)
-				{
-					Iterator<Entry<String, ProcessEngine>> it = processEngines.entrySet().iterator();
-					while(it.hasNext())
-					{
-						try {
-							Entry<String, ProcessEngine> entry = it.next();
-							entry.getValue().close();
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-					processEngines.clear();
-					processEngines = null;
-					
-				}
-				if(processEngineInfosByName != null)
-				{
-					processEngineInfosByName.clear();
-					processEngineInfosByName = null;
-				}
-				
-				if(processEngineInfosByResourceUrl != null)
-				{
-					processEngineInfosByResourceUrl.clear();
-					processEngineInfosByResourceUrl = null;
-				}
-				if(processEngineInfos != null)
-				{
-					processEngineInfos.clear();
-					processEngineInfos = null;
-				}
-			}
-			
-		},1);
-  }
   
   /** Initializes all process engines that can be found on the classpath for 
    * resources <code>activiti.cfg.xml</code> (plain Activiti style configuration)

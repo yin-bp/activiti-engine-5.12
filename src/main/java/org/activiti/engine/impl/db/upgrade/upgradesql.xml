@@ -16,6 +16,16 @@
 		    SUSPENSION_STATE_ from act_re_procdef where DEPLOYMENT_ID_ = ?
 		]]>
 	</property>
+	
+	<!--根据流程key查找对应流程最新版本定义-->
+	<property name="queryLastVersionProcdefByKey" >
+		 <![CDATA[
+			select a.* from act_re_procdef a inner join  
+(select     
+		    KEY_,		    
+		    max(VERSION_) maxv from act_re_procdef where KEY_ = ?  group by KEY_) b on a.KEY_ = b.KEY_ and a.VERSION_ = b.maxv
+		]]>
+	</property>
 	<!--根据流程key查找流程所有旧版本定义信息-->
 	<property name="queryAllProcdefsByKey" >
 		 <![CDATA[

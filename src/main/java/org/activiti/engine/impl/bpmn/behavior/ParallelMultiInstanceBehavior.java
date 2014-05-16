@@ -16,7 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.activiti.engine.ActivitiIllegalArgumentException;
+import org.activiti.engine.impl.Condition;
+import org.activiti.engine.impl.bpmn.parser.BpmnParse;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
+import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.delegate.ActivityBehavior;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
@@ -161,7 +164,14 @@ public class ParallelMultiInstanceBehavior extends MultiInstanceActivityBehavior
         	executionToRemove.deleteCascade(deleteReason);
         }
       }
-      executionEntity.takeAll(executionEntity.getActivity().getOutgoingTransitions(), joinedExecutions,destinationTaskKey);
+     
+	    /**
+	       * 解决多实例任务没有执行处理流出路径的条件运算问题
+	       */
+	    List<PvmTransition> transitionsToTake = this.bpmnActivityBehavior.evalOutgoingTransition(execution,executionEntity);
+	    
+//      executionEntity.takeAll(executionEntity.getActivity().getOutgoingTransitions(), joinedExecutions,destinationTaskKey);
+	    executionEntity.takeAll(transitionsToTake, joinedExecutions,destinationTaskKey);
     } 
   }
 

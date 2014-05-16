@@ -15,7 +15,12 @@ package org.activiti.engine.impl.bpmn.behavior;
 
 import org.activiti.engine.delegate.BpmnError;
 import org.activiti.engine.delegate.Expression;
+import org.activiti.engine.delegate.JavaDelegate;
 import org.activiti.engine.impl.bpmn.helper.ErrorPropagation;
+import org.activiti.engine.impl.context.Context;
+import org.activiti.engine.impl.delegate.ActivityBehaviorInvocation;
+import org.activiti.engine.impl.delegate.JavaDelegateInvocation;
+import org.activiti.engine.impl.pvm.delegate.ActivityBehavior;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
 
 
@@ -43,8 +48,30 @@ public class ServiceTaskExpressionActivityBehavior extends TaskActivityBehavior 
 	Object value = null;
 	try {
 		value = expression.getValue(execution);
-		if (resultVariable != null) {
-		    execution.setVariable(resultVariable, value);
+		if(value != null)
+		{
+			if (value instanceof ActivityBehavior) {
+		        Context.getProcessEngineConfiguration()
+		          .getDelegateInterceptor()
+		          .handleInvocation(new ActivityBehaviorInvocation((ActivityBehavior) value, execution));
+
+		      } else if (value instanceof JavaDelegate) {
+		        Context.getProcessEngineConfiguration()
+		          .getDelegateInterceptor()
+		          .handleInvocation(new JavaDelegateInvocation((JavaDelegate) value, execution));
+		        leave(execution);
+
+		      } else {
+		    	  if (resultVariable != null) {
+					    execution.setVariable(resultVariable, value);
+					}
+		      }
+		}
+		else
+		{
+			if (resultVariable != null) {
+			    execution.setVariable(resultVariable, value);
+			}
 		}
 		leave(execution);
     } catch (Exception exc) {

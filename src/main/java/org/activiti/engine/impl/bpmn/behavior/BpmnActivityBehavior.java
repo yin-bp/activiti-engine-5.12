@@ -21,6 +21,7 @@ import java.util.List;
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.impl.Condition;
 import org.activiti.engine.impl.bpmn.parser.BpmnParse;
+import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
@@ -176,5 +177,41 @@ public class BpmnActivityBehavior implements Serializable {
     }
     
   }
+
+/**
+ * 解决多实例任务没有执行处理流出路径的条件运算问题
+ * @param execution
+ * @param executionEntity
+ * @return
+ */
+protected  List<PvmTransition> evalOutgoingTransition(ActivityExecution execution, ExecutionEntity executionEntity) {
+	
+    List<PvmTransition> outgoingTransitions = executionEntity.getActivity().getOutgoingTransitions();
+//    List<PvmTransition> transitionsToTake = new ArrayList<PvmTransition>(pts) ;
+    String defaultSequenceFlow = (String) execution.getActivity().getProperty("default");
+    
+	    List<PvmTransition> transitionsToTake = new ArrayList<PvmTransition>();
+	    PvmTransition defaultPvmTransition = null;
+//	    List<PvmTransition> outgoingTransitions = execution.getActivity().getOutgoingTransitions();
+	    for (PvmTransition outgoingTransition : outgoingTransitions) {
+	      if (defaultSequenceFlow == null || !outgoingTransition.getId().equals(defaultSequenceFlow)) {
+	        Condition condition = (Condition) outgoingTransition.getProperty(BpmnParse.PROPERTYNAME_CONDITION);
+	        if (condition == null || condition.evaluate(execution)) {
+	          transitionsToTake.add(outgoingTransition);
+	        }
+	      }
+	      else 
+	      {
+	    	  defaultPvmTransition =  outgoingTransition;
+	      }
+	    }
+	    
+	    if(transitionsToTake.size() == 0 && defaultPvmTransition != null)
+	    {
+	    	transitionsToTake.add(defaultPvmTransition);
+	    }
+	    return transitionsToTake;
+	
+}
 
 }
