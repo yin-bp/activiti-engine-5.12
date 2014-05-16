@@ -32,6 +32,7 @@ import com.frameworkset.common.poolman.ConfigSQLExecutor;
 import com.frameworkset.common.poolman.Record;
 import com.frameworkset.common.poolman.SQLExecutor;
 import com.frameworkset.common.poolman.handle.RowHandler;
+import com.frameworkset.orm.transaction.TransactionManager;
 
 /**
  * <p>Title: InstanceUpgrade.java</p>
@@ -60,18 +61,28 @@ public class InstanceUpgrade {
 	 */
 	public void upgradeInstances(String processKey) throws Exception
 	{
-		HashMap procdef = executor.queryObjectByRowHandler(new RowHandler<HashMap>(){
-
-			@Override
-			public void handleRow(HashMap arg0, Record arg1) throws Exception {
-				arg0.put("ID_", arg1.getString("ID_"));
-				arg0.put("KEY_", arg1.getString("KEY_"));
-				arg0.put("VERSION_", arg1.getInt("VERSION_"));
-				arg0.put("DEPLOYMENT_ID_", arg1.getString("DEPLOYMENT_ID_"));
-			}
-			
-		}, HashMap.class, "queryLastVersionProcdefByKey", processKey);
-		_upgradeProcessInstances(procdef);
+		TransactionManager tm = new TransactionManager();
+		try
+		{
+			tm.begin();
+			HashMap procdef = executor.queryObjectByRowHandler(new RowHandler<HashMap>(){
+	
+				@Override
+				public void handleRow(HashMap arg0, Record arg1) throws Exception {
+					arg0.put("ID_", arg1.getString("ID_"));
+					arg0.put("KEY_", arg1.getString("KEY_"));
+					arg0.put("VERSION_", arg1.getInt("VERSION_"));
+					arg0.put("DEPLOYMENT_ID_", arg1.getString("DEPLOYMENT_ID_"));
+				}
+				
+			}, HashMap.class, "queryLastVersionProcdefByKey", processKey);
+			_upgradeProcessInstances(procdef);
+			tm.commit();
+		}
+		finally
+		{
+			tm.release();
+		}
 	}
 	
 	private void _upgradeProcessInstances(HashMap procdef) throws Exception
