@@ -13,6 +13,7 @@
 
 package org.activiti.engine.impl.bpmn.behavior;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -128,26 +129,62 @@ public abstract class MultiInstanceActivityBehavior extends FlowNodeActivityBeha
   }
   
   // Helpers //////////////////////////////////////////////////////////////////////
+  protected Collection getCollectionFromExpress(ActivityExecution execution)
+  {
+	  Object obj = collectionExpression.getValue(execution);
+	  if(obj == null)
+		  throw new ActivitiIllegalArgumentException("collectionExpression " + collectionExpression.getExpressionText() + " eval result is null.");
+      if (obj instanceof String) {
+    	  String sobj = (String)(obj);
+    	  String[] vs = sobj.split("\\,");
+    	  return Arrays.asList(vs);
+      }
+      else if(obj instanceof Collection)
+    	  return (Collection)obj;
+      else
+      {
+    	  throw new ActivitiIllegalArgumentException(collectionExpression.getExpressionText()+"' didn't resolve to a Collection");
+      }
+  }
   
+  protected Collection getCollectionFromVariable(ActivityExecution execution)
+  {
+	  Object obj = execution.getVariable(collectionVariable);
+      if (obj == null) {
+        throw new ActivitiIllegalArgumentException("Variable " + collectionVariable + " is not found");
+      }
+      if (obj instanceof String) {
+    	  String sobj = (String)(obj);
+    	  String[] vs = sobj.split("\\,");
+    	  return Arrays.asList(vs);
+      }
+      else if(obj instanceof Collection)
+    	  return (Collection)obj;
+      else 
+        throw new ActivitiIllegalArgumentException("Variable " + collectionVariable+"' is not a Collection");
+      
+  }
   @SuppressWarnings("rawtypes")
   protected int resolveNrOfInstances(ActivityExecution execution) {
     int nrOfInstances = -1;
     if (loopCardinalityExpression != null) {
       nrOfInstances = resolveLoopCardinality(execution);
     } else if (collectionExpression != null) {
-      Object obj = collectionExpression.getValue(execution);
-      if (!(obj instanceof Collection)) {
-        throw new ActivitiIllegalArgumentException(collectionExpression.getExpressionText()+"' didn't resolve to a Collection");
-      }
+//      Object obj = collectionExpression.getValue(execution);
+//      if (!(obj instanceof Collection)) {
+//        throw new ActivitiIllegalArgumentException(collectionExpression.getExpressionText()+"' didn't resolve to a Collection");
+//      }
+      Collection obj = getCollectionFromExpress(execution);
       nrOfInstances = ((Collection) obj).size();
     } else if (collectionVariable != null) {
-      Object obj = execution.getVariable(collectionVariable);
-      if (obj == null) {
-        throw new ActivitiIllegalArgumentException("Variable " + collectionVariable + " is not found");
-      }
-      if (!(obj instanceof Collection)) {
-        throw new ActivitiIllegalArgumentException("Variable " + collectionVariable+"' is not a Collection");
-      }
+//      Object obj = execution.getVariable(collectionVariable);
+//      if (obj == null) {
+//        throw new ActivitiIllegalArgumentException("Variable " + collectionVariable + " is not found");
+//      }
+//      if (!(obj instanceof Collection)) {
+//        throw new ActivitiIllegalArgumentException("Variable " + collectionVariable+"' is not a Collection");
+//      }
+      Collection obj = getCollectionFromVariable( execution);
       nrOfInstances = ((Collection) obj).size();
     } else {
       throw new ActivitiIllegalArgumentException("Couldn't resolve collection expression nor variable reference");
@@ -160,9 +197,11 @@ public abstract class MultiInstanceActivityBehavior extends FlowNodeActivityBeha
     if (usesCollection() && collectionElementVariable != null) {
       Collection collection = null;
       if (collectionExpression != null) {
-        collection = (Collection) collectionExpression.getValue(execution);
+//        collection = (Collection) collectionExpression.getValue(execution);
+    	  collection = getCollectionFromExpress(execution);
       } else if (collectionVariable != null) {
-        collection = (Collection) execution.getVariable(collectionVariable);
+//        collection = (Collection) execution.getVariable(collectionVariable);
+    	  collection = getCollectionFromVariable( execution);
       }
        
       Object value = null;
