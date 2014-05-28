@@ -205,14 +205,15 @@ public interface TaskService {
    * 将当前任务驳回到上一个任务处理人处，并更新流程变量参数
    * @param taskId
    * @param variables
+ * @return 
    */
-  void rejecttoPreTask(String taskId, Map<String, Object> variables);
+  boolean rejecttoPreTask(String taskId, Map<String, Object> variables);
   
   /**
    * 将当前任务驳回到上一个任务处理人处
    * @param taskId
    */
-  void rejecttoPreTask(String taskId);
+  boolean rejecttoPreTask(String taskId);
 
   /**
    * Changes the assignee of the given task to the given userId.

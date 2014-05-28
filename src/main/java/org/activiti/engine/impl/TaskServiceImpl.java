@@ -24,6 +24,7 @@ import org.activiti.engine.ActivitiException;
 import org.activiti.engine.ActivitiIllegalArgumentException;
 import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.activiti.engine.TaskService;
+import org.activiti.engine.impl.bpmn.behavior.MultiInstanceActivityBehavior;
 import org.activiti.engine.impl.cmd.AddCommentCmd;
 import org.activiti.engine.impl.cmd.AddIdentityLinkCmd;
 import org.activiti.engine.impl.cmd.ClaimTaskCmd;
@@ -51,7 +52,9 @@ import org.activiti.engine.impl.cmd.SaveAttachmentCmd;
 import org.activiti.engine.impl.cmd.SaveTaskCmd;
 import org.activiti.engine.impl.cmd.SetTaskPriorityCmd;
 import org.activiti.engine.impl.cmd.SetTaskVariablesCmd;
+import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
+import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.task.Attachment;
 import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.DelegationState;
@@ -62,7 +65,8 @@ import org.activiti.engine.task.NativeTaskQuery;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskQuery;
 
-import com.frameworkset.common.poolman.SQLExecutor;
+import com.frameworkset.common.poolman.ConfigSQLExecutor;
+import com.frameworkset.orm.transaction.TransactionManager;
 import com.frameworkset.util.StringUtil;
 
 
@@ -353,34 +357,67 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
   public List<Task> getSubTasks(String parentTaskId) {
     return commandExecutor.execute(new GetSubTasksCmd(parentTaskId));
   }
-  private String rejecttoPretaskSQL = "select TASK_DEF_KEY_/**,END_TIME_*/ from ACT_HI_TASKINST a inner join  (select PROC_INST_ID_,id_ from ACT_HI_TASKINST where id_ = ?)  d on a.PROC_INST_ID_ = d.PROC_INST_ID_ where d.id_ <> a.ID_ order by a.END_TIME_ desc";
+//  private String rejecttoPretaskSQL = "select TASK_DEF_KEY_/**,END_TIME_*/ from ACT_HI_TASKINST a inner join  (select PROC_INST_ID_,id_ from ACT_HI_TASKINST where id_ = ?)  d on a.PROC_INST_ID_ = d.PROC_INST_ID_ where d.id_ <> a.ID_ and d.task_def_key_ <> a.task_def_key_ order by a.END_TIME_ desc";
   /**
+   *
    * 将当前任务驳回到上一个任务处理人处，并更新流程变量参数
    * 如果需要改变处理人，可以通过指定变量的的方式设置
    * @param taskId
    * @param variables
    */
-  public void rejecttoPreTask(String taskId, Map<String, Object> variables)
+  public boolean rejecttoPreTask(String taskId, Map<String, Object> variables)
   {
+	  TransactionManager tm = new TransactionManager();
 	  try {
-			String pretaskKey = SQLExecutor.queryObject(String.class,rejecttoPretaskSQL, taskId);
-			if(pretaskKey == null)
-			{
-				throw new ActivitiException("驳回任务失败：taskId="+taskId +" 之前的任务不存在.");
-			}
+		  tm.begin();
+		  TaskEntity task = Context
+			      .getCommandContext()
+			      .getTaskEntityManager()
+			      .findTaskById(taskId);
+		  	ActivityImpl act = task.getExecution().getActivity();		  	
+		  	boolean ismultiinst = act.getActivityBehavior() instanceof MultiInstanceActivityBehavior;
+		  	ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
+		  	String pretaskKey = null;
+		  	if(!ismultiinst)
+		  	{
+				pretaskKey = executor.queryObject(String.class,"rejecttoPretaskSQL", taskId);
+				if(pretaskKey == null)
+				{
+					return false;
+				}
+		  	}
+		  	else
+		  	{
+		  		pretaskKey = executor.queryObject(String.class,"multirejecttoPretaskSQL", taskId);
+				if(pretaskKey == null)
+				{
+					return false;
+				}
+		  	}
 			this.complete(taskId, variables,pretaskKey);
-		} catch (SQLException e) {
-			throw new ActivitiException(StringUtil.formatException(e));
+			tm.commit();
+			return true;
 		}
+	  	catch(ActivitiException w)
+	  	{
+	  		throw w;
+	  	}
+	  	catch (Exception e) {
+			throw new ActivitiException("驳回任务失败：taskId="+taskId ,e);
+		}
+	  	finally
+	  	{
+	  		tm.release();
+	  	}
   }
   
   /**
    * 将当前任务驳回到上一个任务处理人处
    * @param taskId
    */
-  public void rejecttoPreTask(String taskId)
+  public boolean rejecttoPreTask(String taskId)
   {
-	  rejecttoPreTask(taskId,(Map<String, Object>)null);
+	  return rejecttoPreTask(taskId,(Map<String, Object>)null);
   }
 
 }

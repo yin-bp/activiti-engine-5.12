@@ -411,12 +411,14 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
     initFailedJobCommandFactory();
     initInstanceUpgrade();
   }
+  protected ConfigSQLExecutor extendExecutor;
   protected void initInstanceUpgrade()
   {
 	  if(instanceUpgrade == null)
 	  {
 		  instanceUpgrade = new InstanceUpgrade();
-		  instanceUpgrade.setExecutor(new ConfigSQLExecutor("org/activiti/engine/impl/db/upgrade/upgradesql.xml"));
+		  extendExecutor = new ConfigSQLExecutor("org/activiti/engine/impl/db/upgrade/upgradesql.xml");
+		  instanceUpgrade.setExecutor(extendExecutor);
 		  
 	  }
 	  instanceUpgrade.setTaskService(this.taskService);
@@ -1988,6 +1990,10 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
 
 	public InstanceUpgrade getInstanceUpgrade() {
 		return instanceUpgrade;
+	}
+
+	public ConfigSQLExecutor getExtendExecutor() {
+		return extendExecutor;
 	}
   
 }

@@ -101,4 +101,40 @@
 			 		  and END_TIME_ is null
 		]]>
 	</property>
+	
+	<!--驳回任务-->
+	<property name="rejecttoPretaskSQL" >
+		 <![CDATA[
+			select * from (select a.TASK_DEF_KEY_/**,END_TIME_*/ from ACT_HI_TASKINST a 
+			inner join  (select PROC_INST_ID_,id_ from ACT_HI_TASKINST where id_ = ?)  d on a.PROC_INST_ID_ = d.PROC_INST_ID_ 
+			where d.id_ <> a.ID_ and a.END_TIME_ is not null   order by a.END_TIME_ desc)  where  rownum = 1
+		]]>
+	</property>
+	
+	<!--驳回多实例任务-->
+	<property name="multirejecttoPretaskSQL" >
+		 <![CDATA[
+			select * from (select a.TASK_DEF_KEY_/**,END_TIME_*/ from ACT_HI_TASKINST a 
+			inner join  (select PROC_INST_ID_,id_,task_def_key_ from ACT_HI_TASKINST where id_ = ?)  d on a.PROC_INST_ID_ = d.PROC_INST_ID_ 
+			where d.id_ <> a.ID_ and a.END_TIME_ is not null and d.task_def_key_ <> a.task_def_key_ order by a.END_TIME_ desc) where  rownum = 1
+		]]>
+	</property>
+	
+	<!--驳回任务-->
+	<property name="rejecttoPretaskSQL-mysql" >
+		 <![CDATA[
+			select a.TASK_DEF_KEY_/**,END_TIME_*/ from ACT_HI_TASKINST a 
+			inner join  (select PROC_INST_ID_,id_ from ACT_HI_TASKINST where id_ = ?)  d on a.PROC_INST_ID_ = d.PROC_INST_ID_ 
+			where d.id_ <> a.ID_ and a.END_TIME_ is not null   order by a.END_TIME_ desc limit 0,1
+		]]>
+	</property>
+	
+	<!--驳回多实例任务-->
+	<property name="multirejecttoPretaskSQL-mysql" >
+		 <![CDATA[
+			select a.TASK_DEF_KEY_/**,END_TIME_*/ from ACT_HI_TASKINST a 
+			inner join  (select PROC_INST_ID_,id_,task_def_key_ from ACT_HI_TASKINST where id_ = ?)  d on a.PROC_INST_ID_ = d.PROC_INST_ID_ 
+			where d.id_ <> a.ID_ and a.END_TIME_ is not null and d.task_def_key_ <> a.task_def_key_ order by a.END_TIME_ desc  limit 0,1
+		]]>
+	</property>
 </properties>
