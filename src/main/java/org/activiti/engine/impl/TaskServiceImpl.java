@@ -13,7 +13,6 @@
 package org.activiti.engine.impl;
 
 import java.io.InputStream;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -24,7 +23,6 @@ import org.activiti.engine.ActivitiException;
 import org.activiti.engine.ActivitiIllegalArgumentException;
 import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.activiti.engine.TaskService;
-import org.activiti.engine.impl.bpmn.behavior.MultiInstanceActivityBehavior;
 import org.activiti.engine.impl.cmd.AddCommentCmd;
 import org.activiti.engine.impl.cmd.AddIdentityLinkCmd;
 import org.activiti.engine.impl.cmd.ClaimTaskCmd;
@@ -52,9 +50,7 @@ import org.activiti.engine.impl.cmd.SaveAttachmentCmd;
 import org.activiti.engine.impl.cmd.SaveTaskCmd;
 import org.activiti.engine.impl.cmd.SetTaskPriorityCmd;
 import org.activiti.engine.impl.cmd.SetTaskVariablesCmd;
-import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
-import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.task.Attachment;
 import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.DelegationState;
@@ -65,9 +61,7 @@ import org.activiti.engine.task.NativeTaskQuery;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskQuery;
 
-import com.frameworkset.common.poolman.ConfigSQLExecutor;
 import com.frameworkset.orm.transaction.TransactionManager;
-import com.frameworkset.util.StringUtil;
 
 
 /**
@@ -206,6 +200,11 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
   public void complete(String taskId, Map<String, Object> variables,String destinationTaskKey)
   {
 	  commandExecutor.execute(new CompleteTaskCmd(taskId, variables,destinationTaskKey));
+  }
+  
+  public void complete(String taskId, Map<String, Object> variables,boolean rejected)
+  {
+	  commandExecutor.execute(new CompleteTaskCmd(taskId, variables,rejected));
   }
 
   public void delegateTask(String taskId, String userId) {
@@ -370,31 +369,8 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
 	  TransactionManager tm = new TransactionManager();
 	  try {
 		  tm.begin();
-		  TaskEntity task = Context
-			      .getCommandContext()
-			      .getTaskEntityManager()
-			      .findTaskById(taskId);
-		  	ActivityImpl act = task.getExecution().getActivity();		  	
-		  	boolean ismultiinst = act.getActivityBehavior() instanceof MultiInstanceActivityBehavior;
-		  	ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
-		  	String pretaskKey = null;
-		  	if(!ismultiinst)
-		  	{
-				pretaskKey = executor.queryObject(String.class,"rejecttoPretaskSQL", taskId);
-				if(pretaskKey == null)
-				{
-					return false;
-				}
-		  	}
-		  	else
-		  	{
-		  		pretaskKey = executor.queryObject(String.class,"multirejecttoPretaskSQL", taskId);
-				if(pretaskKey == null)
-				{
-					return false;
-				}
-		  	}
-			this.complete(taskId, variables,pretaskKey);
+		 
+			this.complete(taskId, variables,true);
 			tm.commit();
 			return true;
 		}

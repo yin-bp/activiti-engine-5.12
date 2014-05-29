@@ -148,7 +148,13 @@ public interface TaskService {
    * @throws ActivitiException when this task is {@link DelegationState#PENDING} delegation.
    */
   void completeWithDest(String taskId,String destinationTaskKey);
-  
+  /**
+   * 用于任务驳回操作
+   * @param taskId the id of the task to complete, cannot be null.
+   * @param variables the  destination taskKey of the task where trans to, if be null see method complete(String taskId).
+   * @param rejected true 表示驳回操作，false表示正常完成任务
+   */
+  void complete(String taskId, Map<String, Object> variables,boolean rejected);
   /**
    * Delegates the task to another user. This means that the assignee is set 
    * and the delegation state is set to {@link DelegationState#PENDING}.

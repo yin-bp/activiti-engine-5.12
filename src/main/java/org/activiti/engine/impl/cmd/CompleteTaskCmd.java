@@ -14,8 +14,14 @@ package org.activiti.engine.impl.cmd;
 
 import java.util.Map;
 
+import org.activiti.engine.ActivitiException;
+import org.activiti.engine.impl.bpmn.behavior.MultiInstanceActivityBehavior;
+import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.interceptor.CommandContext;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
+import org.activiti.engine.impl.pvm.process.ActivityImpl;
+
+import com.frameworkset.common.poolman.ConfigSQLExecutor;
 
 
 /**
@@ -25,6 +31,7 @@ public class CompleteTaskCmd extends NeedsActiveTaskCmd<Void> {
       
   private static final long serialVersionUID = 1L;
   protected Map<String, Object> variables;
+  
   
   
   public CompleteTaskCmd(String taskId, Map<String, Object> variables) {
@@ -43,6 +50,43 @@ public class CompleteTaskCmd extends NeedsActiveTaskCmd<Void> {
     this.variables = variables;
     
   }
+  protected String findRejectedNode(CommandContext commandContext, TaskEntity task)
+  {
+	 
+	  	try {
+			ActivityImpl act = task.getExecution().getActivity();		  	
+			boolean ismultiinst = act.getActivityBehavior() instanceof MultiInstanceActivityBehavior;
+			ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
+			String pretaskKey = null;
+			if(!ismultiinst)
+			{
+				pretaskKey = executor.queryObject(String.class,"rejecttoPretaskSQL", taskId);
+				if(pretaskKey == null)
+				{
+					throw new ActivitiException("驳回任务失败："+task.getTaskDefinitionKey()+"["+taskId+"],没有找到驳回节点!");
+				}
+			}
+			else
+			{
+				pretaskKey = executor.queryObject(String.class,"multirejecttoPretaskSQL", taskId);
+				if(pretaskKey == null)
+				{
+					throw new ActivitiException("驳回任务失败："+task.getTaskDefinitionKey()+"["+taskId+"],没有找到驳回节点!");
+				}
+			}
+			return pretaskKey;
+		} catch (ActivitiException e) {
+			throw e;
+		}
+	  	catch (Exception e) {
+			throw new ActivitiException("驳回任务失败："+task.getTaskDefinitionKey()+"["+taskId+"]",e);
+		}
+  }
+  public CompleteTaskCmd(String taskId, Map<String, Object> variables,boolean isrejected) {
+	    super(taskId,isrejected);
+	    this.variables = variables;
+	    
+	  }
   
   protected Void execute(CommandContext commandContext, TaskEntity task) {
     if (variables!=null) {
@@ -52,6 +96,10 @@ public class CompleteTaskCmd extends NeedsActiveTaskCmd<Void> {
     /**
      * modified by biaoping.yin
      */
+    if(this.isrejected && destinationTaskKey == null)
+    {
+    	this.destinationTaskKey = findRejectedNode( commandContext,  task);
+    }
     if(this.destinationTaskKey == null || this.destinationTaskKey.equals(""))
     	task.complete();
     else

@@ -35,6 +35,7 @@ public abstract class NeedsActiveTaskCmd<T> implements Command<T>, Serializable 
   
   protected String taskId;
   protected String destinationTaskKey;
+  protected boolean isrejected;
   public NeedsActiveTaskCmd(String taskId) {
     this.taskId = taskId;
   }
@@ -47,6 +48,11 @@ public abstract class NeedsActiveTaskCmd<T> implements Command<T>, Serializable 
 	    this.taskId = taskId;
 	    this.destinationTaskKey = destinationTaskKey;
   }
+  
+  public NeedsActiveTaskCmd(String taskId,boolean isrejected) {
+	    this.taskId = taskId;
+	    this.isrejected = isrejected;
+}
   
   public T execute(CommandContext commandContext) {
     
