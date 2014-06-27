@@ -404,6 +404,29 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
 	  		tm.release();
 	  	}
   }
+  public boolean rejecttoPreTask(String taskId, Map<String, Object> variables,String rejectReason)
+  {
+	  TransactionManager tm = new TransactionManager();
+	  try {
+		  tm.begin();
+		 
+			this.completeWithReason(taskId, variables,true, rejectReason);
+			tm.commit();
+			return true;
+		}
+	  	catch(ActivitiException w)
+	  	{
+	  		throw w;
+	  	}
+	  	catch (Exception e) {
+			throw new ActivitiException("驳回任务失败：taskId="+taskId ,e);
+		}
+	  	finally
+	  	{
+	  		tm.release();
+	  	}
+  }
+  
   
   /**
    * 将当前任务驳回到上一个任务处理人处
@@ -412,6 +435,15 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
   public boolean rejecttoPreTask(String taskId)
   {
 	  return rejecttoPreTask(taskId,(Map<String, Object>)null);
+  }
+  
+  /**
+   * 将当前任务驳回到上一个任务处理人处
+   * @param taskId
+   */
+  public boolean rejecttoPreTask(String taskId,String rejectReason)
+  {
+	  return rejecttoPreTask(taskId,(Map<String, Object>)null, rejectReason);
   }
 
 }
