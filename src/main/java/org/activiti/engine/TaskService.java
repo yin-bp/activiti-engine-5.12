@@ -139,6 +139,7 @@ public interface TaskService {
    * @throws ActivitiException when this task is {@link DelegationState#PENDING} delegation.
    */
   void complete(String taskId);
+  void completeWithReason(String taskId,String completeReason);
   
   /**
    * Called when the task is successfully executed.
@@ -148,6 +149,7 @@ public interface TaskService {
    * @throws ActivitiException when this task is {@link DelegationState#PENDING} delegation.
    */
   void completeWithDest(String taskId,String destinationTaskKey);
+  void completeWithDestReason(String taskId,String destinationTaskKey,String completeReason);
   /**
    * 用于任务驳回操作
    * @param taskId the id of the task to complete, cannot be null.
@@ -155,6 +157,7 @@ public interface TaskService {
    * @param rejected true 表示驳回操作，false表示正常完成任务
    */
   void complete(String taskId, Map<String, Object> variables,boolean rejected);
+  void completeWithReason(String taskId, Map<String, Object> variables,boolean rejected,String reason);
   /**
    * Delegates the task to another user. This means that the assignee is set 
    * and the delegation state is set to {@link DelegationState#PENDING}.
@@ -183,7 +186,7 @@ public interface TaskService {
    * @throws ActivitiObjectNotFoundException when no task exists with the given id.
    */
   void complete(String taskId, Map<String, Object> variables);
-  
+  void completeWithReason(String taskId, Map<String, Object> variables,String completeReason);
   /**
    * Called when the task is successfully executed, 
    * and the required task parameters are given by the end-user.
@@ -205,6 +208,7 @@ public interface TaskService {
    * @throws ActivitiObjectNotFoundException when no task exists with the given id.
    */
   void complete(String taskId, Map<String, Object> variables,String destinationTaskKey);
+  void completeWithReason(String taskId, Map<String, Object> variables,String destinationTaskKey,String reason);
   
   
   /**

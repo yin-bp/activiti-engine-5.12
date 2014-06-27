@@ -162,6 +162,10 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
   public void complete(String taskId) {
     commandExecutor.execute(new CompleteTaskCmd(taskId, null));
   }
+  public void completeWithReason(String taskId,String completeReason)
+  {
+	  commandExecutor.execute(new CompleteTaskCmd(taskId, null,completeReason));
+  }
   /**
    * Called when the task is successfully executed.
    * @param taskId the id of the task to complete, cannot be null.
@@ -173,8 +177,16 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
   {
 	  commandExecutor.execute(new CompleteTaskCmd(taskId, null,destinationTaskKey));
   }
+  public void completeWithDestReason(String taskId,String destinationTaskKey,String completeReason)
+  {
+	  commandExecutor.execute(new CompleteTaskCmd(taskId,completeReason, null,destinationTaskKey));
+  }
   public void complete(String taskId, Map<String, Object> variables) {
     commandExecutor.execute(new CompleteTaskCmd(taskId, variables));
+  }
+  public void completeWithReason(String taskId, Map<String, Object> variables,String completeReason)
+  {
+	  commandExecutor.execute(new CompleteTaskCmd(taskId,completeReason, variables));
   }
   
   /**
@@ -201,12 +213,18 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
   {
 	  commandExecutor.execute(new CompleteTaskCmd(taskId, variables,destinationTaskKey));
   }
-  
+  public void completeWithReason(String taskId, Map<String, Object> variables,String destinationTaskKey,String reason)
+  {
+	  commandExecutor.execute(new CompleteTaskCmd(taskId, reason,variables,destinationTaskKey));
+  }
   public void complete(String taskId, Map<String, Object> variables,boolean rejected)
   {
 	  commandExecutor.execute(new CompleteTaskCmd(taskId, variables,rejected));
   }
-
+  public void completeWithReason(String taskId, Map<String, Object> variables,boolean rejected,String reason)
+  {
+	  commandExecutor.execute(new CompleteTaskCmd(taskId, variables,rejected,reason));
+  }
   public void delegateTask(String taskId, String userId) {
     commandExecutor.execute(new DelegateTaskCmd(taskId, userId));
   }

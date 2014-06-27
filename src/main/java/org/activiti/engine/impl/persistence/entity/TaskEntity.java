@@ -160,11 +160,16 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
 //    }
 	  complete(null );
   }
+  
+  public void complete(String destinationTaskKey )
+  {
+	  complete(destinationTaskKey,null );
+  }
   /**
    * 任务完成时特定的跳转目标地址
    */
   private String destinationTaskKey;
-  public void complete(String destinationTaskKey ) {
+  public void complete(String destinationTaskKey ,String completeReason) {
 	this.destinationTaskKey = destinationTaskKey;
     fireEvent(TaskListener.EVENTNAME_COMPLETE);
 
@@ -188,59 +193,66 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
 //    	e.printStackTrace();
     }
     String deleteReason = null;
-    if(!customDTask)
-	{
-    	deleteReason = TaskEntity.DELETE_REASON_COMPLETED; 
-	}
+    if(completeReason == null)
+    {
+	    if(!customDTask)
+		{
+	    	deleteReason = TaskEntity.DELETE_REASON_COMPLETED; 
+		}
+	    else
+	    {
+	    	if(dtaskName != null)
+	    	{
+	    		deleteReason = "转到节点["+dtaskName + "-" + destinationTaskKey + "]";//转到即自由跳转的意思
+	    	}
+	    	else
+	    	{
+	    		deleteReason = "转到节点[" + destinationTaskKey + "]";//转到即自由跳转的意思
+	    	}
+	    }
+	    if(this.assignee != null && !this.assignee.equals(""))
+	    {
+	    	String userName = null;
+	    	try
+	    	{
+	    		userName = Context.getProcessEngineConfiguration().getUserInfoMap().getUserName(this.assignee);
+	    	}
+	    	catch(Exception e)
+	    	{
+	//    		e.printStackTrace();
+	    	}
+	    	
+	    	if(userName == null)
+	    	{
+	    		userName = assignee;
+	    	}
+	    	if(!userName.equals(assignee))
+	    		userName = userName + "-" + this.assignee; 
+			deleteReason = "任务被[" + userName + "]" +deleteReason;
+	    }
+	    
+	    if(this.taskDefinitionKey != null)
+	    {
+	    	String taskName = null;
+	    	if(execution != null)
+	    	{
+	    		
+		    	taskName = (String)execution.getActivity().getProperty("name");
+		    	
+	    	}
+	    	if(taskName != null)
+	    	{
+	    		deleteReason = "[" +taskName +"-"+ this.taskDefinitionKey+ "]" +deleteReason;
+	    	}
+	    	else
+	    	{
+	    		deleteReason = "["+this.taskDefinitionKey+ "]" +deleteReason;
+	    	}
+	    }
+    }
     else
     {
-    	if(dtaskName != null)
-    	{
-    		deleteReason = "转到节点["+dtaskName + "-" + destinationTaskKey + "]";//转到即自由跳转的意思
-    	}
-    	else
-    	{
-    		deleteReason = "转到节点[" + destinationTaskKey + "]";//转到即自由跳转的意思
-    	}
-    }
-    if(this.assignee != null && !this.assignee.equals(""))
-    {
-    	String userName = null;
-    	try
-    	{
-    		userName = Context.getProcessEngineConfiguration().getUserInfoMap().getUserName(this.assignee);
-    	}
-    	catch(Exception e)
-    	{
-//    		e.printStackTrace();
-    	}
-    	
-    	if(userName == null)
-    	{
-    		userName = assignee;
-    	}
-    	if(!userName.equals(assignee))
-    		userName = userName + "-" + this.assignee; 
-		deleteReason = "任务被[" + userName + "]" +deleteReason;
-    }
-    
-    if(this.taskDefinitionKey != null)
-    {
-    	String taskName = null;
-    	if(execution != null)
-    	{
-    		
-	    	taskName = (String)execution.getActivity().getProperty("name");
-	    	
-    	}
-    	if(taskName != null)
-    	{
-    		deleteReason = "[" +taskName +"-"+ this.taskDefinitionKey+ "]" +deleteReason;
-    	}
-    	else
-    	{
-    		deleteReason = "["+this.taskDefinitionKey+ "]" +deleteReason;
-    	}
+    	deleteReason = completeReason;
     }
     Context
       .getCommandContext()
@@ -249,10 +261,11 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
     
     if (execution!=null) {
 //      execution = getExecution();
-      if(customDTask)
+      if(customDTask || completeReason != null)
       {
     	  execution.setDeleteReason(deleteReason);
       }
+      
       execution.removeTask(this);
 //      execution.signal(null, null);
       if(destinationTaskKey == null || "".equals(destinationTaskKey))

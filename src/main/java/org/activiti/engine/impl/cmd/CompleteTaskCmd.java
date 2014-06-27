@@ -32,11 +32,16 @@ public class CompleteTaskCmd extends NeedsActiveTaskCmd<Void> {
   private static final long serialVersionUID = 1L;
   protected Map<String, Object> variables;
   
-  
+  protected String completeReason;
   
   public CompleteTaskCmd(String taskId, Map<String, Object> variables) {
     super(taskId);
     this.variables = variables;
+  }
+  public CompleteTaskCmd(String taskId, String completeReason,Map<String, Object> variables) {
+    super(taskId);
+    this.variables = variables;
+    this.completeReason = completeReason;
   }
   /**
    * 完成任务指定跳转目标节点
@@ -50,6 +55,12 @@ public class CompleteTaskCmd extends NeedsActiveTaskCmd<Void> {
     this.variables = variables;
     
   }
+  
+  public CompleteTaskCmd(String taskId, String completeReason, Map<String, Object> variables,String destinationTaskKey) {
+	    super(taskId,destinationTaskKey);
+	    this.variables = variables;
+	    this.completeReason = completeReason;
+	  }
   protected String findRejectedNode(CommandContext commandContext, TaskEntity task)
   {
 	 
@@ -87,7 +98,11 @@ public class CompleteTaskCmd extends NeedsActiveTaskCmd<Void> {
 	    this.variables = variables;
 	    
 	  }
-  
+  public CompleteTaskCmd(String taskId, Map<String, Object> variables,boolean isrejected,String reason) {
+	    super(taskId,isrejected);
+	    this.variables = variables;
+	    this.completeReason = reason;
+	  }
   protected Void execute(CommandContext commandContext, TaskEntity task) {
     if (variables!=null) {
       task.setExecutionVariables(variables);
@@ -100,10 +115,20 @@ public class CompleteTaskCmd extends NeedsActiveTaskCmd<Void> {
     {
     	this.destinationTaskKey = findRejectedNode( commandContext,  task);
     }
-    if(this.destinationTaskKey == null || this.destinationTaskKey.equals(""))
-    	task.complete();
+    if(completeReason == null)
+    {
+	    if(this.destinationTaskKey == null || this.destinationTaskKey.equals(""))
+	    	task.complete();
+	    else
+	    	task.complete(this.destinationTaskKey);
+    }
     else
-    	task.complete(this.destinationTaskKey);
+    {
+    	if(this.destinationTaskKey == null || this.destinationTaskKey.equals(""))
+	    	task.complete(null,this.completeReason);
+	    else
+	    	task.complete(this.destinationTaskKey,this.completeReason);
+    }
     return null;
   }
   
