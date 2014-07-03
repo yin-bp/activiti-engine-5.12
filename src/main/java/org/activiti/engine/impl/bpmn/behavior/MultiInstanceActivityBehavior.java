@@ -79,6 +79,14 @@ public abstract class MultiInstanceActivityBehavior extends FlowNodeActivityBeha
   {
 	  
   }
+  public boolean isMail()
+  {
+	  if(innerActivityBehavior != null)
+	  {
+		  return innerActivityBehavior instanceof MailActivityBehavior;
+	  }
+	  return false;
+  }
   /**
    * @param innerActivityBehavior The original {@link ActivityBehavior} of the activity 
    *                         that will be wrapped inside this behavior.

@@ -18,6 +18,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.activiti.engine.impl.bpmn.behavior.MailActivityBehavior;
+import org.activiti.engine.impl.bpmn.behavior.MixMultiInstanceActivityBehavior;
+import org.activiti.engine.impl.bpmn.behavior.MultiInstanceActivityBehavior;
+import org.activiti.engine.impl.bpmn.behavior.ParallelMultiInstanceBehavior;
+import org.activiti.engine.impl.bpmn.behavior.SequentialMultiInstanceBehavior;
 import org.activiti.engine.impl.pvm.PvmActivity;
 import org.activiti.engine.impl.pvm.PvmException;
 import org.activiti.engine.impl.pvm.PvmTransition;
@@ -51,6 +56,55 @@ public class ActivityImpl extends ScopeImpl implements PvmActivity, HasDIBounds 
 
   public TransitionImpl createOutgoingTransition() {
     return createOutgoingTransition(null);
+  }
+  /**
+   * 返回任务是否是邮件任务
+   * @return
+   */
+  public boolean isMailTask()
+  {
+	  if(activityBehavior != null )
+	  {
+		  boolean ret =  activityBehavior instanceof MailActivityBehavior;
+		  if(ret )
+			  return true;
+		  if(activityBehavior instanceof MultiInstanceActivityBehavior )
+		  {
+			  return ((MultiInstanceActivityBehavior)activityBehavior).isMail();
+		  }
+	  }
+	  return false;
+  }
+  /**
+   * 返回任务类型是否是多实例任务类型
+   * @return
+   */
+  public boolean isMultiTask()
+  {
+	  return activityBehavior != null && activityBehavior instanceof MultiInstanceActivityBehavior;
+  }
+  /**
+   * 返回任务类型是否是并行多实例任务
+   * @return
+   */
+  public boolean isParreal()
+  {
+	  return activityBehavior != null && 
+			  (activityBehavior instanceof ParallelMultiInstanceBehavior 
+					  || (activityBehavior instanceof MixMultiInstanceActivityBehavior && ((MixMultiInstanceActivityBehavior)activityBehavior).isParreal()));
+	  
+  }
+  
+  /**
+   * 返回任务类型是否是串行多实例任务
+   * @return
+   */
+  public boolean isSequence()
+  {
+	  return activityBehavior != null && 
+			  (activityBehavior instanceof SequentialMultiInstanceBehavior 
+					  || (activityBehavior instanceof MixMultiInstanceActivityBehavior && ((MixMultiInstanceActivityBehavior)activityBehavior).isSequence()));
+	  
   }
   /**
    * 创建流程临时迁移路径，在运行时为流程实例增加额外的执行路径，用来实现自由流功能

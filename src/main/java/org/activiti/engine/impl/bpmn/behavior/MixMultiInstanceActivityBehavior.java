@@ -60,6 +60,28 @@ public class MixMultiInstanceActivityBehavior extends
 		}
 		
 	}
+	 /**
+	   * 返回任务类型是否是并行多实例任务
+	   * @return
+	   */
+	  public boolean isParreal()
+	  {
+		  return defaultMultiInstanceActivityBehavior != null && defaultMultiInstanceActivityBehavior instanceof ParallelMultiInstanceBehavior;
+	  }
+	  
+	  /**
+	   * 返回任务类型是否是串行多实例任务
+	   * @return
+	   */
+	  public boolean isSequence()
+	  {
+		  return defaultMultiInstanceActivityBehavior != null && defaultMultiInstanceActivityBehavior instanceof SequentialMultiInstanceBehavior;
+	  }
+	  
+	  public boolean isMail()
+	  {
+		  return this.defaultMultiInstanceActivityBehavior.innerActivityBehavior instanceof MailActivityBehavior;
+	  }
 	private MultiInstanceActivityBehavior getMultiInstanceActivityBehavior(VariableScope execution)
 	{
 		String mode = (String)execution.getVariable(this.multiInstanceMode_variable);
@@ -295,5 +317,6 @@ public class MixMultiInstanceActivityBehavior extends
 		// TODO Auto-generated method stub
 		getMultiInstanceActivityBehavior(activityContext).leaveIgnoreConditions(activityContext);
 	}
+	
 
 }
