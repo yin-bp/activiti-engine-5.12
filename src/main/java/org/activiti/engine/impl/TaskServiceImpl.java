@@ -225,6 +225,15 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
   {
 	  commandExecutor.execute(new CompleteTaskCmd(taskId, variables,rejected,reason));
   }
+  
+  public void complete(String taskId, Map<String, Object> variables,boolean rejected,int rejectedtype)
+  {
+	  commandExecutor.execute(new CompleteTaskCmd(taskId, variables,rejected, rejectedtype));
+  }
+  public void completeWithReason(String taskId, Map<String, Object> variables,boolean rejected,int rejectedtype,String reason)
+  {
+	  commandExecutor.execute(new CompleteTaskCmd(taskId, variables,rejected, rejectedtype,reason));
+  }
   public void delegateTask(String taskId, String userId) {
     commandExecutor.execute(new DelegateTaskCmd(taskId, userId));
   }
@@ -445,5 +454,87 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
   {
 	  return rejecttoPreTask(taskId,(Map<String, Object>)null, rejectReason);
   }
-
+  
+  
+/***/
+  /**
+  *
+  * 将当前任务驳回到上一个任务处理人处，并更新流程变量参数
+  * 如果需要改变处理人，可以通过指定变量的的方式设置
+  * rejectedtype 0-驳回上一个任务对应的节点 1-驳回到当前节点的上一个节点（多条路径暂时不支持）
+  * @param taskId
+  * @param variables
+  */
+ public boolean rejecttoPreTask(String taskId, Map<String, Object> variables,int rejectedtype )
+ {
+	  TransactionManager tm = new TransactionManager();
+	  try {
+		  tm.begin();
+		 
+			this.complete(taskId, variables,true, rejectedtype);
+			tm.commit();
+			return true;
+		}
+	  	catch(ActivitiException w)
+	  	{
+	  		throw w;
+	  	}
+	  	catch (Exception e) {
+			throw new ActivitiException("驳回任务失败：taskId="+taskId ,e);
+		}
+	  	finally
+	  	{
+	  		tm.release();
+	  	}
+ }
+ /**
+  * 
+  * @param taskId
+  * @param variables
+  * @param rejectReason
+  * @param rejectedtype 0-驳回上一个任务对应的节点 1-驳回到当前节点的上一个节点（多条路径暂时不支持）
+  * @return
+  */
+ public boolean rejecttoPreTask(String taskId, Map<String, Object> variables,String rejectReason,int rejectedtype)
+ {
+	  TransactionManager tm = new TransactionManager();
+	  try {
+		    tm.begin();
+		 
+			this.completeWithReason(taskId, variables,true,rejectedtype, rejectReason);
+			tm.commit();
+			return true;
+		}
+	  	catch(ActivitiException w)
+	  	{
+	  		throw w;
+	  	}
+	  	catch (Exception e) {
+			throw new ActivitiException("驳回任务失败：taskId="+taskId ,e);
+		}
+	  	finally
+	  	{
+	  		tm.release();
+	  	}
+ }
+ 
+ 
+ /**
+  * 将当前任务驳回到上一个任务处理人处
+  * @param taskId
+  * @param 0-驳回上一个任务对应的节点 1-驳回到当前节点的上一个节点（多条路径暂时不支持）
+  */
+ public boolean rejecttoPreTask(String taskId,int rejectedtype)
+ {
+	  return rejecttoPreTask(taskId,(Map<String, Object>)null, rejectedtype);
+ }
+ 
+ /**
+  * 将当前任务驳回到上一个任务处理人处
+  * @param taskId
+  */
+ public boolean rejecttoPreTask(String taskId,String rejectReason,int rejectedtype)
+ {
+	  return rejecttoPreTask(taskId,(Map<String, Object>)null, rejectReason, rejectedtype);
+ }
 }

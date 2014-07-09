@@ -106,6 +106,46 @@ public class ActivityImpl extends ScopeImpl implements PvmActivity, HasDIBounds 
 					  || (activityBehavior instanceof MixMultiInstanceActivityBehavior && ((MixMultiInstanceActivityBehavior)activityBehavior).isSequence()));
 	  
   }
+  private List<String> inactivies ;
+  
+  private List<String> outactivies ;
+  /**
+   * 获取流程的入节点id清单
+   * @return
+   */
+  public List<String> getInActivities()
+  {
+	  if(this.incomingTransitions == null || incomingTransitions.size() == 0)
+		  return null;
+	  if(inactivies != null)
+		  return inactivies;
+	  List<String> ret = new ArrayList<String>();
+	  for(TransitionImpl trs:incomingTransitions)
+	  {
+		  ret.add(trs.getSource().getId());
+	  }
+	  return inactivies = ret;
+		  
+  }
+  
+  /**
+   * 获取流程的入节点id清单
+   * @return
+   */
+  public List<String> getOutActivities()
+  {
+	  if(this.outgoingTransitions == null || outgoingTransitions.size() == 0)
+		  return null;
+	  if(outactivies != null)
+		  return outactivies;
+	  List<String> ret = new ArrayList<String>();
+	  for(TransitionImpl trs:outgoingTransitions)
+	  {
+		  ret.add(trs.getSource().getId());
+	  }
+	  return outactivies = ret;
+		  
+  }
   /**
    * 创建流程临时迁移路径，在运行时为流程实例增加额外的执行路径，用来实现自由流功能
    * @param transitionId

@@ -28,6 +28,8 @@ import org.activiti.engine.task.NativeTaskQuery;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskQuery;
 
+import com.frameworkset.orm.transaction.TransactionManager;
+
 /** Service which provides access to {@link Task} and form related operations.
  * 
  * @author Tom Baeyens
@@ -458,4 +460,37 @@ public interface TaskService {
 
   /** The list of subtasks for this parent task */
   List<Task> getSubTasks(String parentTaskId);
+  
+  /**
+  *
+  * 将当前任务驳回到上一个任务处理人处，并更新流程变量参数
+  * 如果需要改变处理人，可以通过指定变量的的方式设置
+  * rejectedtype 0-驳回上一个任务对应的节点 1-驳回到当前节点的上一个节点（多条路径暂时不支持）
+  * @param taskId
+  * @param variables
+  */
+ public boolean rejecttoPreTask(String taskId, Map<String, Object> variables,int rejectedtype );
+ /**
+  * 
+  * @param taskId
+  * @param variables
+  * @param rejectReason
+  * @param rejectedtype 0-驳回上一个任务对应的节点 1-驳回到当前节点的上一个节点（多条路径暂时不支持）
+  * @return
+  */
+ public boolean rejecttoPreTask(String taskId, Map<String, Object> variables,String rejectReason,int rejectedtype);
+ 
+ 
+ /**
+  * 将当前任务驳回到上一个任务处理人处
+  * @param taskId
+  * @param 0-驳回上一个任务对应的节点 1-驳回到当前节点的上一个节点（多条路径暂时不支持）
+  */
+ public boolean rejecttoPreTask(String taskId,int rejectedtype);
+ 
+ /**
+  * 将当前任务驳回到上一个任务处理人处
+  * @param taskId
+  */
+ public boolean rejecttoPreTask(String taskId,String rejectReason,int rejectedtype);
 }

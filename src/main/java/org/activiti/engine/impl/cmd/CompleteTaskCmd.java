@@ -12,10 +12,10 @@
  */
 package org.activiti.engine.impl.cmd;
 
+import java.util.List;
 import java.util.Map;
 
 import org.activiti.engine.ActivitiException;
-import org.activiti.engine.impl.bpmn.behavior.MultiInstanceActivityBehavior;
 import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.interceptor.CommandContext;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
@@ -65,26 +65,43 @@ public class CompleteTaskCmd extends NeedsActiveTaskCmd<Void> {
   {
 	 
 	  	try {
-			ActivityImpl act = task.getExecution().getActivity();		  	
-			boolean ismultiinst = act.getActivityBehavior() instanceof MultiInstanceActivityBehavior;
-			ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
-			String pretaskKey = null;
-			if(!ismultiinst)
-			{
-				pretaskKey = executor.queryObject(String.class,"rejecttoPretaskSQL", taskId);
-				if(pretaskKey == null)
+	  		ActivityImpl act = task.getExecution().getActivity();
+	  		String pretaskKey = null;
+	  		if(this.rejectedtype == 0)
+	  		{
+					  	
+				boolean ismultiinst = act.isMultiTask();
+				ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
+				
+				if(!ismultiinst)
+				{
+					pretaskKey = executor.queryObject(String.class,"rejecttoPretaskSQL", taskId);
+					if(pretaskKey == null)
+					{
+						throw new ActivitiException("驳回任务失败："+task.getTaskDefinitionKey()+"["+taskId+"],没有找到驳回节点!");
+					}
+				}
+				else
+				{
+					pretaskKey = executor.queryObject(String.class,"multirejecttoPretaskSQL", taskId);
+					if(pretaskKey == null)
+					{
+						throw new ActivitiException("驳回任务失败："+task.getTaskDefinitionKey()+"["+taskId+"],没有找到驳回节点!");
+					}
+				}
+	  		}
+	  		else
+	  		{
+	  			List<String> acts = act.getInActivities();
+	  			if(acts != null && acts.size() > 0)
+	  			{
+	  				pretaskKey = acts.get(0);
+	  			}
+	  			if(pretaskKey == null)
 				{
 					throw new ActivitiException("驳回任务失败："+task.getTaskDefinitionKey()+"["+taskId+"],没有找到驳回节点!");
 				}
-			}
-			else
-			{
-				pretaskKey = executor.queryObject(String.class,"multirejecttoPretaskSQL", taskId);
-				if(pretaskKey == null)
-				{
-					throw new ActivitiException("驳回任务失败："+task.getTaskDefinitionKey()+"["+taskId+"],没有找到驳回节点!");
-				}
-			}
+	  		}
 			return pretaskKey;
 		} catch (ActivitiException e) {
 			throw e;
@@ -94,12 +111,29 @@ public class CompleteTaskCmd extends NeedsActiveTaskCmd<Void> {
 		}
   }
   public CompleteTaskCmd(String taskId, Map<String, Object> variables,boolean isrejected) {
-	    super(taskId,isrejected);
+	    super(taskId,isrejected,0);
 	    this.variables = variables;
 	    
 	  }
   public CompleteTaskCmd(String taskId, Map<String, Object> variables,boolean isrejected,String reason) {
-	    super(taskId,isrejected);
+	    super(taskId,isrejected,0);
+	    this.variables = variables;
+	    this.completeReason = reason;
+	  }
+  /**
+   * 
+   * @param taskId
+   * @param variables
+   * @param isrejected
+   * @param rejecttype 0-驳回上一个任务对应的节点 1-驳回到当前节点的上一个节点（多条路径暂时不支持）
+   */
+  public CompleteTaskCmd(String taskId, Map<String, Object> variables,boolean isrejected,int rejecttype) {
+	    super(taskId,isrejected,rejecttype);
+	    this.variables = variables;
+	    
+	  }
+public CompleteTaskCmd(String taskId, Map<String, Object> variables,boolean isrejected,int rejecttype,String reason) {
+	    super(taskId,isrejected,rejecttype);
 	    this.variables = variables;
 	    this.completeReason = reason;
 	  }
