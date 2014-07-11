@@ -12,6 +12,7 @@
  */
 package org.activiti.engine.impl.bpmn.behavior;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -19,9 +20,11 @@ import java.util.List;
 
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.ActivitiIllegalArgumentException;
+import org.activiti.engine.KPI;
 import org.activiti.engine.delegate.Expression;
 import org.activiti.engine.delegate.TaskListener;
 import org.activiti.engine.impl.calendar.DueDateBusinessCalendar;
+import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
 import org.activiti.engine.impl.task.TaskDefinition;
@@ -102,8 +105,25 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
 
   @SuppressWarnings({ "unchecked", "rawtypes" })
   protected void handleAssignments(TaskEntity task, ActivityExecution execution) {
+	  boolean parserkpi = false;
     if (taskDefinition.getAssigneeExpression() != null) {
-      task.setAssignee((String) taskDefinition.getAssigneeExpression().getValue(execution));
+      String assignee = (String) taskDefinition.getAssigneeExpression().getValue(execution);	
+      task.setAssignee(assignee);
+      if(!parserkpi)//设置流程kpi指标
+      {
+    	  List<String> candiates = new ArrayList<String>();
+    	  candiates.add(assignee);
+    	  KPI kpi = Context.getProcessEngineConfiguration().getKPIService().buildKPI(execution, candiates);
+          if(kpi != null)
+          {
+        	  task.setALERTTIME(kpi.getALERTTIME());
+        	  task.setOVERTIME(kpi.getOVERTIME());
+        	  task.setIS_CONTAIN_HOLIDAY(kpi.getIS_CONTAIN_HOLIDAY());
+        	  task.setDURATION_NODE(kpi.getDURATION_NODE());
+        	  task.setNOTICERATE(kpi.getNOTICERATE());
+          }
+          parserkpi = true;
+      }
     }
 
     if (!taskDefinition.getCandidateGroupIdExpressions().isEmpty()) {
@@ -121,13 +141,40 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
     }
 
     if (!taskDefinition.getCandidateUserIdExpressions().isEmpty()) {
+    
       for (Expression userIdExpr : taskDefinition.getCandidateUserIdExpressions()) {
         Object value = userIdExpr.getValue(execution);
         if (value instanceof String) {
           List<String> candiates = extractCandidates((String) value);
           task.addCandidateUsers(candiates);
+          if(!parserkpi)//设置流程kpi指标
+          {
+        	  KPI kpi = Context.getProcessEngineConfiguration().getKPIService().buildKPI(execution, candiates);
+              if(kpi != null)
+              {
+            	  task.setALERTTIME(kpi.getALERTTIME());
+            	  task.setOVERTIME(kpi.getOVERTIME());
+            	  task.setIS_CONTAIN_HOLIDAY(kpi.getIS_CONTAIN_HOLIDAY());
+            	  task.setDURATION_NODE(kpi.getDURATION_NODE());
+            	  task.setNOTICERATE(kpi.getNOTICERATE());
+              }
+              parserkpi = true;
+          }
         } else if (value instanceof Collection) {
           task.addCandidateUsers((Collection) value);
+          if(!parserkpi)
+          {
+        	  KPI kpi = Context.getProcessEngineConfiguration().getKPIService().buildKPI(execution, (Collection) value);
+              if(kpi != null)
+              {
+            	  task.setALERTTIME(kpi.getALERTTIME());
+            	  task.setOVERTIME(kpi.getOVERTIME());
+            	  task.setIS_CONTAIN_HOLIDAY(kpi.getIS_CONTAIN_HOLIDAY());
+            	  task.setDURATION_NODE(kpi.getDURATION_NODE());
+            	  task.setNOTICERATE(kpi.getNOTICERATE());
+              }
+              parserkpi = true;
+          }
         } else {
           throw new ActivitiException("Expression did not resolve to a string or collection of strings");
         }

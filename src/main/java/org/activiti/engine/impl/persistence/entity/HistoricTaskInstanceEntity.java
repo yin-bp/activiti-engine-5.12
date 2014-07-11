@@ -13,6 +13,7 @@
 
 package org.activiti.engine.impl.persistence.entity;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,7 +41,36 @@ public class HistoricTaskInstanceEntity extends HistoricScopeInstanceEntity impl
   protected int priority;
   protected Date dueDate;
   protected Date claimTime;
-
+  /**
+   * 超时是否已经发送
+   */
+  protected int OVERTIMESEND;
+  /**
+   * '任务持续时间限制
+   */
+  protected long DURATION_NODE;
+  /**
+   * 预警是否已发送
+   */
+  protected int ADVANCESEND;
+  /**
+   * 提前预警时间
+   */
+  protected Timestamp ALERTTIME;
+  /**
+   * 超时告警时间
+   */
+  protected Timestamp OVERTIME;
+  /**
+   * 预警时间率
+   */
+  protected int NOTICERATE;
+  
+  /**
+   * 节假日策略
+   * '节假日策略，0-考虑节假日，不考虑作息时间，1-不考虑节假日，不考虑作息时间，2-考虑节假日，考虑作息时间，默认值为1';
+   */
+  protected String IS_CONTAIN_HOLIDAY;
   public HistoricTaskInstanceEntity() {
   }
 
@@ -58,7 +88,11 @@ public class HistoricTaskInstanceEntity extends HistoricScopeInstanceEntity impl
     this.assignee = task.getAssignee();
     this.startTime = ClockUtil.getCurrentTime();
     this.taskDefinitionKey = task.getTaskDefinitionKey();
-    
+    this.ALERTTIME = task.getALERTTIME();
+	  this.OVERTIME = (task.getOVERTIME());
+	  this.IS_CONTAIN_HOLIDAY = (task.getIS_CONTAIN_HOLIDAY());
+	  this.DURATION_NODE = (task.getDURATION_NODE());
+	  this.NOTICERATE = (task.getNOTICERATE());
     this.setPriority(task.getPriority());
     this.setDueDate(task.getDueDate());
   }
@@ -162,4 +196,60 @@ public class HistoricTaskInstanceEntity extends HistoricScopeInstanceEntity impl
     }
     return endTime.getTime() - claimTime.getTime();
   }
+
+public int getOVERTIMESEND() {
+	return OVERTIMESEND;
+}
+
+public void setOVERTIMESEND(int oVERTIMESEND) {
+	OVERTIMESEND = oVERTIMESEND;
+}
+
+public long getDURATION_NODE() {
+	return DURATION_NODE;
+}
+
+public void setDURATION_NODE(long dURATION_NODE) {
+	DURATION_NODE = dURATION_NODE;
+}
+
+public int getADVANCESEND() {
+	return ADVANCESEND;
+}
+
+public void setADVANCESEND(int aDVANCESEND) {
+	ADVANCESEND = aDVANCESEND;
+}
+
+public Timestamp getALERTTIME() {
+	return ALERTTIME;
+}
+
+public void setALERTTIME(Timestamp aLERTTIME) {
+	ALERTTIME = aLERTTIME;
+}
+
+public Timestamp getOVERTIME() {
+	return OVERTIME;
+}
+
+public void setOVERTIME(Timestamp oVERTIME) {
+	OVERTIME = oVERTIME;
+}
+
+public int getNOTICERATE() {
+	return NOTICERATE;
+}
+
+public void setNOTICERATE(int nOTICERATE) {
+	NOTICERATE = nOTICERATE;
+}
+
+public String getIS_CONTAIN_HOLIDAY() {
+	return IS_CONTAIN_HOLIDAY;
+}
+
+public void setIS_CONTAIN_HOLIDAY(String iS_CONTAIN_HOLIDAY) {
+	IS_CONTAIN_HOLIDAY = iS_CONTAIN_HOLIDAY;
+}
 }

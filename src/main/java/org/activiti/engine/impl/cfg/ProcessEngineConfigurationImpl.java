@@ -33,6 +33,7 @@ import org.activiti.engine.ActivitiException;
 import org.activiti.engine.FormService;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.IdentityService;
+import org.activiti.engine.KPIService;
 import org.activiti.engine.ManagementService;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngineConfiguration;
@@ -43,6 +44,7 @@ import org.activiti.engine.form.AbstractFormType;
 import org.activiti.engine.impl.FormServiceImpl;
 import org.activiti.engine.impl.HistoryServiceImpl;
 import org.activiti.engine.impl.IdentityServiceImpl;
+import org.activiti.engine.impl.KPIServiceImpl;
 import org.activiti.engine.impl.ManagementServiceImpl;
 import org.activiti.engine.impl.ProcessEngineImpl;
 import org.activiti.engine.impl.RepositoryServiceImpl;
@@ -410,8 +412,21 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
     initEventHandlers();
     initFailedJobCommandFactory();
     initInstanceUpgrade();
+    initKPIService();
   }
   protected ConfigSQLExecutor extendExecutor;
+  protected KPIService KPIService;
+  protected void initKPIService()
+  {
+	  if(this.KPIService == null)
+	  {
+		  KPIService = new KPIServiceImpl();
+	  }
+	  else
+	  {
+		  return;
+	  }
+  }
   protected void initInstanceUpgrade()
   {
 	  if(instanceUpgrade == null)
@@ -1994,6 +2009,11 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
 
 	public ConfigSQLExecutor getExtendExecutor() {
 		return extendExecutor;
+	}
+
+	public KPIService getKPIService() {
+		// TODO Auto-generated method stub
+		return KPIService;
 	}
   
 }

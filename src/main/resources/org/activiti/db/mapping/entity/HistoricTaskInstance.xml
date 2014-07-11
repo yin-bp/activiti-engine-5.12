@@ -39,7 +39,7 @@
         TASK_DEF_KEY_,
         FORM_KEY_,
         PRIORITY_,
-        DUE_DATE_
+        DUE_DATE_,OVERTIMESEND,DURATION_NODE,ADVANCESEND,ALERTTIME,OVERTIME,NOTICERATE,IS_CONTAIN_HOLIDAY
       ) values (
         #{id ,jdbcType=VARCHAR},
         #{processDefinitionId, jdbcType=VARCHAR},
@@ -58,7 +58,14 @@
         #{taskDefinitionKey ,jdbcType=VARCHAR},
         #{formKey ,jdbcType=VARCHAR},
         #{priority, jdbcType=INTEGER},
-        #{dueDate, jdbcType=TIMESTAMP}
+        #{dueDate, jdbcType=TIMESTAMP},
+        #{OVERTIMESEND, jdbcType=INTEGER},
+        #{DURATION_NODE, jdbcType=BIGINT},
+        #{ADVANCESEND, jdbcType=INTEGER},
+        #{ALERTTIME, jdbcType=TIMESTAMP},
+        #{OVERTIME, jdbcType=TIMESTAMP},
+        #{NOTICERATE, jdbcType=INTEGER},
+        #{IS_CONTAIN_HOLIDAY, jdbcType=VARCHAR}
       )
   </insert>
 

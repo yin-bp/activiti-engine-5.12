@@ -34,7 +34,7 @@
         ASSIGNEE_,
         START_TIME_,
         END_TIME_,
-        DURATION_
+        DURATION_,OVERTIMESEND,DURATION_NODE,ADVANCESEND,ALERTTIME,OVERTIME,NOTICERATE,IS_CONTAIN_HOLIDAY
       ) values (
         #{id ,jdbcType=VARCHAR},
         #{processDefinitionId, jdbcType=VARCHAR},
@@ -48,7 +48,14 @@
         #{assignee ,jdbcType=VARCHAR},
         #{startTime, jdbcType=TIMESTAMP},
         #{endTime, jdbcType=TIMESTAMP},
-        #{durationInMillis ,jdbcType=BIGINT}
+        #{durationInMillis ,jdbcType=BIGINT},
+        #{OVERTIMESEND, jdbcType=INTEGER},
+        #{DURATION_NODE, jdbcType=BIGINT},
+        #{ADVANCESEND, jdbcType=INTEGER},
+        #{ALERTTIME, jdbcType=TIMESTAMP},
+        #{OVERTIME, jdbcType=TIMESTAMP},
+        #{NOTICERATE, jdbcType=INTEGER},
+        #{IS_CONTAIN_HOLIDAY, jdbcType=VARCHAR}
       )
   </insert>
 

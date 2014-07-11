@@ -24,7 +24,7 @@
     <property name="history" value="full" />
     <property name="idGenerator" class="org.activiti.engine.impl.persistence.StrongUuidGenerator"/>
     <property name="userInfoMap" class="org.activiti.engine.impl.identity.UserInfoMapImpl"/>
-    
+    <property name="KPIService" class="org.activiti.engine.impl.KPIServiceImpl"/>
   </property>
   <property name="beanFactory" factory-class="org.frameworkset.spi.DefaultApplicationContext" 
 			  factory-method="getApplicationContext">
