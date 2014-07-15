@@ -15,6 +15,7 @@ package org.activiti.engine.impl.pvm.runtime;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +51,7 @@ public class ExecutionImpl implements
         ExecutionListenerExecution, 
         PvmExecution,
         InterpretableExecution {
-  
+	 protected Date taskCreateTime; 
   private static final long serialVersionUID = 1L;
   
   private static Logger log = LoggerFactory.getLogger(ExecutionImpl.class);
@@ -867,5 +868,14 @@ public class ExecutionImpl implements
   
   public void disposeStartingExecution() {
     startingExecution = null;
+  }
+  @Override
+  public Date getTaskCreateTime() {
+  	// TODO Auto-generated method stub
+  	return null;
+  }
+
+  public void setTaskCreateTime(Date taskCreateTime) {
+  	this.taskCreateTime = taskCreateTime;
   }
 }

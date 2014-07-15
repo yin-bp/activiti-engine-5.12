@@ -1,6 +1,7 @@
 package org.activiti.engine;
 
 import java.util.Collection;
+import java.util.Date;
 
 import org.activiti.engine.delegate.DelegateExecution;
 
@@ -11,6 +12,6 @@ import org.activiti.engine.delegate.DelegateExecution;
  */
 public interface KPIService {
 	
-	public KPI buildKPI(DelegateExecution execution,Collection<String> candiates);
+	public KPI buildKPI(DelegateExecution execution,Collection<String> candiates,Date taskCreateTime);
 	
 }

@@ -14,6 +14,7 @@
 package org.activiti.engine.impl.persistence.entity;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -194,6 +195,8 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
    * persisted reference to the business key.
    */
   protected String businessKey;
+  
+  protected Date taskCreateTime; 
 
   /**
    * persisted reference to the parent of this execution.
@@ -1563,5 +1566,15 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
   public String getCurrentActivityName() {
     return activityName;
   }
+
+@Override
+public Date getTaskCreateTime() {
+	// TODO Auto-generated method stub
+	return null;
+}
+
+public void setTaskCreateTime(Date taskCreateTime) {
+	this.taskCreateTime = taskCreateTime;
+}
   
 }

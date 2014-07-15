@@ -28,7 +28,6 @@ public class HistoricActivityInstanceEntity extends HistoricScopeInstanceEntity 
 public HistoricActivityInstanceEntity()
 {
 	super();
-	System.out.println();
 }
   private static final long serialVersionUID = 1L;
   
@@ -67,9 +66,9 @@ public HistoricActivityInstanceEntity()
   
   /**
    * 节假日策略
-   * '节假日策略，0-考虑节假日，不考虑作息时间，1-不考虑节假日，不考虑作息时间，2-考虑节假日，考虑作息时间，默认值为1';
+   * '节假日策略，1-考虑节假日，不考虑作息时间，0-不考虑节假日，不考虑作息时间，2-考虑节假日，考虑作息时间，默认值为1';
    */
-  protected String IS_CONTAIN_HOLIDAY;
+  protected int IS_CONTAIN_HOLIDAY;
   public Object getPersistentState() {
     Map<String, Object> persistentState = (Map<String, Object>) new HashMap<String, Object>();
     persistentState.put("endTime", endTime);
@@ -185,11 +184,11 @@ public void setNOTICERATE(int nOTICERATE) {
 	NOTICERATE = nOTICERATE;
 }
 
-public String getIS_CONTAIN_HOLIDAY() {
+public int getIS_CONTAIN_HOLIDAY() {
 	return IS_CONTAIN_HOLIDAY;
 }
 
-public void setIS_CONTAIN_HOLIDAY(String iS_CONTAIN_HOLIDAY) {
+public void setIS_CONTAIN_HOLIDAY(int iS_CONTAIN_HOLIDAY) {
 	IS_CONTAIN_HOLIDAY = iS_CONTAIN_HOLIDAY;
 }
 

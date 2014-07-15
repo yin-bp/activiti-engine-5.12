@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.activiti.engine.ActivitiException;
-import org.activiti.engine.KPI;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
@@ -117,15 +116,36 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
   
   /**
    * 节假日策略
-   * '节假日策略，0-考虑节假日，不考虑作息时间，1-不考虑节假日，不考虑作息时间，2-考虑节假日，考虑作息时间，默认值为1';
+   * '节假日策略，1-考虑节假日，不考虑作息时间，0-不考虑节假日，不考虑作息时间，2-考虑节假日，考虑作息时间，默认值为1';
    */
-  protected String IS_CONTAIN_HOLIDAY;
+  protected int IS_CONTAIN_HOLIDAY;
+  protected HistoricTaskInstanceEntity historicTaskInstanceEntity;
+  protected HistoricActivityInstanceEntity historicActivityInstanceEntity;
   
   public TaskEntity() {
   }
 
   public TaskEntity(String taskId) {
     this.id = taskId;
+  }
+  
+  public void synstatetoHistory()
+  {
+	      this.historicTaskInstanceEntity.setALERTTIME(getALERTTIME());
+	      this.historicTaskInstanceEntity.setOVERTIME(getOVERTIME());
+		  this.historicTaskInstanceEntity.setIS_CONTAIN_HOLIDAY(getIS_CONTAIN_HOLIDAY());
+		  this.historicTaskInstanceEntity.setDURATION_NODE(getDURATION_NODE());
+		  this.historicTaskInstanceEntity.setNOTICERATE(getNOTICERATE());
+		  
+		  if(historicActivityInstanceEntity != null)
+		  {
+			  this.historicActivityInstanceEntity.setALERTTIME(getALERTTIME());
+		      this.historicActivityInstanceEntity.setOVERTIME(getOVERTIME());
+			  this.historicActivityInstanceEntity.setIS_CONTAIN_HOLIDAY(getIS_CONTAIN_HOLIDAY());
+			  this.historicActivityInstanceEntity.setDURATION_NODE(getDURATION_NODE());
+			  this.historicActivityInstanceEntity.setNOTICERATE(getNOTICERATE());
+			    
+		  }
   }
   
   /** creates and initializes a new persistent task. */
@@ -908,11 +928,29 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
 		NOTICERATE = nOTICERATE;
 	}
 
-	public String getIS_CONTAIN_HOLIDAY() {
+	public int getIS_CONTAIN_HOLIDAY() {
 		return IS_CONTAIN_HOLIDAY;
 	}
 
-	public void setIS_CONTAIN_HOLIDAY(String iS_CONTAIN_HOLIDAY) {
+	public void setIS_CONTAIN_HOLIDAY(int iS_CONTAIN_HOLIDAY) {
 		IS_CONTAIN_HOLIDAY = iS_CONTAIN_HOLIDAY;
+	}
+
+	public HistoricTaskInstanceEntity getHistoricTaskInstanceEntity() {
+		return historicTaskInstanceEntity;
+	}
+
+	public void setHistoricTaskInstanceEntity(
+			HistoricTaskInstanceEntity historicTaskInstanceEntity) {
+		this.historicTaskInstanceEntity = historicTaskInstanceEntity;
+	}
+
+	public HistoricActivityInstanceEntity getHistoricActivityInstanceEntity() {
+		return historicActivityInstanceEntity;
+	}
+
+	public void setHistoricActivityInstanceEntity(
+			HistoricActivityInstanceEntity historicActivityInstanceEntity) {
+		this.historicActivityInstanceEntity = historicActivityInstanceEntity;
 	}
 }

@@ -70,7 +70,7 @@ public class HistoricTaskInstanceEntity extends HistoricScopeInstanceEntity impl
    * 节假日策略
    * '节假日策略，0-考虑节假日，不考虑作息时间，1-不考虑节假日，不考虑作息时间，2-考虑节假日，考虑作息时间，默认值为1';
    */
-  protected String IS_CONTAIN_HOLIDAY;
+  protected int IS_CONTAIN_HOLIDAY;
   public HistoricTaskInstanceEntity() {
   }
 
@@ -88,13 +88,10 @@ public class HistoricTaskInstanceEntity extends HistoricScopeInstanceEntity impl
     this.assignee = task.getAssignee();
     this.startTime = ClockUtil.getCurrentTime();
     this.taskDefinitionKey = task.getTaskDefinitionKey();
-    this.ALERTTIME = task.getALERTTIME();
-	  this.OVERTIME = (task.getOVERTIME());
-	  this.IS_CONTAIN_HOLIDAY = (task.getIS_CONTAIN_HOLIDAY());
-	  this.DURATION_NODE = (task.getDURATION_NODE());
-	  this.NOTICERATE = (task.getNOTICERATE());
+
     this.setPriority(task.getPriority());
     this.setDueDate(task.getDueDate());
+    task.setHistoricTaskInstanceEntity(this);
   }
 
   // persistence //////////////////////////////////////////////////////////////
@@ -245,11 +242,11 @@ public void setNOTICERATE(int nOTICERATE) {
 	NOTICERATE = nOTICERATE;
 }
 
-public String getIS_CONTAIN_HOLIDAY() {
+public int getIS_CONTAIN_HOLIDAY() {
 	return IS_CONTAIN_HOLIDAY;
 }
 
-public void setIS_CONTAIN_HOLIDAY(String iS_CONTAIN_HOLIDAY) {
+public void setIS_CONTAIN_HOLIDAY(int iS_CONTAIN_HOLIDAY) {
 	IS_CONTAIN_HOLIDAY = iS_CONTAIN_HOLIDAY;
 }
 }

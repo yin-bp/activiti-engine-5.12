@@ -6,7 +6,7 @@ public class KPI {
 	private Timestamp ALERTTIME ;          
 	private Timestamp  OVERTIME;
 	private int  NOTICERATE;
-	private String  IS_CONTAIN_HOLIDAY;
+	private int  IS_CONTAIN_HOLIDAY;
 	private long DURATION_NODE;
 	public KPI() {
 		// TODO Auto-generated constructor stub
@@ -29,10 +29,10 @@ public class KPI {
 	public void setNOTICERATE(int nOTICERATE) {
 		NOTICERATE = nOTICERATE;
 	}
-	public String getIS_CONTAIN_HOLIDAY() {
+	public int getIS_CONTAIN_HOLIDAY() {
 		return IS_CONTAIN_HOLIDAY;
 	}
-	public void setIS_CONTAIN_HOLIDAY(String iS_CONTAIN_HOLIDAY) {
+	public void setIS_CONTAIN_HOLIDAY(int iS_CONTAIN_HOLIDAY) {
 		IS_CONTAIN_HOLIDAY = iS_CONTAIN_HOLIDAY;
 	}
 	public long getDURATION_NODE() {

@@ -13,8 +13,9 @@
 
 package org.activiti.engine.delegate;
 
+import java.util.Date;
+
 import org.activiti.engine.EngineServices;
-import org.activiti.engine.ProcessEngine;
 
 
 
@@ -72,4 +73,6 @@ public interface DelegateExecution extends VariableScope {
    * All Activiti services can be accessed through this interface.
    */
   EngineServices getEngineServices();
+  
+  Date getTaskCreateTime();
 }

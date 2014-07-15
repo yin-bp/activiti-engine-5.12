@@ -65,7 +65,7 @@
         #{ALERTTIME, jdbcType=TIMESTAMP},
         #{OVERTIME, jdbcType=TIMESTAMP},
         #{NOTICERATE, jdbcType=INTEGER},
-        #{IS_CONTAIN_HOLIDAY, jdbcType=VARCHAR}
+        #{IS_CONTAIN_HOLIDAY, jdbcType=INTEGER}
       )
   </insert>
 

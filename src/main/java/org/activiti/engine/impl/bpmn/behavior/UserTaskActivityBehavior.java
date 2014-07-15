@@ -113,7 +113,7 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
       {
     	  List<String> candiates = new ArrayList<String>();
     	  candiates.add(assignee);
-    	  KPI kpi = Context.getProcessEngineConfiguration().getKPIService().buildKPI(execution, candiates);
+    	  KPI kpi = Context.getProcessEngineConfiguration().getKPIService().buildKPI(execution, candiates,task.getCreateTime());
           if(kpi != null)
           {
         	  task.setALERTTIME(kpi.getALERTTIME());
@@ -121,6 +121,7 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
         	  task.setIS_CONTAIN_HOLIDAY(kpi.getIS_CONTAIN_HOLIDAY());
         	  task.setDURATION_NODE(kpi.getDURATION_NODE());
         	  task.setNOTICERATE(kpi.getNOTICERATE());
+        	  task.synstatetoHistory();
           }
           parserkpi = true;
       }
@@ -149,7 +150,7 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
           task.addCandidateUsers(candiates);
           if(!parserkpi)//设置流程kpi指标
           {
-        	  KPI kpi = Context.getProcessEngineConfiguration().getKPIService().buildKPI(execution, candiates);
+        	  KPI kpi = Context.getProcessEngineConfiguration().getKPIService().buildKPI(execution, candiates,task.getCreateTime());
               if(kpi != null)
               {
             	  task.setALERTTIME(kpi.getALERTTIME());
@@ -157,6 +158,7 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
             	  task.setIS_CONTAIN_HOLIDAY(kpi.getIS_CONTAIN_HOLIDAY());
             	  task.setDURATION_NODE(kpi.getDURATION_NODE());
             	  task.setNOTICERATE(kpi.getNOTICERATE());
+            	  task.synstatetoHistory();
               }
               parserkpi = true;
           }
@@ -164,7 +166,7 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
           task.addCandidateUsers((Collection) value);
           if(!parserkpi)
           {
-        	  KPI kpi = Context.getProcessEngineConfiguration().getKPIService().buildKPI(execution, (Collection) value);
+        	  KPI kpi = Context.getProcessEngineConfiguration().getKPIService().buildKPI(execution, (Collection) value,task.getCreateTime());
               if(kpi != null)
               {
             	  task.setALERTTIME(kpi.getALERTTIME());
@@ -172,6 +174,7 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
             	  task.setIS_CONTAIN_HOLIDAY(kpi.getIS_CONTAIN_HOLIDAY());
             	  task.setDURATION_NODE(kpi.getDURATION_NODE());
             	  task.setNOTICERATE(kpi.getNOTICERATE());
+            	  task.synstatetoHistory();
               }
               parserkpi = true;
           }
