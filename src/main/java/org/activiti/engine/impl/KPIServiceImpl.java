@@ -3,6 +3,7 @@ package org.activiti.engine.impl;
 import java.util.Collection;
 import java.util.Date;
 
+import org.activiti.engine.ActivitiException;
 import org.activiti.engine.KPI;
 import org.activiti.engine.KPIService;
 import org.activiti.engine.delegate.DelegateExecution;
@@ -14,7 +15,7 @@ public class KPIServiceImpl implements KPIService {
 	}
 
 	@Override
-	public KPI buildKPI(DelegateExecution execution,Collection<String> candiates,Date taskCreateTime) {
+	public KPI buildKPI(DelegateExecution execution,Collection<String> candiates,Date taskCreateTime) throws ActivitiException{
 		// TODO Auto-generated method stub
 		return null;
 	}
