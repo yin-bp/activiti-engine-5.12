@@ -92,10 +92,10 @@ public class CompleteTaskCmd extends NeedsActiveTaskCmd<Void> {
 	  		}
 	  		else
 	  		{
-	  			List<String> acts = act.getInActivities();
+	  			List<ActivityImpl> acts = act.getInActivities();
 	  			if(acts != null && acts.size() > 0)
 	  			{
-	  				pretaskKey = acts.get(0);
+	  				pretaskKey = acts.get(0).getId();
 	  			}
 	  			if(pretaskKey == null)
 				{

@@ -122,6 +122,7 @@ public abstract class ScopeImpl extends ProcessElementImpl implements PvmScope {
     return activities;
   }
 
+
   public IOSpecification getIoSpecification() {
     return ioSpecification;
   }

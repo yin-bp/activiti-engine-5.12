@@ -137,4 +137,10 @@
 			where d.id_ <> a.ID_ and a.END_TIME_ is not null and d.task_def_key_ <> a.task_def_key_ order by a.END_TIME_ desc  limit 0,1
 		]]>
 	</property>
+	<property name="getproc_def_id_bytaskid" >
+		 <![CDATA[
+			select PROC_DEF_ID_,TASK_DEF_KEY_ from act_hi_taskinst t where id_ = ?
+		]]>
+	</property>
+	
 </properties>

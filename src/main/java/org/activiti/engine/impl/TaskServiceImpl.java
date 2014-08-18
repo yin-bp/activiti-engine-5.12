@@ -50,7 +50,10 @@ import org.activiti.engine.impl.cmd.SaveAttachmentCmd;
 import org.activiti.engine.impl.cmd.SaveTaskCmd;
 import org.activiti.engine.impl.cmd.SetTaskPriorityCmd;
 import org.activiti.engine.impl.cmd.SetTaskVariablesCmd;
+import org.activiti.engine.impl.context.Context;
+import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
+import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.task.Attachment;
 import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.DelegationState;
@@ -61,6 +64,7 @@ import org.activiti.engine.task.NativeTaskQuery;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskQuery;
 
+import com.frameworkset.common.poolman.ConfigSQLExecutor;
 import com.frameworkset.orm.transaction.TransactionManager;
 
 
@@ -536,5 +540,150 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
  public boolean rejecttoPreTask(String taskId,String rejectReason,int rejectedtype)
  {
 	  return rejecttoPreTask(taskId,(Map<String, Object>)null, rejectReason, rejectedtype);
+ }
+ /**
+  * 获取当前任务的驳回节点 
+  * @param taskId
+  * @return 驳回节点数组，包含两个元素：第一个元素是上个任务环节对应的节点，第二个元素是当前节点的上一个节点
+  */
+ public String[] findRejectedNode(String taskId)
+ {
+	 String[] twonodes = new String[2] ;
+	  	try {
+	  		
+	  		String pretaskKey = null;
+	  		
+	  		ConfigSQLExecutor executor = this.findProcessEngineConfigurationImpl().getExtendExecutor();
+	  		HashMap pid = executor.queryObject(HashMap.class,"getproc_def_id_bytaskid",taskId);
+			ProcessDefinitionEntity def = (ProcessDefinitionEntity) ((RepositoryServiceImpl) this.findProcessEngineConfigurationImpl().getRepositoryService())
+					.getDeployedProcessDefinition((String)pid.get("PROC_DEF_ID_"));
+			ActivityImpl act = def.findActivity((String)pid.get("TASK_DEF_KEY_"));
+			boolean ismultiinst = act.isMultiTask();
+			
+			if(!ismultiinst)
+			{
+				pretaskKey = executor.queryObject(String.class,"rejecttoPretaskSQL", taskId);
+				twonodes[0] = pretaskKey;
+
+			}
+			else
+			{
+				pretaskKey = executor.queryObject(String.class,"multirejecttoPretaskSQL", taskId);
+				twonodes[0] = pretaskKey;
+
+			}
+  		
+
+  		
+			do
+				{
+					List<ActivityImpl> acts = act.getInActivities();
+		  			
+		  			if(acts != null && acts.size() > 0)
+		  			{
+	  					ActivityImpl pretask = acts.get(0);
+	  	  				String type =  (String)pretask.getProperty("type");
+	  	  				if(type.equals("userTask"))
+	  	  				{
+	  	  					twonodes[1] = pretask.getId();
+	  	  					break;
+	  	  				}
+	  	  				act = pretask;
+		  			}
+		  			else
+		  			{
+		  				break;
+		  			}
+				}while(true);
+
+	  		return twonodes;
+	  			
+		} catch (ActivitiException e) {
+			throw e;
+		}
+	  	catch (Exception e) {
+			throw new ActivitiException("获取驳回任务失败：["+taskId+"]",e);
+		}
+ }
+ 
+ /**
+  * 获取当前任务的驳回节点 
+  * @param taskId
+  * @return 驳回节点数组，包含两个元素：第一个元素是上个任务环节对应的节点，第二个元素是当前节点的上一个节点
+  */
+ public ActivityImpl[] findRejectedActivityNode(String taskId)
+ {
+	 String[] twonodes = new String[2] ;
+	 ActivityImpl[] nodes = new ActivityImpl[2];
+	  	try {
+	  		
+	  		String pretaskKey = null;
+	  		
+	  		
+	  		ConfigSQLExecutor executor = findProcessEngineConfigurationImpl().getExtendExecutor();
+	  		HashMap pid = executor.queryObject(HashMap.class,"getproc_def_id_bytaskid",taskId);
+			ProcessDefinitionEntity def = (ProcessDefinitionEntity) ((RepositoryServiceImpl)this.findProcessEngineConfigurationImpl().getRepositoryService())
+					.getDeployedProcessDefinition((String)pid.get("PROC_DEF_ID_"));
+			ActivityImpl act = def.findActivity((String)pid.get("TASK_DEF_KEY_"));
+			boolean ismultiinst = act.isMultiTask();
+			if(!ismultiinst)
+			{
+				pretaskKey = executor.queryObject(String.class,"rejecttoPretaskSQL", taskId);
+				twonodes[0] = pretaskKey;
+
+			}
+			else
+			{
+				pretaskKey = executor.queryObject(String.class,"multirejecttoPretaskSQL", taskId);
+				twonodes[0] = pretaskKey;
+
+			}
+  		
+
+  		
+  			
+  			{
+  				
+  				
+  				do
+  				{
+  					List<ActivityImpl> acts = act.getInActivities();
+  		  			
+  		  			if(acts != null && acts.size() > 0)
+  		  			{
+	  					ActivityImpl pretask = acts.get(0);
+	  	  				String type =  (String)pretask.getProperty("type");
+	  	  				if(type.equals("userTask"))
+	  	  				{
+	  	  					nodes[1] = pretask;
+	  	  					break;
+	  	  				}
+	  	  				act = pretask;
+  		  			}
+  		  			else
+  		  			{
+  		  				break;
+  		  			}
+  				}while(true);
+  				
+  			}
+  			
+  			List<ActivityImpl> activities = act.getProcessDefinition().getActivities();
+  			for(ActivityImpl _act:activities)
+  			{
+  				if(twonodes[0] != null && _act.getId().equals(twonodes[0]))
+  				{
+  					nodes[0] = _act;
+  				}
+  				
+  			}
+	  		return nodes;
+	  			
+		} catch (ActivitiException e) {
+			throw e;
+		}
+	  	catch (Exception e) {
+			throw new ActivitiException("获取驳回任务失败：["+taskId+"]",e);
+		}
  }
 }

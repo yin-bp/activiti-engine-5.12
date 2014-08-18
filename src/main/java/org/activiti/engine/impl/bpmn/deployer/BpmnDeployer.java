@@ -322,6 +322,16 @@ public class BpmnDeployer implements Deployer {
       } else if (resources.containsKey(diagramForBpmnFileResource)) {
         return diagramForBpmnFileResource;
       }
+      else
+      {
+    	  Iterator<String> keys = resources.keySet().iterator();
+    	  while(keys.hasNext())
+    	  {
+    		  String key = keys.next();
+    		  if(key.endsWith("."+diagramSuffix))
+    			  return key;
+    	  }
+      }
     }
     return null;
   }

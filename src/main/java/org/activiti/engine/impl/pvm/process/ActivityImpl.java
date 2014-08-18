@@ -106,23 +106,23 @@ public class ActivityImpl extends ScopeImpl implements PvmActivity, HasDIBounds 
 					  || (activityBehavior instanceof MixMultiInstanceActivityBehavior && ((MixMultiInstanceActivityBehavior)activityBehavior).isSequence()));
 	  
   }
-  private List<String> inactivies ;
+  private List<ActivityImpl> inactivies ;
   
-  private List<String> outactivies ;
+  private List<ActivityImpl> outactivies ;
   /**
    * 获取流程的入节点id清单
    * @return
    */
-  public List<String> getInActivities()
+  public List<ActivityImpl> getInActivities()
   {
 	  if(this.incomingTransitions == null || incomingTransitions.size() == 0)
 		  return null;
 	  if(inactivies != null)
 		  return inactivies;
-	  List<String> ret = new ArrayList<String>();
+	  List<ActivityImpl> ret = new ArrayList<ActivityImpl>();
 	  for(TransitionImpl trs:incomingTransitions)
 	  {
-		  ret.add(trs.getSource().getId());
+		  ret.add(trs.getSource());
 	  }
 	  return inactivies = ret;
 		  
@@ -132,16 +132,16 @@ public class ActivityImpl extends ScopeImpl implements PvmActivity, HasDIBounds 
    * 获取流程的入节点id清单
    * @return
    */
-  public List<String> getOutActivities()
+  public List<ActivityImpl> getOutActivities()
   {
 	  if(this.outgoingTransitions == null || outgoingTransitions.size() == 0)
 		  return null;
 	  if(outactivies != null)
 		  return outactivies;
-	  List<String> ret = new ArrayList<String>();
+	  List<ActivityImpl> ret = new ArrayList<ActivityImpl>();
 	  for(TransitionImpl trs:outgoingTransitions)
 	  {
-		  ret.add(trs.getSource().getId());
+		  ret.add(trs.getSource());
 	  }
 	  return outactivies = ret;
 		  

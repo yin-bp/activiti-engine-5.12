@@ -9,7 +9,6 @@
 	<classpathentry kind="src" path="src/main/resources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/activation-1.1.jar"/>
-	<classpathentry kind="lib" path="lib/bboss-aop.jar" sourcepath="/bbossaop"/>
 	<classpathentry kind="lib" path="lib/cglib-2.2.jar"/>
 	<classpathentry kind="lib" path="lib/commons-email-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang-2.4.jar"/>
@@ -48,5 +47,6 @@
 	<classpathentry kind="lib" path="lib-log/slf4j-api-1.7.2.jar"/>
 	<classpathentry kind="lib" path="lib-log/slf4j-log4j12-1.7.2.jar"/>
 	<classpathentry kind="lib" path="libs-test/jgraphx-1.10.4.2.jar"/>
+	<classpathentry kind="lib" path="lib/bboss-core.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

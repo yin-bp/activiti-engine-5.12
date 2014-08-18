@@ -12,7 +12,10 @@
  */
 package org.activiti.engine.impl;
 
+import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
+import org.activiti.engine.impl.interceptor.CommandContextInterceptor;
 import org.activiti.engine.impl.interceptor.CommandExecutor;
+import org.activiti.engine.impl.interceptor.CommandInterceptor;
 
 
 
@@ -22,12 +25,28 @@ import org.activiti.engine.impl.interceptor.CommandExecutor;
 public class ServiceImpl {
 
   protected CommandExecutor commandExecutor;
-  
+  protected ProcessEngineConfigurationImpl processEngineConfiguration;
   public CommandExecutor getCommandExecutor() {
     return commandExecutor;
   }
 
   public void setCommandExecutor(CommandExecutor commandExecutor) {
     this.commandExecutor = commandExecutor;
+  }
+  public ProcessEngineConfigurationImpl findProcessEngineConfigurationImpl()
+  {
+	  if(processEngineConfiguration != null)
+		  return processEngineConfiguration;
+	  CommandInterceptor temp = (CommandInterceptor)commandExecutor;
+	  do
+	  {
+		  if(temp instanceof CommandContextInterceptor)
+		  {
+			  this.processEngineConfiguration = ((CommandContextInterceptor)temp).getProcessEngineConfiguration();
+			  break;
+		  }
+		  temp = (CommandInterceptor)temp.getNext();
+	  }while(temp !=null);
+	  return processEngineConfiguration;
   }
 }

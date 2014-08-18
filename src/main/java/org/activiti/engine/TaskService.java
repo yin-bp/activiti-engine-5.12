@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.query.NativeQuery;
 import org.activiti.engine.task.Attachment;
 import org.activiti.engine.task.Comment;
@@ -27,8 +28,6 @@ import org.activiti.engine.task.IdentityLinkType;
 import org.activiti.engine.task.NativeTaskQuery;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskQuery;
-
-import com.frameworkset.orm.transaction.TransactionManager;
 
 /** Service which provides access to {@link Task} and form related operations.
  * 
@@ -493,4 +492,18 @@ public interface TaskService {
   * @param taskId
   */
  public boolean rejecttoPreTask(String taskId,String rejectReason,int rejectedtype);
+ 
+ /**
+  * 获取当前任务的驳回节点 
+  * @param taskId
+  * @return 驳回节点数组，包含两个元素：第一个元素是上个任务环节对应的节点，第二个元素是当前节点的上一个节点
+  */
+ public String[] findRejectedNode(String taskId);
+ 
+ /**
+  * 获取当前任务的驳回节点 
+  * @param taskId
+  * @return 驳回节点数组，包含两个元素：第一个元素是上个任务环节对应的节点，第二个元素是当前节点的上一个节点
+  */
+ public ActivityImpl[] findRejectedActivityNode(String taskId);
 }
