@@ -54,6 +54,7 @@ import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
+import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.task.Attachment;
 import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.DelegationState;
@@ -686,4 +687,57 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
 			throw new ActivitiException("获取驳回任务失败：["+taskId+"]",e);
 		}
  }
+
+@Override
+public ActivityImpl findFirstNodeByteTask(String taskId) {
+	
+	try {
+		ConfigSQLExecutor executor = findProcessEngineConfigurationImpl().getExtendExecutor();
+  		HashMap pid = executor.queryObject(HashMap.class,"getproc_def_id_bytaskid",taskId);
+  		return findFirstNodeByDefID((String)pid.get("PROC_DEF_ID_")) ;
+	}  catch (ActivitiException e) {
+		throw e;
+	}
+  	catch (Exception e) {
+		throw new ActivitiException("findFirstNodeByteTask失败：["+taskId+"]",e);
+	}
+}
+
+@Override
+public ActivityImpl findFirstNodeByDefID(String processdefid) {
+	try {
+		ConfigSQLExecutor executor = findProcessEngineConfigurationImpl().getExtendExecutor();
+  		
+		ProcessDefinitionEntity def = (ProcessDefinitionEntity) ((RepositoryServiceImpl) this.findProcessEngineConfigurationImpl().getRepositoryService())
+				.getDeployedProcessDefinition(processdefid);
+		List<ActivityImpl> activities = def.getActivities();
+		if(activities == null || activities.size() == 0)
+			return null;
+		for(ActivityImpl act:activities)
+		{
+			String type =  (String)act.getProperty("type");
+				if(type.equals("startEvent"))
+				{
+					if(act.getOutActivities() != null && act.getOutActivities().size() > 0)
+						return act.getOutActivities().get(0);
+					
+				}
+		}
+		return null;
+	}  catch (ActivitiException e) {
+		throw e;
+	}
+  	catch (Exception e) {
+		throw new ActivitiException("findFirstNodeByDefID失败：["+processdefid+"]",e);
+	}
+}
+
+@Override
+public ActivityImpl findFirstNodeByDefKey(String processdefKey) {
+	ProcessDefinition def = this.findProcessEngineConfigurationImpl().getRepositoryService()
+	.createProcessDefinitionQuery()
+	.processDefinitionKey(processdefKey)
+	.latestVersion().singleResult();
+	return findFirstNodeByDefID(def.getId());
+}
 }

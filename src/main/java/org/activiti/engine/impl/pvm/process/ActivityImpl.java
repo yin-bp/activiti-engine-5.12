@@ -141,7 +141,7 @@ public class ActivityImpl extends ScopeImpl implements PvmActivity, HasDIBounds 
 	  List<ActivityImpl> ret = new ArrayList<ActivityImpl>();
 	  for(TransitionImpl trs:outgoingTransitions)
 	  {
-		  ret.add(trs.getSource());
+		  ret.add(trs.getDestination());
 	  }
 	  return outactivies = ret;
 		  

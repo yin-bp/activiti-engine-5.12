@@ -501,6 +501,25 @@ public interface TaskService {
  public String[] findRejectedNode(String taskId);
  
  /**
+  * 获取当前任务对应的流程的第一个节点
+  * @param taskId
+  * @return 
+  */
+ public ActivityImpl findFirstNodeByteTask(String taskId);
+ /**
+  * 获取流程定义id对应的流程的第一个节点 
+  * @param taskId
+  * @return 驳回节点数组，包含两个元素：第一个元素是上个任务环节对应的节点，第二个元素是当前节点的上一个节点
+  */
+ public ActivityImpl findFirstNodeByDefID(String processdefid);
+ /**
+  * 获取流程定义id对应的流程的第一个节点 
+  * @param taskId
+  * @return 驳回节点数组，包含两个元素：第一个元素是上个任务环节对应的节点，第二个元素是当前节点的上一个节点
+  */
+ public ActivityImpl findFirstNodeByDefKey(String processdefKey);
+ 
+ /**
   * 获取当前任务的驳回节点 
   * @param taskId
   * @return 驳回节点数组，包含两个元素：第一个元素是上个任务环节对应的节点，第二个元素是当前节点的上一个节点
