@@ -57,6 +57,12 @@ public abstract class NeedsActiveTaskCmd<T> implements Command<T>, Serializable 
 	    this.rejectedtype = rejectedtype;
 }
   
+  public NeedsActiveTaskCmd(String taskId,boolean isrejected,String destinationTaskKey) {
+	    this.taskId = taskId;
+	    this.isrejected = isrejected;
+	    this.destinationTaskKey = destinationTaskKey;
+}
+  
   public T execute(CommandContext commandContext) {
     
     if(taskId == null) {

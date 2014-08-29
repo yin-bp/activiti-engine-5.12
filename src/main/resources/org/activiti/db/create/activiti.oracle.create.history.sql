@@ -260,5 +260,16 @@ ADD (IS_CONTAIN_HOLIDAY NUMBER(1));
 ALTER TABLE ACT_RU_TASK
 ADD (IS_CONTAIN_HOLIDAY NUMBER(1) );
 
+-- Create table
+create table td_wf_rejectlog
+(
+  newtaskid    nvarchar2(64),
+  rejecttaskid nvarchar2(64),
+  rejectnode   nvarchar2(100)
+)
+;
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table td_wf_rejectlog
+  add constraint rejectlog_pk primary key (NEWTASKID);
 
 

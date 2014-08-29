@@ -18,6 +18,7 @@ package org.activiti.engine.impl.bpmn.behavior;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.Expression;
 import org.activiti.engine.delegate.VariableScope;
+import org.activiti.engine.impl.TaskContext;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 
@@ -119,12 +120,12 @@ public class MixMultiInstanceActivityBehavior extends
 		getMultiInstanceActivityBehavior(execution).signal(execution, signalName, signalData);
 	}
 
-	@Override
-	public void signal(ActivityExecution execution, String signalName,
-			Object signalData, String destinationTaskKey) throws Exception {
-		// TODO Auto-generated method stub
-		getMultiInstanceActivityBehavior(execution).signal(execution, signalName, signalData, destinationTaskKey);
-	}
+//	@Override
+//	public void signal(ActivityExecution execution, String signalName,
+//			Object signalData, TaskContext taskContext) throws Exception {
+//		// TODO Auto-generated method stub
+//		getMultiInstanceActivityBehavior(execution).signal(execution, signalName, signalData,  taskContext);
+//	}
 
 	@Override
 	public void lastExecutionEnded(ActivityExecution execution) {
@@ -306,11 +307,11 @@ public class MixMultiInstanceActivityBehavior extends
 		getMultiInstanceActivityBehavior(execution).leave(execution);
 	}
 
-	@Override
-	protected void leave(ActivityExecution execution, String destinationTaskKey) {
-		// TODO Auto-generated method stub
-		getMultiInstanceActivityBehavior(execution).leave(execution, destinationTaskKey);
-	}
+//	@Override
+//	protected void leave(ActivityExecution execution,TaskContext taskContext) {
+//		// TODO Auto-generated method stub
+//		getMultiInstanceActivityBehavior(execution).leave(execution, taskContext);
+//	}
 
 	@Override
 	protected void leaveIgnoreConditions(ActivityExecution activityContext) {

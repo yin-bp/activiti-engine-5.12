@@ -12,6 +12,7 @@
  */
 package org.activiti.engine.impl.bpmn.behavior;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,11 +24,14 @@ import org.activiti.engine.ActivitiIllegalArgumentException;
 import org.activiti.engine.KPI;
 import org.activiti.engine.delegate.Expression;
 import org.activiti.engine.delegate.TaskListener;
+import org.activiti.engine.impl.TaskContext;
 import org.activiti.engine.impl.calendar.DueDateBusinessCalendar;
 import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
 import org.activiti.engine.impl.task.TaskDefinition;
+
+import com.frameworkset.common.poolman.ConfigSQLExecutor;
 
 /**
  * activity implementation for the user task.
@@ -41,9 +45,19 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
   public UserTaskActivityBehavior(TaskDefinition taskDefinition) {
     this.taskDefinition = taskDefinition;
   }
-
+  private void recoredrejectedlog(ActivityExecution execution,TaskEntity newtask ) throws Exception
+  {
+	  TaskContext taskContext = execution.getTaskContext();
+	  if(taskContext.isIsrejected() && taskContext.isReturntoreject())
+	  {
+		  ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
+		  executor.insert("recoredrejectedlog", taskContext.getRejectednode(),taskContext.getRejectedtaskid(),newtask.getId());//rejectnode,rejecttaskid,newtaskid
+	  }
+  }
   public void execute(ActivityExecution execution) throws Exception {
     TaskEntity task = TaskEntity.createAndInsert(execution);
+    
+    recoredrejectedlog( execution, task );
     task.setExecution(execution);
     task.setTaskDefinition(taskDefinition);
 
@@ -99,9 +113,9 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
     leave(execution);
   }
   
-  public void signal(ActivityExecution execution, String signalName, Object signalData,String destinationTaskKey) throws Exception {
-	    leave(execution,destinationTaskKey);
-  }
+//  public void signal(ActivityExecution execution, String signalName, Object signalData,TaskContext taskContext) throws Exception {
+//	    leave(execution, taskContext);
+//  }
 
   @SuppressWarnings({ "unchecked", "rawtypes" })
   protected void handleAssignments(TaskEntity task, ActivityExecution execution) {

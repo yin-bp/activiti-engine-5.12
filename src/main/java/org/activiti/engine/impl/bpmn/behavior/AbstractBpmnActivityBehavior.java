@@ -33,43 +33,43 @@ public class AbstractBpmnActivityBehavior extends FlowNodeActivityBehavior {
   
   protected MultiInstanceActivityBehavior multiInstanceActivityBehavior;
   
-  /**
-   * Subclasses that call leave() will first pass through this method, before
-   * the regular {@link FlowNodeActivityBehavior#leave(ActivityExecution)} is
-   * called. This way, we can check if the activity has loop characteristics,
-   * and delegate to the behavior if this is the case.
-   */
-  protected void leave(ActivityExecution execution) {
-//    if(hasCompensationHandler(execution)) {
-//      createCompensateEventSubscription(execution);
-//    }
-//    if (!hasLoopCharacteristics()) {
-//      super.leave(execution);
-//    } else if (hasMultiInstanceCharacteristics()){
-//      multiInstanceActivityBehavior.leave(execution);
-//    }
-	  leave(execution,null);
-  }
+//  /**
+//   * Subclasses that call leave() will first pass through this method, before
+//   * the regular {@link FlowNodeActivityBehavior#leave(ActivityExecution)} is
+//   * called. This way, we can check if the activity has loop characteristics,
+//   * and delegate to the behavior if this is the case.
+//   */
+//  protected void leave(ActivityExecution execution) {
+////    if(hasCompensationHandler(execution)) {
+////      createCompensateEventSubscription(execution);
+////    }
+////    if (!hasLoopCharacteristics()) {
+////      super.leave(execution);
+////    } else if (hasMultiInstanceCharacteristics()){
+////      multiInstanceActivityBehavior.leave(execution);
+////    }
+//	  leave(execution,null);
+//  }
   
   /**
    * added by biaoping.yin
    * @param execution
    * @param destinationTaskKey
    */
-  protected void leave(ActivityExecution execution,String destinationTaskKey) {
+  protected void leave(ActivityExecution execution) {
 	    if(hasCompensationHandler(execution)) {
 	      createCompensateEventSubscription(execution);
 	    }
 	    if (!hasLoopCharacteristics()) {
-	    	if(destinationTaskKey == null || "".equals(destinationTaskKey))
+//	    	if(destinationTaskKey == null || "".equals(destinationTaskKey))
+//	    		super.leave(execution);
+//	    	else
 	    		super.leave(execution);
-	    	else
-	    		super.leave(execution,destinationTaskKey);
 	    } else if (hasMultiInstanceCharacteristics()){
-	    	if(destinationTaskKey == null || "".equals(destinationTaskKey))
+//	    	if(destinationTaskKey == null || "".equals(destinationTaskKey))
+//	    		multiInstanceActivityBehavior.leave(execution);
+//	    	else
 	    		multiInstanceActivityBehavior.leave(execution);
-	    	else
-	    		multiInstanceActivityBehavior.leave(execution,destinationTaskKey);
 	      
 	    }
 	  }

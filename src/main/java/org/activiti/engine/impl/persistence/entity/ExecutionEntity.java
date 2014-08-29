@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.activiti.engine.EngineServices;
+import org.activiti.engine.impl.TaskContext;
 import org.activiti.engine.impl.bpmn.parser.BpmnParse;
 import org.activiti.engine.impl.bpmn.parser.EventSubscriptionDeclaration;
 import org.activiti.engine.impl.context.Context;
@@ -342,38 +343,38 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
   }
 
 
-  // methods that translate to operations /////////////////////////////////////
-
-  public void signal(String signalName, Object signalData) {
-//    ensureActivityInitialized();
-//    SignallableActivityBehavior activityBehavior = (SignallableActivityBehavior) activity.getActivityBehavior();
-//    try {
-//      activityBehavior.signal(this, signalName, signalData);
-//    } catch (RuntimeException e) {
-//      throw e;
-//    } catch (Exception e) {
-//      throw new PvmException("couldn't process signal '"+signalName+"' on activity '"+activity.getId()+"': "+e.getMessage(), e);
-//    }
-	  signal(signalName, signalData,null);
-  }
+//  // methods that translate to operations /////////////////////////////////////
+//
+//  public void signal(String signalName, Object signalData) {
+////    ensureActivityInitialized();
+////    SignallableActivityBehavior activityBehavior = (SignallableActivityBehavior) activity.getActivityBehavior();
+////    try {
+////      activityBehavior.signal(this, signalName, signalData);
+////    } catch (RuntimeException e) {
+////      throw e;
+////    } catch (Exception e) {
+////      throw new PvmException("couldn't process signal '"+signalName+"' on activity '"+activity.getId()+"': "+e.getMessage(), e);
+////    }
+//	  signal(signalName, signalData,null);
+//  }
   /**
    * added by biaoping.yin
    * @param signalName
    * @param signalData
    * @param destinationTaskKey
    */
-  public void signal(String signalName, Object signalData,String destinationTaskKey) {
+  public void signal(String signalName, Object signalData) {
 	    ensureActivityInitialized();
 	    SignallableActivityBehavior activityBehavior = (SignallableActivityBehavior) activity.getActivityBehavior();
 	    try {
 //	      activityBehavior.signal(this, signalName, signalData);
-	    	if(destinationTaskKey == null || "".equals(destinationTaskKey))
+//	    	if(destinationTaskKey == null || "".equals(destinationTaskKey))
+//	    	{
+//	    		activityBehavior.signal(this, signalName, signalData);
+//	    	}
+//	    	else
 	    	{
 	    		activityBehavior.signal(this, signalName, signalData);
-	    	}
-	    	else
-	    	{
-	    		activityBehavior.signal(this, signalName, signalData,destinationTaskKey);
 	    	}
 	    } catch (RuntimeException e) {
 	      throw e;
@@ -575,7 +576,7 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
     }
   }
   
-  public void takeAll(List<PvmTransition> transitions, List<ActivityExecution> recyclableExecutions,String destinationTaskKey) {
+  public void takeAll(List<PvmTransition> transitions, List<ActivityExecution> recyclableExecutions,TaskContext taskContext) {
 	    transitions = new ArrayList<PvmTransition>(transitions);
 	    recyclableExecutions = (recyclableExecutions!=null ? new ArrayList<ActivityExecution>(recyclableExecutions) : new ArrayList<ActivityExecution>());
 	    
@@ -586,7 +587,7 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
 	        }
 	      }
 	    }
-	    if(destinationTaskKey != null && !destinationTaskKey.equals(""))
+	    if(taskContext.getDestinationTaskKey() != null && !taskContext.getDestinationTaskKey().equals(""))
 	    {
 	    	 // prune the executions that are not recycled 
 		      for (ActivityExecution prunedExecution: recyclableExecutions) {
@@ -599,7 +600,7 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
 		      {
 		    	  concurrentRoot.setDeleteReason(this.getDeleteReason());
 		      }
-		      TransitionImpl transition = ((ActivityImpl)concurrentRoot.getActivity()).createCustomOutgoingTransition(null, destinationTaskKey);    	
+		      TransitionImpl transition = ((ActivityImpl)concurrentRoot.getActivity()).createCustomOutgoingTransition(null, taskContext.getDestinationTaskKey());    	
 		      concurrentRoot.take(transition);
 		      
 	    }
@@ -1575,6 +1576,17 @@ public Date getTaskCreateTime() {
 
 public void setTaskCreateTime(Date taskCreateTime) {
 	this.taskCreateTime = taskCreateTime;
+}
+private TaskContext taskContext;
+@Override
+public TaskContext getTaskContext() {
+	// TODO Auto-generated method stub
+	return taskContext;
+}
+@Override
+public void setTaskContext(TaskContext taskContext) {
+	// TODO Auto-generated method stub
+	this.taskContext = taskContext;
 }
   
 }

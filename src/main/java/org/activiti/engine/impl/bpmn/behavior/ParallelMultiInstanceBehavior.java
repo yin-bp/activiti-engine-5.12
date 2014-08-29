@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.activiti.engine.ActivitiIllegalArgumentException;
+import org.activiti.engine.impl.TaskContext;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.delegate.ActivityBehavior;
@@ -99,16 +100,16 @@ public class ParallelMultiInstanceBehavior extends MultiInstanceActivityBehavior
    * {@link AbstractBpmnActivityBehavior#leave(ActivityExecution)} method.
    * Handles the completion of one of the parallel instances
    */
-  public void leave(ActivityExecution execution) {
-	   leave(execution,null); 
-  }
+//  public void leave(ActivityExecution execution) {
+//	   leave(execution,null); 
+//  }
   
   /**
    * added by biaoping.yin
    */
-  public void leave(ActivityExecution execution,String destinationTaskKey) {
+  public void leave(ActivityExecution execution) {
     callActivityEndListeners(execution);
-    
+    TaskContext taskContext = execution.getTaskContext();
     int loopCounter = getLoopVariable(execution, LOOP_COUNTER);
     int nrOfInstances = getLoopVariable(execution, NUMBER_OF_INSTANCES);
     int nrOfCompletedInstances = getLoopVariable(execution, NUMBER_OF_COMPLETED_INSTANCES) + 1;
@@ -126,7 +127,7 @@ public class ParallelMultiInstanceBehavior extends MultiInstanceActivityBehavior
     logLoopDetails(execution, "instance completed", loopCounter, nrOfCompletedInstances, nrOfActiveInstances, nrOfInstances);
    
     ExecutionEntity executionEntity = (ExecutionEntity) execution;
-    boolean customDTask = (destinationTaskKey != null && !destinationTaskKey.equals(""));
+    boolean customDTask = (taskContext.getDestinationTaskKey() != null && !taskContext.getDestinationTaskKey().equals(""));
     String deleteReason = executionEntity.getDeleteReason();
    
     
@@ -169,7 +170,7 @@ public class ParallelMultiInstanceBehavior extends MultiInstanceActivityBehavior
 	    List<PvmTransition> transitionsToTake = this.bpmnActivityBehavior.evalOutgoingTransition(execution,executionEntity);
 	    
 //      executionEntity.takeAll(executionEntity.getActivity().getOutgoingTransitions(), joinedExecutions,destinationTaskKey);
-	    executionEntity.takeAll(transitionsToTake, joinedExecutions,destinationTaskKey);
+	    executionEntity.takeAll(transitionsToTake, joinedExecutions, taskContext);
     } 
   }
 

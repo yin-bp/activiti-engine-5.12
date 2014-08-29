@@ -13,6 +13,7 @@
 package org.activiti.engine.impl.bpmn.behavior;
 
 import org.activiti.engine.ActivitiException;
+import org.activiti.engine.impl.TaskContext;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
 import org.activiti.engine.impl.pvm.delegate.SignallableActivityBehavior;
 
@@ -44,10 +45,10 @@ public abstract class FlowNodeActivityBehavior implements SignallableActivityBeh
     bpmnActivityBehavior.performDefaultOutgoingBehavior(execution);
   }
   
-  protected void leave(ActivityExecution execution,String destinationTaskKey)
-  {
-	  bpmnActivityBehavior.performDefaultOutgoingBehavior(execution, destinationTaskKey);
-  }
+//  protected void leave(ActivityExecution execution,TaskContext taskContext)
+//  {
+//	  bpmnActivityBehavior.performDefaultOutgoingBehavior(execution, taskContext);
+//  }
   
   protected void leaveIgnoreConditions(ActivityExecution activityContext) {
     bpmnActivityBehavior.performIgnoreConditionsOutgoingBehavior(activityContext);
@@ -58,9 +59,9 @@ public abstract class FlowNodeActivityBehavior implements SignallableActivityBeh
     throw new ActivitiException("this activity doesn't accept signals");
   }
   
-  public void signal(ActivityExecution execution, String signalName, Object signalData,String destinationTaskKey) throws Exception {
-    // concrete activity behaviours that do accept signals should override this method;
-    throw new ActivitiException("this activity doesn't accept signals");
-  }
+//  public void signal(ActivityExecution execution, String signalName, Object signalData,TaskContext taskContext) throws Exception {
+//    // concrete activity behaviours that do accept signals should override this method;
+//    throw new ActivitiException("this activity doesn't accept signals");
+//  }
   
 }

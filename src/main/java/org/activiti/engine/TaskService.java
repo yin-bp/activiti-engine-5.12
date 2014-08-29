@@ -493,6 +493,40 @@ public interface TaskService {
   */
  public boolean rejecttoPreTask(String taskId,String rejectReason,int rejectedtype);
  
+ 
+ /**
+ *
+ * 将当前任务驳回到上一个任务处理人处，并更新流程变量参数
+ * 如果需要改变处理人，可以通过指定变量的的方式设置
+ * rejectedtype 0-驳回上一个任务对应的节点 1-驳回到当前节点的上一个节点（多条路径暂时不支持）
+ * @param taskId
+ * @param variables
+ */
+public boolean rejecttoTask(String taskId, Map<String, Object> variables,String desttaskkey );
+/**
+ * 
+ * @param taskId
+ * @param variables
+ * @param rejectReason
+ * @param rejectedtype 0-驳回上一个任务对应的节点 1-驳回到当前节点的上一个节点（多条路径暂时不支持）
+ * @return
+ */
+public boolean rejecttoTask(String taskId, Map<String, Object> variables,String rejectReason,String desttaskkey);
+
+
+/**
+ * 将当前任务驳回到上一个任务处理人处
+ * @param taskId
+ * @param 0-驳回上一个任务对应的节点 1-驳回到当前节点的上一个节点（多条路径暂时不支持）
+ */
+public boolean rejecttoTask(String taskId,String desttaskkey);
+
+/**
+ * 将当前任务驳回到上一个任务处理人处
+ * @param taskId
+ */
+public boolean rejecttoTask(String taskId,String rejectReason,String desttaskkey);
+ 
  /**
   * 获取当前任务的驳回节点 
   * @param taskId
@@ -525,4 +559,52 @@ public interface TaskService {
   * @return 驳回节点数组，包含两个元素：第一个元素是上个任务环节对应的节点，第二个元素是当前节点的上一个节点
   */
  public ActivityImpl[] findRejectedActivityNode(String taskId);
+ 
+// public void complete( boolean returntoreject,String taskId);
+// public void completeWithReason( boolean returntoreject,String taskId,String completeReason);
+// public void complete( boolean returntoreject,String taskId, Map<String, Object> variables);
+// public void completeWithReason(boolean returntoreject,String taskId, Map<String, Object> variables,String completeReason);
+ 
+ /******************
+  * 一组控制是否返回驳回点的控制变量
+  */
+ 
+
+
+
+
+
+/**
+*
+* 将当前任务驳回到上一个任务处理人处，并更新流程变量参数
+* 如果需要改变处理人，可以通过指定变量的的方式设置
+* rejectedtype 0-驳回上一个任务对应的节点 1-驳回到当前节点的上一个节点（多条路径暂时不支持）
+* @param taskId
+* @param variables
+*/
+public boolean rejecttoTask(String taskId, Map<String, Object> variables,String desttaskkey ,boolean returntoreject);
+/**
+* 
+* @param taskId
+* @param variables
+* @param rejectReason
+* @param rejectedtype 0-驳回上一个任务对应的节点 1-驳回到当前节点的上一个节点（多条路径暂时不支持）
+* @return
+*/
+public boolean rejecttoTask(String taskId, Map<String, Object> variables,String rejectReason,String desttaskkey,boolean returntoreject);
+
+
+/**
+* 将当前任务驳回到上一个任务处理人处
+* @param taskId
+* @param 0-驳回上一个任务对应的节点 1-驳回到当前节点的上一个节点（多条路径暂时不支持）
+*/
+public boolean rejecttoTask(String taskId,String desttaskkey,boolean returntoreject);
+
+/**
+* 将当前任务驳回到上一个任务处理人处
+* @param taskId
+*/
+public boolean rejecttoTask(String taskId,String rejectReason,String desttaskkey,boolean returntoreject);
+
 }

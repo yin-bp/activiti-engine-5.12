@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.activiti.engine.ActivitiException;
+import org.activiti.engine.impl.TaskContext;
 import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.interceptor.CommandContext;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
@@ -33,16 +34,19 @@ public class CompleteTaskCmd extends NeedsActiveTaskCmd<Void> {
   protected Map<String, Object> variables;
   
   protected String completeReason;
+  protected boolean returntoreject; 
+  
+ 
   
   public CompleteTaskCmd(String taskId, Map<String, Object> variables) {
-    super(taskId);
-    this.variables = variables;
-  }
-  public CompleteTaskCmd(String taskId, String completeReason,Map<String, Object> variables) {
-    super(taskId);
-    this.variables = variables;
-    this.completeReason = completeReason;
-  }
+	    super(taskId);
+	    this.variables = variables;
+	  }
+	  public CompleteTaskCmd(String taskId, String completeReason,Map<String, Object> variables) {
+	    super(taskId);
+	    this.variables = variables;
+	    this.completeReason = completeReason;
+	  }
   /**
    * 完成任务指定跳转目标节点
    * added by biaoping.yin
@@ -61,6 +65,24 @@ public class CompleteTaskCmd extends NeedsActiveTaskCmd<Void> {
 	    this.variables = variables;
 	    this.completeReason = completeReason;
 	  }
+  protected String findTaskSourceRejectedNode(CommandContext commandContext)
+  {
+	 
+	  	try {
+	  		String pretaskKey = null;
+	  				  	
+				
+				ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
+				
+				pretaskKey = executor.queryObject(String.class,"findTaskSourceRejectedNode", taskId);
+					  		
+			return pretaskKey;
+		} catch (Exception e) {
+			throw new ActivitiException("",e);
+		}
+	  
+  }
+  
   protected String findRejectedNode(CommandContext commandContext, TaskEntity task)
   {
 	 
@@ -120,6 +142,23 @@ public class CompleteTaskCmd extends NeedsActiveTaskCmd<Void> {
 	    this.variables = variables;
 	    this.completeReason = reason;
 	  }
+  public CompleteTaskCmd(String taskId,boolean isrejected,String destinationTaskKey, Map<String, Object> variables) {
+	  super( taskId, isrejected, destinationTaskKey);  
+	  this.variables = variables;
+	  
+}
+  
+  public CompleteTaskCmd(String taskId,boolean isrejected,String destinationTaskKey, Map<String, Object> variables,String reason,boolean returntoreject) {
+	  super( taskId, isrejected, destinationTaskKey);  
+	  this.variables = variables;
+	  this.completeReason = reason;
+	  this.returntoreject = returntoreject;
+	  
+}
+  public CompleteTaskCmd(String taskId,boolean isrejected,String destinationTaskKey) {
+	  super( taskId, isrejected, destinationTaskKey);  
+	  
+}
   /**
    * 
    * @param taskId
@@ -145,23 +184,42 @@ public CompleteTaskCmd(String taskId, Map<String, Object> variables,boolean isre
     /**
      * modified by biaoping.yin
      */
-    if(this.isrejected && destinationTaskKey == null)
+    if(this.isrejected )
     {
-    	this.destinationTaskKey = findRejectedNode( commandContext,  task);
+    	if(destinationTaskKey == null)
+    		this.destinationTaskKey = findRejectedNode( commandContext,  task);
+    }
+    else// if(this.returntoreject)
+    {
+    	if(destinationTaskKey == null)//查找任务是否有关联的驳回节点，如果有，则任务直接跳转到上次驳回节点
+    	{
+    		this.destinationTaskKey = findTaskSourceRejectedNode( commandContext);
+    	}
+    		
+    }
+    TaskContext taskContext = new TaskContext();
+    taskContext.setDestinationTaskKey(destinationTaskKey);
+    if(isrejected)
+    {
+	    taskContext.setRejectedtaskid(this.taskId);
+	    taskContext.setRejectednode(task.getTaskDefinitionKey());
+	    taskContext.setIsrejected(isrejected);
+	    taskContext.setRejecttype(this.rejectedtype);
+	    taskContext.setReturntoreject(returntoreject);
     }
     if(completeReason == null)
     {
-	    if(this.destinationTaskKey == null || this.destinationTaskKey.equals(""))
-	    	task.complete();
-	    else
-	    	task.complete(this.destinationTaskKey);
+//	    if(this.destinationTaskKey == null || this.destinationTaskKey.equals(""))
+//	    	task.complete();
+//	    else
+	    	task.complete(taskContext);
     }
     else
     {
-    	if(this.destinationTaskKey == null || this.destinationTaskKey.equals(""))
-	    	task.complete(null,this.completeReason);
-	    else
-	    	task.complete(this.destinationTaskKey,this.completeReason);
+//    	if(this.destinationTaskKey == null || this.destinationTaskKey.equals(""))
+//	    	task.complete(null,this.completeReason);
+//	    else
+	    	task.complete(taskContext,this.completeReason);
     }
     return null;
   }

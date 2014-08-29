@@ -15,7 +15,7 @@ package org.activiti.engine.impl.bpmn.behavior;
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.ActivitiIllegalArgumentException;
 import org.activiti.engine.delegate.BpmnError;
-import org.activiti.engine.impl.pvm.delegate.ActivityBehavior;
+import org.activiti.engine.impl.TaskContext;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 
@@ -55,16 +55,16 @@ public class SequentialMultiInstanceBehavior extends MultiInstanceActivityBehavi
    * {@link AbstractBpmnActivityBehavior#leave(ActivityExecution)} method.
    * Handles the completion of one instance, and executes the logic for the sequential behavior.    
    */
-  public void leave(ActivityExecution execution)
-  {
-	  leave(execution,null);
-  }
+//  public void leave(ActivityExecution execution)
+//  {
+//	  leave(execution,null);
+//  }
   /**
    * added by biaoping.yin
    */
-  public void leave(ActivityExecution execution,String destinationTaskKey) {
+  public void leave(ActivityExecution execution) {
     callActivityEndListeners(execution);
-    
+    TaskContext taskContext = execution.getTaskContext();
     int loopCounter = getLoopVariable(execution, LOOP_COUNTER) + 1;
     int nrOfInstances = getLoopVariable(execution, NUMBER_OF_INSTANCES);
     int nrOfCompletedInstances = getLoopVariable(execution, NUMBER_OF_COMPLETED_INSTANCES) + 1;
@@ -73,9 +73,9 @@ public class SequentialMultiInstanceBehavior extends MultiInstanceActivityBehavi
     setLoopVariable(execution, LOOP_COUNTER, loopCounter);
     setLoopVariable(execution, NUMBER_OF_COMPLETED_INSTANCES, nrOfCompletedInstances);
     logLoopDetails(execution, "instance completed", loopCounter, nrOfCompletedInstances, nrOfActiveInstances, nrOfInstances);
-    boolean reject = destinationTaskKey != null && !destinationTaskKey.equals("");
+    boolean reject = taskContext.getDestinationTaskKey() != null && !taskContext.getDestinationTaskKey().equals("");
     if (loopCounter == nrOfInstances || completionConditionSatisfied(execution) || reject) {
-      super.leave(execution,destinationTaskKey);
+      super.leave(execution);
     } else {
       try {
         executeOriginalBehavior(execution, loopCounter);

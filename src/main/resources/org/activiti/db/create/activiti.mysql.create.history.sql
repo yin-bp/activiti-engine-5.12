@@ -16,6 +16,15 @@ create table ACT_HI_PROCINST (
     unique ACT_UNIQ_HI_BUS_KEY (PROC_DEF_ID_, BUSINESS_KEY_)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
 
+-- Create table
+create table td_wf_rejectlog
+(
+  newtaskid    varchar(64) not null,
+  rejecttaskid varchar(64) not null,
+  rejectnode   varchar(100) not null,
+   primary key (newtaskid),
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
+
 create table ACT_HI_ACTINST (
     ID_ varchar(64) not null,
     PROC_DEF_ID_ varchar(64) not null,

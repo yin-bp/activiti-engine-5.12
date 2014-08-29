@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.impl.Condition;
+import org.activiti.engine.impl.TaskContext;
 import org.activiti.engine.impl.bpmn.parser.BpmnParse;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.pvm.PvmTransition;
@@ -58,8 +59,8 @@ public class BpmnActivityBehavior implements Serializable {
   }
   
   
-  public void performDefaultOutgoingBehavior(ActivityExecution activityExceution,String destinationTaskKey) {
-	    performOutgoingBehavior(activityExceution, true, false, null,destinationTaskKey);
+  public void performDefaultOutgoingBehavior(ActivityExecution activityExceution,TaskContext taskContext) {
+	    performOutgoingBehavior(activityExceution, true, false, null,taskContext);
 	  }
   /**
    * Performs the default outgoing BPMN 2.0 behavior (@see
@@ -102,15 +103,15 @@ public class BpmnActivityBehavior implements Serializable {
    * @param destinationTaskKey
    */
   protected void performOutgoingBehavior(ActivityExecution execution, 
-          boolean checkConditions, boolean throwExceptionIfExecutionStuck, List<ActivityExecution> reusableExecutions,String destinationTaskKey) {
+          boolean checkConditions, boolean throwExceptionIfExecutionStuck, List<ActivityExecution> reusableExecutions,TaskContext taskContext) {
 
     if (log.isDebugEnabled()) {
       log.debug("Leaving activity '{}'", execution.getActivity().getId());
     }
-    if(destinationTaskKey != null)
+    if(taskContext.getDestinationTaskKey() != null)
     {
 //    	System.out.println();
-    	TransitionImpl transition = ((ActivityImpl)execution.getActivity()).createCustomOutgoingTransition(null, destinationTaskKey);    	
+    	TransitionImpl transition = ((ActivityImpl)execution.getActivity()).createCustomOutgoingTransition(null, taskContext.getDestinationTaskKey());    	
     	execution.take(transition);
     }
     else

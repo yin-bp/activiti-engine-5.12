@@ -1,3 +1,8 @@
+td_wf_rejectlog
+rejectnode
+rejecttaskid
+newtaskid
+
 2014-05-16 解决多实例任务多出路分支条件不起作用导致每个分支都产生任务的问题修改
 2014-05-16 ServiceTask中express类型的服务也支持javadelegate和activitibehavier类型的表达式类运算
 2014-05-16 增加实例升级处理服务

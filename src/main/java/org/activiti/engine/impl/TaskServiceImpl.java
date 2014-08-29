@@ -167,10 +167,19 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
   public void complete(String taskId) {
     commandExecutor.execute(new CompleteTaskCmd(taskId, null));
   }
+  
+//  public void complete( boolean returntoreject,String taskId) {
+//	    commandExecutor.execute(new CompleteTaskCmd(taskId, returntoreject, (Map<String, Object>) null));
+//	  }
   public void completeWithReason(String taskId,String completeReason)
   {
 	  commandExecutor.execute(new CompleteTaskCmd(taskId, null,completeReason));
   }
+  
+//  public void completeWithReason( boolean returntoreject,String taskId,String completeReason)
+//  {
+//	  commandExecutor.execute(new CompleteTaskCmd(taskId, completeReason, returntoreject,(Map<String, Object>)null));
+//  }
   /**
    * Called when the task is successfully executed.
    * @param taskId the id of the task to complete, cannot be null.
@@ -189,10 +198,19 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
   public void complete(String taskId, Map<String, Object> variables) {
     commandExecutor.execute(new CompleteTaskCmd(taskId, variables));
   }
+  
+//  public void complete( boolean returntoreject,String taskId, Map<String, Object> variables) {
+//	    commandExecutor.execute(new CompleteTaskCmd(taskId, returntoreject, variables));
+//	  }
   public void completeWithReason(String taskId, Map<String, Object> variables,String completeReason)
   {
 	  commandExecutor.execute(new CompleteTaskCmd(taskId,completeReason, variables));
   }
+  
+//  public void completeWithReason(boolean returntoreject,String taskId, Map<String, Object> variables,String completeReason)
+//  {
+//	  commandExecutor.execute(new CompleteTaskCmd(taskId,completeReason,returntoreject, variables));
+//  }
   
   /**
    * Called when the task is successfully executed, 
@@ -238,6 +256,15 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
   public void completeWithReason(String taskId, Map<String, Object> variables,boolean rejected,int rejectedtype,String reason)
   {
 	  commandExecutor.execute(new CompleteTaskCmd(taskId, variables,rejected, rejectedtype,reason));
+  }
+  
+  public void completeWithReason(String taskId, Map<String, Object> variables,boolean rejected,String rejecttonode,String reason)
+  {
+	  commandExecutor.execute(new CompleteTaskCmd(taskId,rejected,rejecttonode, variables,reason,false));
+  }
+  public void completeWithReason(String taskId, Map<String, Object> variables,boolean rejected,String rejecttonode,String reason,boolean returntoreject)
+  {
+	  commandExecutor.execute(new CompleteTaskCmd(taskId,rejected,rejecttonode, variables,reason,returntoreject));
   }
   public void delegateTask(String taskId, String userId) {
     commandExecutor.execute(new DelegateTaskCmd(taskId, userId));
@@ -542,6 +569,69 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
  {
 	  return rejecttoPreTask(taskId,(Map<String, Object>)null, rejectReason, rejectedtype);
  }
+ 
+ /**
+ *
+ * 将当前任务驳回到上一个任务处理人处，并更新流程变量参数
+ * 如果需要改变处理人，可以通过指定变量的的方式设置
+ * rejectedtype 0-驳回上一个任务对应的节点 1-驳回到当前节点的上一个节点（多条路径暂时不支持）
+ * @param taskId
+ * @param variables
+ */
+public boolean rejecttoTask(String taskId, Map<String, Object> variables,String desttaskkey )
+{
+	return rejecttoTask( taskId,  variables,(String)null,desttaskkey);
+}
+/**
+ * 
+ * @param taskId
+ * @param variables
+ * @param rejectReason
+ * @param rejectedtype 0-驳回上一个任务对应的节点 1-驳回到当前节点的上一个节点（多条路径暂时不支持）
+ * @return
+ */
+public boolean rejecttoTask(String taskId, Map<String, Object> variables,String rejectReason,String desttaskkey)
+{
+	TransactionManager tm = new TransactionManager();
+	  try {
+		    tm.begin();
+		 
+			this.completeWithReason(taskId, variables,true,desttaskkey, rejectReason);
+			tm.commit();
+			return true;
+		}
+	  	catch(ActivitiException w)
+	  	{
+	  		throw w;
+	  	}
+	  	catch (Exception e) {
+			throw new ActivitiException("驳回任务失败：taskId="+taskId +"->"+desttaskkey ,e);
+		}
+	  	finally
+	  	{
+	  		tm.release();
+	  	}
+}
+
+
+/**
+ * 将当前任务驳回到上一个任务处理人处
+ * @param taskId
+ * @param 0-驳回上一个任务对应的节点 1-驳回到当前节点的上一个节点（多条路径暂时不支持）
+ */
+public boolean rejecttoTask(String taskId,String desttaskkey)
+{
+	return rejecttoTask( taskId,  (Map<String, Object>)null,(String)null,desttaskkey);
+}
+
+/**
+ * 将当前任务驳回到上一个任务处理人处
+ * @param taskId
+ */
+public boolean rejecttoTask(String taskId,String rejectReason,String desttaskkey)
+{
+	return rejecttoTask( taskId,  (Map<String, Object>)null,rejectReason,desttaskkey);
+}
  /**
   * 获取当前任务的驳回节点 
   * @param taskId
@@ -739,5 +829,55 @@ public ActivityImpl findFirstNodeByDefKey(String processdefKey) {
 	.processDefinitionKey(processdefKey)
 	.latestVersion().singleResult();
 	return findFirstNodeByDefID(def.getId());
+}
+
+
+
+
+
+
+@Override
+public boolean rejecttoTask(String taskId, Map<String, Object> variables,
+		String desttaskkey, boolean returntoreject) {
+	return rejecttoTask( taskId, variables,
+			(String)null, desttaskkey, returntoreject);
+}
+
+@Override
+public boolean rejecttoTask(String taskId, Map<String, Object> variables,
+		String rejectReason, String desttaskkey, boolean returntoreject) {
+	TransactionManager tm = new TransactionManager();
+	  try {
+		  tm.begin();
+		 
+		  completeWithReason( taskId,  variables,true,desttaskkey,rejectReason, returntoreject);
+			tm.commit();
+			return true;
+		}
+	  	catch(ActivitiException w)
+	  	{
+	  		throw w;
+	  	}
+	  	catch (Exception e) {
+			throw new ActivitiException("驳回任务失败：taskId="+taskId ,e);
+		}
+	  	finally
+	  	{
+	  		tm.release();
+	  	}
+}
+
+@Override
+public boolean rejecttoTask(String taskId, String desttaskkey,
+		boolean returntoreject) {
+	return rejecttoTask( taskId, (Map<String, Object>)null,
+			(String)null, desttaskkey, returntoreject);
+}
+
+@Override
+public boolean rejecttoTask(String taskId, String rejectReason,
+		String desttaskkey, boolean returntoreject) {
+	return rejecttoTask( taskId, (Map<String, Object>)null,
+			rejectReason, desttaskkey, returntoreject);
 }
 }

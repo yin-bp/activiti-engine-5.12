@@ -28,6 +28,7 @@ import org.activiti.engine.ActivitiException;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
+import org.activiti.engine.impl.TaskContext;
 import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.db.DbSqlSession;
 import org.activiti.engine.impl.db.HasRevision;
@@ -215,16 +216,16 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
 	  complete(null );
   }
   
-  public void complete(String destinationTaskKey )
+  public void complete(TaskContext taskContext )
   {
-	  complete(destinationTaskKey,null );
+	  complete(taskContext,null );
   }
   /**
    * 任务完成时特定的跳转目标地址
    */
   private String destinationTaskKey;
-  public void complete(String destinationTaskKey ,String completeReason) {
-	this.destinationTaskKey = destinationTaskKey;
+  public void complete(TaskContext taskContext ,String completeReason) {
+	this.destinationTaskKey = taskContext.getDestinationTaskKey();
     fireEvent(TaskListener.EVENTNAME_COMPLETE);
 
     if (Authentication.getAuthenticatedUserId() != null && processInstanceId != null) {
@@ -236,6 +237,8 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
      */
     if (executionId!=null) 
         execution = getExecution();
+    if (execution!=null)
+    	this.execution.setTaskContext(taskContext);
     boolean customDTask = (destinationTaskKey != null && !destinationTaskKey.equals(""));
     String dtaskName = null;
     try
@@ -322,13 +325,13 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
       
       execution.removeTask(this);
 //      execution.signal(null, null);
-      if(destinationTaskKey == null || "".equals(destinationTaskKey))
+//      if(destinationTaskKey == null || "".equals(destinationTaskKey))
+//      {
+//    	  execution.signal(null, null);
+//      }
+//      else
       {
     	  execution.signal(null, null);
-      }
-      else
-      {
-    	  execution.signal(null, null,destinationTaskKey);
       }
     }
   }
@@ -416,6 +419,7 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
         .getCommandContext()
         .getExecutionEntityManager()
         .findExecutionById(executionId);
+      
     }
     return execution;
   }

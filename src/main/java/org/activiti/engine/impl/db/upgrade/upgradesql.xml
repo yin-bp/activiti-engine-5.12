@@ -142,5 +142,15 @@
 			select PROC_DEF_ID_,TASK_DEF_KEY_ from act_hi_taskinst t where id_ = ?
 		]]>
 	</property>
+	<property name="findTaskSourceRejectedNode" >
+		 <![CDATA[
+			select rejectnode from td_wf_rejectlog t where newtaskid = ?
+		]]>
+	</property>
+	<property name="recoredrejectedlog" >
+		 <![CDATA[
+			insert into td_wf_rejectlog(rejectnode,rejecttaskid,newtaskid) values(?,?,?)
+		]]>
+	</property>
 	
 </properties>

@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.activiti.engine.EngineServices;
+import org.activiti.engine.impl.TaskContext;
 import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.pvm.PvmActivity;
 import org.activiti.engine.impl.pvm.PvmException;
@@ -51,6 +52,7 @@ public class ExecutionImpl implements
         ExecutionListenerExecution, 
         PvmExecution,
         InterpretableExecution {
+	protected TaskContext taskContext;
 	 protected Date taskCreateTime; 
   private static final long serialVersionUID = 1L;
   
@@ -878,4 +880,15 @@ public class ExecutionImpl implements
   public void setTaskCreateTime(Date taskCreateTime) {
   	this.taskCreateTime = taskCreateTime;
   }
+
+	@Override
+	public TaskContext getTaskContext() {
+		// TODO Auto-generated method stub
+		return taskContext;
+	}
+	@Override
+	public void setTaskContext(TaskContext taskContext) {
+		// TODO Auto-generated method stub
+		this.taskContext = taskContext;
+	}
 }

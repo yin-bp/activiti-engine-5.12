@@ -15,6 +15,7 @@ package org.activiti.engine.impl.pvm.delegate;
 import java.util.List;
 
 import org.activiti.engine.delegate.DelegateExecution;
+import org.activiti.engine.impl.TaskContext;
 import org.activiti.engine.impl.pvm.PvmActivity;
 import org.activiti.engine.impl.pvm.PvmProcessDefinition;
 import org.activiti.engine.impl.pvm.PvmProcessInstance;
@@ -145,4 +146,7 @@ public interface ActivityExecution extends DelegateExecution {
    * resources are removed. The execution itself can continue execution. 
    */
   void destroyScope(String string);
+  
+  TaskContext getTaskContext();
+  public void setTaskContext(TaskContext taskContext);
 }
