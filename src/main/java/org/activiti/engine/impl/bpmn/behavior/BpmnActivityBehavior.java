@@ -59,9 +59,9 @@ public class BpmnActivityBehavior implements Serializable {
   }
   
   
-  public void performDefaultOutgoingBehavior(ActivityExecution activityExceution,TaskContext taskContext) {
-	    performOutgoingBehavior(activityExceution, true, false, null,taskContext);
-	  }
+//  public void performDefaultOutgoingBehavior(ActivityExecution activityExceution,TaskContext taskContext) {
+//	    performOutgoingBehavior(activityExceution, true, false, null,taskContext);
+//	  }
   /**
    * Performs the default outgoing BPMN 2.0 behavior (@see
    * {@link #performDefaultOutgoingBehavior(ActivityExecution)}), but without
@@ -87,14 +87,14 @@ public class BpmnActivityBehavior implements Serializable {
    * @param throwExceptionIfExecutionStuck
    *          If true, an {@link ActivitiException} will be thrown in case no
    *          transition could be found to leave the activity.
-   */
-  protected void performOutgoingBehavior(ActivityExecution execution, 
-          boolean checkConditions, boolean throwExceptionIfExecutionStuck, List<ActivityExecution> reusableExecutions)
-  {
-	  performOutgoingBehavior(execution, 
-	          checkConditions, throwExceptionIfExecutionStuck, reusableExecutions,null);
-  }
-  /**
+
+//  protected void performOutgoingBehavior(ActivityExecution execution, 
+//          boolean checkConditions, boolean throwExceptionIfExecutionStuck, List<ActivityExecution> reusableExecutions)
+//  {
+//	  performOutgoingBehavior(execution, 
+//	          checkConditions, throwExceptionIfExecutionStuck, reusableExecutions,null);
+//  }
+
    * added by biaoping.yin
    * @param execution
    * @param checkConditions
@@ -103,12 +103,13 @@ public class BpmnActivityBehavior implements Serializable {
    * @param destinationTaskKey
    */
   protected void performOutgoingBehavior(ActivityExecution execution, 
-          boolean checkConditions, boolean throwExceptionIfExecutionStuck, List<ActivityExecution> reusableExecutions,TaskContext taskContext) {
+          boolean checkConditions, boolean throwExceptionIfExecutionStuck, List<ActivityExecution> reusableExecutions) {
 
     if (log.isDebugEnabled()) {
       log.debug("Leaving activity '{}'", execution.getActivity().getId());
     }
-    if(taskContext.getDestinationTaskKey() != null)
+    TaskContext taskContext = execution.getTaskContext();
+    if(taskContext!=null &&  taskContext.getDestinationTaskKey() != null)
     {
 //    	System.out.println();
     	TransitionImpl transition = ((ActivityImpl)execution.getActivity()).createCustomOutgoingTransition(null, taskContext.getDestinationTaskKey());    	

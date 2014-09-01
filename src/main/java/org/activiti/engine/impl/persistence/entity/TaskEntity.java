@@ -252,20 +252,36 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
     String deleteReason = null;
     if(completeReason == null)
     {
+    	
 	    if(!customDTask)
 		{
 	    	deleteReason = TaskEntity.DELETE_REASON_COMPLETED; 
 		}
 	    else
 	    {
-	    	if(dtaskName != null)
+	    	if(!taskContext.isIsrejected())
 	    	{
-	    		deleteReason = "转到节点["+dtaskName + "-" + destinationTaskKey + "]";//转到即自由跳转的意思
+		    	if(dtaskName != null)
+		    	{
+		    		deleteReason = "转到节点["+dtaskName + "-" + destinationTaskKey + "]";//转到即自由跳转的意思
+		    	}
+		    	else
+		    	{
+		    		deleteReason = "转到节点[" + destinationTaskKey + "]";//转到即自由跳转的意思
+		    	}
 	    	}
 	    	else
 	    	{
-	    		deleteReason = "转到节点[" + destinationTaskKey + "]";//转到即自由跳转的意思
+	    		if(dtaskName != null)
+		    	{
+		    		deleteReason = "驳回到节点["+dtaskName + "-" + destinationTaskKey + "]";//转到即自由跳转的意思
+		    	}
+		    	else
+		    	{
+		    		deleteReason = "驳回到节点[" + destinationTaskKey + "]";//转到即自由跳转的意思
+		    	}
 	    	}
+	    		
 	    }
 	    if(this.assignee != null && !this.assignee.equals(""))
 	    {

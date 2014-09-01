@@ -30,6 +30,7 @@ import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
 import org.activiti.engine.impl.task.TaskDefinition;
+import org.apache.log4j.Logger;
 
 import com.frameworkset.common.poolman.ConfigSQLExecutor;
 
@@ -39,7 +40,7 @@ import com.frameworkset.common.poolman.ConfigSQLExecutor;
  * @author Joram Barrez
  */
 public class UserTaskActivityBehavior extends TaskActivityBehavior {
-
+  private static Logger log = Logger.getLogger(UserTaskActivityBehavior.class);
   protected TaskDefinition taskDefinition;
 
   public UserTaskActivityBehavior(TaskDefinition taskDefinition) {
@@ -48,7 +49,7 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
   private void recoredrejectedlog(ActivityExecution execution,TaskEntity newtask ) throws Exception
   {
 	  TaskContext taskContext = execution.getTaskContext();
-	  if(taskContext.isIsrejected() && taskContext.isReturntoreject())
+	  if(taskContext != null && taskContext.isIsrejected() && taskContext.isReturntoreject())
 	  {
 		  ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
 		  executor.insert("recoredrejectedlog", taskContext.getRejectednode(),taskContext.getRejectedtaskid(),newtask.getId());//rejectnode,rejecttaskid,newtaskid
@@ -127,7 +128,16 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
       {
     	  List<String> candiates = new ArrayList<String>();
     	  candiates.add(assignee);
-    	  KPI kpi = Context.getProcessEngineConfiguration().getKPIService().buildKPI(execution, candiates,task.getCreateTime());
+    	
+    	  KPI kpi = null;
+    	  try
+    	  {
+    		  kpi = Context.getProcessEngineConfiguration().getKPIService().buildKPI(execution, candiates,task.getCreateTime());
+    	  }
+    	  catch(Exception e)
+    	  {
+    		  log.warn("BuildKPI failed:",e);
+    	  }
           if(kpi != null)
           {
         	  task.setALERTTIME(kpi.getALERTTIME());
@@ -159,12 +169,22 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
     
       for (Expression userIdExpr : taskDefinition.getCandidateUserIdExpressions()) {
         Object value = userIdExpr.getValue(execution);
+        
         if (value instanceof String) {
           List<String> candiates = extractCandidates((String) value);
           task.addCandidateUsers(candiates);
+          
           if(!parserkpi)//设置流程kpi指标
           {
-        	  KPI kpi = Context.getProcessEngineConfiguration().getKPIService().buildKPI(execution, candiates,task.getCreateTime());
+        	  KPI kpi = null;
+        	  try
+        	  {
+        		  kpi = Context.getProcessEngineConfiguration().getKPIService().buildKPI(execution, candiates,task.getCreateTime());
+        	  }
+        	  catch(Exception e)
+        	  {
+        		  log.warn("BuildKPI failed:",e);
+        	  }
               if(kpi != null)
               {
             	  task.setALERTTIME(kpi.getALERTTIME());
@@ -180,7 +200,16 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
           task.addCandidateUsers((Collection) value);
           if(!parserkpi)
           {
-        	  KPI kpi = Context.getProcessEngineConfiguration().getKPIService().buildKPI(execution, (Collection) value,task.getCreateTime());
+        	  KPI kpi = null;
+        	  try
+        	  {
+        		  kpi = Context.getProcessEngineConfiguration().getKPIService().buildKPI(execution, (Collection) value,task.getCreateTime());
+        	  }
+        	  catch(Exception e)
+        	  {
+        		  log.warn("BuildKPI failed:",e);
+        	  }
+        	
               if(kpi != null)
               {
             	  task.setALERTTIME(kpi.getALERTTIME());
