@@ -19,7 +19,6 @@ import org.activiti.engine.ActivitiIllegalArgumentException;
 import org.activiti.engine.impl.TaskContext;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.pvm.PvmTransition;
-import org.activiti.engine.impl.pvm.delegate.ActivityBehavior;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 

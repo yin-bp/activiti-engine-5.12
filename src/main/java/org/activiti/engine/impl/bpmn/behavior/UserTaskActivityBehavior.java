@@ -12,7 +12,6 @@
  */
 package org.activiti.engine.impl.bpmn.behavior;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -183,7 +182,7 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
         	  }
         	  catch(Exception e)
         	  {
-        		  log.warn("BuildKPI failed:",e);
+        		  log.warn("BuildKPI Service failed:",e);
         	  }
               if(kpi != null)
               {
@@ -207,7 +206,7 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
         	  }
         	  catch(Exception e)
         	  {
-        		  log.warn("BuildKPI failed:",e);
+        		  log.warn("BuildKPI Service failed:",e);
         	  }
         	
               if(kpi != null)

@@ -17,12 +17,14 @@ import org.activiti.bpmn.model.BaseElement;
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.FlowNode;
 import org.activiti.bpmn.model.MultiInstanceLoopCharacteristics;
+import org.activiti.bpmn.model.UserTask;
 import org.activiti.engine.impl.bpmn.behavior.AbstractBpmnActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.MixMultiInstanceActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.MultiInstanceActivityBehavior;
 import org.activiti.engine.impl.bpmn.parser.BpmnParse;
 import org.activiti.engine.impl.el.ExpressionManager;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
+import org.activiti.engine.impl.task.TaskDefinition;
 import org.apache.commons.lang.StringUtils;
 
 
@@ -101,6 +103,20 @@ public abstract class AbstractActivityBpmnParseHandler<T extends FlowNode> exten
     // activiti:elementVariable
     if (StringUtils.isNotEmpty(loopCharacteristics.getElementVariable())) {
       miActivityBehavior.setCollectionElementVariable(loopCharacteristics.getElementVariable());
+      if(modelActivity instanceof UserTask)
+      {
+    	  UserTask userTask = (UserTask)modelActivity;
+    	  if(StringUtils.isEmpty(userTask.getAssignee()))
+    	  {
+    		  userTask.setAssignee("${"+loopCharacteristics.getElementVariable() + "}");
+    		  TaskDefinition taskDefinition = bpmnParse.getCurrentProcessDefinition().getTaskDefinition(userTask.getId());
+    		  if(taskDefinition.getAssigneeExpression() == null && taskDefinition.getCandidateGroupIdExpressions().isEmpty() && taskDefinition.getCandidateUserIdExpressions().isEmpty())
+    		  {
+    			  taskDefinition.setAssigneeExpression(expressionManager.createExpression(userTask.getAssignee()));
+    		  }
+    	  }
+      }
+      
     }
 
     // Validation

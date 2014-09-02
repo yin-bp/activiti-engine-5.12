@@ -226,6 +226,10 @@ public class ProcessDefinitionEntity extends ProcessDefinitionImpl implements Pr
   public Map<String, TaskDefinition> getTaskDefinitions() {
     return taskDefinitions;
   }
+  
+  public TaskDefinition getTaskDefinition(String taskKey) {
+	    return taskDefinitions == null?null:taskDefinitions.get(taskKey);
+  }
 
   public void setTaskDefinitions(Map<String, TaskDefinition> taskDefinitions) {
     this.taskDefinitions = taskDefinitions;

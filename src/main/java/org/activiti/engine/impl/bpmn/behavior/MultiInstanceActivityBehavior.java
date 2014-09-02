@@ -24,7 +24,6 @@ import org.activiti.engine.delegate.BpmnError;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.ExecutionListener;
 import org.activiti.engine.delegate.Expression;
-import org.activiti.engine.impl.TaskContext;
 import org.activiti.engine.impl.bpmn.helper.ErrorPropagation;
 import org.activiti.engine.impl.bpmn.helper.ScopeUtil;
 import org.activiti.engine.impl.context.Context;
