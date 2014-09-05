@@ -32,6 +32,7 @@ import org.activiti.engine.impl.pvm.runtime.InterpretableExecution;
 public class AbstractBpmnActivityBehavior extends FlowNodeActivityBehavior {
   
   protected MultiInstanceActivityBehavior multiInstanceActivityBehavior;
+  protected boolean useMixUsetask;
   
 //  /**
 //   * Subclasses that call leave() will first pass through this method, before
@@ -131,5 +132,10 @@ public class AbstractBpmnActivityBehavior extends FlowNodeActivityBehavior {
     }
     
   }
-
+  public boolean isUseMixUsetask() {
+		return useMixUsetask;
+	}
+	public void setUseMixUsetask(boolean useMixUsetask) {
+		this.useMixUsetask = useMixUsetask;
+	}
 }

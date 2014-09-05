@@ -20,12 +20,17 @@ import org.activiti.bpmn.model.MultiInstanceLoopCharacteristics;
 import org.activiti.bpmn.model.UserTask;
 import org.activiti.engine.impl.bpmn.behavior.AbstractBpmnActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.MixMultiInstanceActivityBehavior;
+import org.activiti.engine.impl.bpmn.behavior.MixUserTaskActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.MultiInstanceActivityBehavior;
+import org.activiti.engine.impl.bpmn.behavior.UserTaskActivityBehavior;
 import org.activiti.engine.impl.bpmn.parser.BpmnParse;
+import org.activiti.engine.impl.cfg.BeansConfigurationHelper;
 import org.activiti.engine.impl.el.ExpressionManager;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.impl.task.TaskDefinition;
 import org.apache.commons.lang.StringUtils;
+
+import com.frameworkset.util.StringUtil;
 
 
 /**
@@ -41,7 +46,96 @@ public abstract class AbstractActivityBpmnParseHandler<T extends FlowNode> exten
             && ((Activity) element).getLoopCharacteristics() != null) {
       createMultiInstanceLoopCharacteristics(bpmnParse, (Activity) element);
     }
+    else  if(element instanceof UserTask && BeansConfigurationHelper.getProcessEngineConfiguration().enableMixMultiUserTask())
+    {
+    	 UserTask userTask = (UserTask)element;
+    	 createUserTaskMultiInstanceLoopCharacteristics(bpmnParse, userTask) ;
+    }
   }
+  
+  protected void createUserTaskMultiInstanceLoopCharacteristics(BpmnParse bpmnParse, UserTask modelActivity) {
+	  
+	 
+	    
+	    // Activity Behavior
+	    
+	    ActivityImpl activity = bpmnParse.getCurrentScope().findActivity(modelActivity.getId());
+	    if (activity == null) {
+	      bpmnParse.getBpmnModel().addProblem("Activity " + modelActivity.getId() + " needed for multi instance cannot bv found", modelActivity);
+	    }	    
+	    AbstractBpmnActivityBehavior bpmnActivityBehavior = (AbstractBpmnActivityBehavior) activity.getActivityBehavior();
+	    if( !(bpmnActivityBehavior instanceof UserTaskActivityBehavior))
+	    	return ;
+	    if (StringUtil.isEmpty(modelActivity.getAssignee())) {
+	    	if (StringUtil.isEmpty(modelActivity.getCandidateUsers())) {
+		    	return ;
+		    }
+	    	
+	    }
+	    
+	    bpmnActivityBehavior.setUseMixUsetask(true);
+	    MixUserTaskActivityBehavior mixUserTaskActivityBehavior = new MixUserTaskActivityBehavior((UserTaskActivityBehavior)bpmnActivityBehavior);
+//	    MultiInstanceLoopCharacteristics loopCharacteristics = modelActivity.getLoopCharacteristics();
+	    MultiInstanceActivityBehavior miActivityBehavior = null;
+	    MultiInstanceActivityBehavior miParallelActivityBehavior = null;
+	    MultiInstanceActivityBehavior miSequentialActivityBehavior = null;
+	    miParallelActivityBehavior = bpmnParse.getActivityBehaviorFactory().createParallelMultiInstanceBehavior(
+	            activity, bpmnActivityBehavior);
+	    miSequentialActivityBehavior = bpmnParse.getActivityBehaviorFactory().createSequentialMultiInstanceBehavior(
+	            activity, bpmnActivityBehavior);
+	    miActivityBehavior = new MixMultiInstanceActivityBehavior(activity, 
+	    		miParallelActivityBehavior, 
+	    		miSequentialActivityBehavior, 
+	    		 MultiInstanceActivityBehavior.multiInstanceMode_parallel);
+	    miActivityBehavior.setInnerActivityBehavior(bpmnActivityBehavior);
+	    mixUserTaskActivityBehavior.setMixmultiInstanceActivityBehavior(miActivityBehavior);
+//	    if (loopCharacteristics.isSequential()) {
+//	      miActivityBehavior = bpmnParse.getActivityBehaviorFactory().createSequentialMultiInstanceBehavior(
+//	              activity, (AbstractBpmnActivityBehavior) activity.getActivityBehavior()); 
+//	    } else {
+//	      miActivityBehavior = bpmnParse.getActivityBehaviorFactory().createParallelMultiInstanceBehavior(
+//	              activity, (AbstractBpmnActivityBehavior) activity.getActivityBehavior());
+//	    }
+	    
+	    // ActivityImpl settings
+	    activity.setScope(true);
+//	    activity.setProperty("multiInstance", loopCharacteristics.isSequential() ? MultiInstanceActivityBehavior.multiInstanceMode_sequential : MultiInstanceActivityBehavior.multiInstanceMode_parallel);
+	    activity.setActivityBehavior(mixUserTaskActivityBehavior);
+	    
+	    ExpressionManager expressionManager = bpmnParse.getExpressionManager();
+	    BpmnModel bpmnModel = bpmnParse.getBpmnModel();
+	    
+//	    // loopcardinality
+//	    if (StringUtils.isNotEmpty(loopCharacteristics.getLoopCardinality())) {
+//	      miActivityBehavior.setLoopCardinalityExpression(expressionManager.createExpression(loopCharacteristics.getLoopCardinality()));
+//	    }
+//	    
+//	    // completion condition
+//	    if (StringUtils.isNotEmpty(loopCharacteristics.getCompletionCondition())) {
+//	      miActivityBehavior.setCompletionConditionExpression(expressionManager.createExpression(loopCharacteristics.getCompletionCondition()));
+//	    }
+	    
+	    // activiti:collection
+//	    if (StringUtils.isNotEmpty(modelActivity.getAssignee())) {
+	      if (modelActivity.getAssignee().contains("{")) {
+	        miActivityBehavior.setCollectionExpression(expressionManager.createExpression(modelActivity.getAssignee()));
+	       
+	       
+	      } else {
+	        miActivityBehavior.setCollectionVariable(modelActivity.getAssignee());
+	       
+	      }
+	      miActivityBehavior.setCollectionElementVariable(modelActivity.getId()+"_user");
+	      
+//	    }
+
+	    
+	      
+	   
+
+	    
+
+	  }
   
   protected void createMultiInstanceLoopCharacteristics(BpmnParse bpmnParse, org.activiti.bpmn.model.Activity modelActivity) {
     

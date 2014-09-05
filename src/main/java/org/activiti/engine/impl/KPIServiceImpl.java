@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.activiti.engine.ActivitiException;
+import org.activiti.engine.ControlParam;
 import org.activiti.engine.KPI;
 import org.activiti.engine.KPIService;
 import org.activiti.engine.delegate.DelegateExecution;
@@ -19,5 +20,13 @@ public class KPIServiceImpl implements KPIService {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public ControlParam getControlParam(DelegateExecution currentexecution,String taskKey) throws ActivitiException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
 
 }

@@ -131,11 +131,14 @@ public abstract class ProcessEngineConfiguration implements EngineServices {
   protected String activityFontName = "宋体";  
   protected ClassLoader classLoader;
   protected ProcessEngineLifecycleListener processEngineLifecycleListener;
-
+  protected boolean enableMixMultiUserTask = false;
   /** use one of the static createXxxx methods instead */
   protected ProcessEngineConfiguration() {
   }
-
+  public boolean enableMixMultiUserTask()
+  {
+	  return enableMixMultiUserTask;
+  }
   public abstract ProcessEngine buildProcessEngine();
   
   public static ProcessEngineConfiguration createProcessEngineConfigurationFromResourceDefault() {

@@ -25,10 +25,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.activiti.engine.ActivitiException;
+import org.activiti.engine.ControlParam;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
 import org.activiti.engine.impl.TaskContext;
+import org.activiti.engine.impl.bpmn.behavior.FlowNodeActivityBehavior;
 import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.db.DbSqlSession;
 import org.activiti.engine.impl.db.HasRevision;
@@ -43,6 +45,8 @@ import org.activiti.engine.task.DelegationState;
 import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.task.IdentityLinkType;
 import org.activiti.engine.task.Task;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 /**
  * @author Tom Baeyens
@@ -55,7 +59,7 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
 //  public static final String DELETE_REASON_DELETED = "deleted";
   public static final String DELETE_REASON_COMPLETED = "完成";
   public static final String DELETE_REASON_DELETED = "删除";
-
+  private static Logger log = Logger.getLogger(TaskEntity.class);
   private static final long serialVersionUID = 1L;
 
   protected int revision;
@@ -238,7 +242,29 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
     if (executionId!=null) 
         execution = getExecution();
     if (execution!=null)
+    {
+//    	try {
+//    		if(Context.enableMixMultiUserTask() )
+//    		{
+//    			String users =((FlowNodeActivityBehavior) execution.getActivity().getActivityBehavior()).getAssignee(this, execution);
+//    		
+//    			if(users == null || users.indexOf(",") < 0)
+//    			{
+//    				taskContext.setOneassignee(true);
+//    			}
+//    			else
+//    				taskContext.setOneassignee(false);
+//    		}
+//			ControlParam controlParam = Context.getProcessEngineConfiguration().getKPIService().getControlParam(execution,this.taskDefinitionKey);
+//			taskContext.setControlParam(controlParam);//设定当前任务的控制变量参数
+//		} catch (Exception e) {
+//			
+//			log.error("",e);
+//		}
+    	Context.createTaskContextControlParam(taskContext, execution, this.taskDefinitionKey);
     	this.execution.setTaskContext(taskContext);
+    	
+    }
     boolean customDTask = (destinationTaskKey != null && !destinationTaskKey.equals(""));
     String dtaskName = null;
     try

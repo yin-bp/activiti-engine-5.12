@@ -199,6 +199,7 @@ public CompleteTaskCmd(String taskId, Map<String, Object> variables,boolean isre
     }
     TaskContext taskContext = new TaskContext();
     taskContext.setDestinationTaskKey(destinationTaskKey);
+    
     if(isrejected)
     {
 	    taskContext.setRejectedtaskid(this.taskId);

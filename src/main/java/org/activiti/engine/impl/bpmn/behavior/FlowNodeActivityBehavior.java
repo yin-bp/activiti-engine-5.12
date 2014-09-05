@@ -14,6 +14,7 @@ package org.activiti.engine.impl.bpmn.behavior;
 
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.impl.TaskContext;
+import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
 import org.activiti.engine.impl.pvm.delegate.SignallableActivityBehavior;
 
@@ -29,7 +30,10 @@ import org.activiti.engine.impl.pvm.delegate.SignallableActivityBehavior;
 public abstract class FlowNodeActivityBehavior implements SignallableActivityBehavior {
   
   protected BpmnActivityBehavior bpmnActivityBehavior = new BpmnActivityBehavior();
-  
+  public String getAssignee(TaskEntity task, ActivityExecution execution)
+  {
+	  return null;
+  }
   /**
    * Default behaviour: just leave the activity with no extra functionality.
    */

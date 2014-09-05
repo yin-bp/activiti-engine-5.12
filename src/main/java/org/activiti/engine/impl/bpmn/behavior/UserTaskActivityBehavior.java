@@ -116,17 +116,39 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
 //  public void signal(ActivityExecution execution, String signalName, Object signalData,TaskContext taskContext) throws Exception {
 //	    leave(execution, taskContext);
 //  }
+  
+  public String getAssignee(TaskEntity task, ActivityExecution execution)
+  {
+	  if (taskDefinition.getAssigneeExpression() != null) 
+	      return (String) taskDefinition.getAssigneeExpression().getValue(execution);
+	    return null;
+  }
 
   @SuppressWarnings({ "unchecked", "rawtypes" })
   protected void handleAssignments(TaskEntity task, ActivityExecution execution) {
 	  boolean parserkpi = false;
     if (taskDefinition.getAssigneeExpression() != null) {
-      String assignee = (String) taskDefinition.getAssigneeExpression().getValue(execution);	
-      task.setAssignee(assignee);
+      String assignee = (String) taskDefinition.getAssigneeExpression().getValue(execution);
+      List<String> candiates = new ArrayList<String>();
+      if(assignee != null )      
+      {
+    	  if(assignee.indexOf(",") >0)
+    	  {
+    		 String[] ases = assignee.split("\\,"); 
+    		 candiates = Arrays.asList(ases);
+    		 task.addCandidateUsers(candiates);
+    	  }
+    	  else
+    	  {
+	    	  candiates.add(assignee);
+	          task.setAssignee(assignee);
+    	  }
+    	  
+      }
+	  
       if(!parserkpi)//设置流程kpi指标
       {
-    	  List<String> candiates = new ArrayList<String>();
-    	  candiates.add(assignee);
+    	  
     	
     	  KPI kpi = null;
     	  try
@@ -242,5 +264,6 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
   public TaskDefinition getTaskDefinition() {
     return taskDefinition;
   }
+
   
 }

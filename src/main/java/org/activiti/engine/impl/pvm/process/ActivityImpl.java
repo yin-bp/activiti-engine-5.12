@@ -43,7 +43,7 @@ public class ActivityImpl extends ScopeImpl implements PvmActivity, HasDIBounds 
   protected boolean isScope;
   protected boolean isAsync;
   protected boolean isExclusive;
-  
+
   // Graphical information
   protected int x = -1;
   protected int y = -1;
@@ -295,5 +295,7 @@ public class ActivityImpl extends ScopeImpl implements PvmActivity, HasDIBounds 
   public void setExclusive(boolean isExclusive) {
     this.isExclusive = isExclusive;
   }
+
+
   
 }

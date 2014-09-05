@@ -12,6 +12,10 @@
  */
 package org.activiti.engine.impl.pvm.runtime;
 
+import org.activiti.engine.ActivitiException;
+import org.activiti.engine.impl.TaskContext;
+import org.activiti.engine.impl.context.Context;
+import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.impl.pvm.process.ScopeImpl;
 import org.activiti.engine.impl.pvm.process.TransitionImpl;
@@ -49,6 +53,27 @@ public class AtomicOperationTransitionNotifyListenerStart extends AbstractEventA
     } else {
       execution.setTransition(null);
       execution.setActivity(destination);
+      if(execution.getTaskContext() == null)
+      {
+    	 try {
+//			TaskContext taskContext = new TaskContext();
+//			 ControlParam controlParam = Context.getProcessEngineConfiguration().getKPIService().getControlParam(execution,destination.getId());
+//				taskContext.setControlParam(controlParam);//设定当前任务的控制变量参数
+//				String users =((FlowNodeActivityBehavior) ((ExecutionEntity)execution).getActivity().getActivityBehavior()).getAssignee(null, execution);
+//	    		
+//    			if(users == null || users.indexOf(",") < 0)
+//    			{
+//    				taskContext.setOneassignee(true);
+//    			}
+//    			else
+//    				taskContext.setOneassignee(false);
+    		 	TaskContext taskContext = Context.createTaskContext((ExecutionEntity)execution, destination.getId());
+				execution.setTaskContext(taskContext);
+		} catch (ActivitiException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+      }
       execution.performOperation(ACTIVITY_EXECUTE);
     }
   }

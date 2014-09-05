@@ -88,7 +88,14 @@ public class MixMultiInstanceActivityBehavior extends
 		if(mode == null)
 			mode = (String)execution.getVariableLocal(this.multiInstanceMode_variable);
 		if(mode == null)
-			return this.defaultMultiInstanceActivityBehavior;
+		{
+			if(execution instanceof ActivityExecution)
+			{
+				return ((ActivityExecution)execution).getTaskContext().isIsparrel()?innerParallelActivityBehavior:innerSequentialActivityBehavior;
+			}
+			else
+				return this.defaultMultiInstanceActivityBehavior;	
+		}
 		if(mode.equals(multiInstanceMode_parallel))
 		{
 			return this.innerParallelActivityBehavior;

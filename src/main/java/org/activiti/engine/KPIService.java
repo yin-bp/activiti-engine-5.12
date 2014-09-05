@@ -13,5 +13,5 @@ import org.activiti.engine.delegate.DelegateExecution;
 public interface KPIService {
 	
 	public KPI buildKPI(DelegateExecution execution,Collection<String> candiates,Date taskCreateTime) throws ActivitiException;
-	
+	public ControlParam getControlParam(DelegateExecution currentexecution,String taskKey) throws ActivitiException;
 }

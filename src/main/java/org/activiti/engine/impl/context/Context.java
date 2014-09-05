@@ -15,10 +15,17 @@ package org.activiti.engine.impl.context;
 
 import java.util.Stack;
 
+import org.activiti.engine.ControlParam;
+import org.activiti.engine.impl.TaskContext;
+import org.activiti.engine.impl.bpmn.behavior.FlowNodeActivityBehavior;
+import org.activiti.engine.impl.cfg.BeansConfigurationHelper;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.engine.impl.interceptor.CommandContext;
 import org.activiti.engine.impl.jobexecutor.JobExecutorContext;
+import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
+import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.pvm.runtime.InterpretableExecution;
+import org.apache.log4j.Logger;
 
 
 /**
@@ -31,7 +38,11 @@ public class Context {
   protected static ThreadLocal<Stack<ProcessEngineConfigurationImpl>> processEngineConfigurationStackThreadLocal = new ThreadLocal<Stack<ProcessEngineConfigurationImpl>>();
   protected static ThreadLocal<Stack<ExecutionContext>> executionContextStackThreadLocal = new ThreadLocal<Stack<ExecutionContext>>();
   protected static ThreadLocal<JobExecutorContext> jobExecutorContextThreadLocal = new ThreadLocal<JobExecutorContext>();
-
+  private static Logger log = Logger.getLogger(Context.class);
+  public static boolean enableMixMultiUserTask()
+  {
+	  return BeansConfigurationHelper.getProcessEngineConfiguration().enableMixMultiUserTask();
+  }
   public static CommandContext getCommandContext() {
     Stack<CommandContext> stack = getStack(commandContextThreadLocal);
     if (stack.isEmpty()) {
@@ -95,5 +106,53 @@ public class Context {
   
   public static void removeJobExecutorContext() {
     jobExecutorContextThreadLocal.remove();
+  }
+  
+  public static TaskContext createTaskContext(ExecutionEntity execution,String taskKey)
+  {
+	  TaskContext taskContext = new TaskContext();
+	  try {
+	  		ControlParam controlParam = Context.getProcessEngineConfiguration().getKPIService().getControlParam(execution,taskKey);
+			taskContext.setControlParam(controlParam);//设定当前任务的控制变量参数
+			if(Context.enableMixMultiUserTask() )
+    		{
+				String users =((FlowNodeActivityBehavior) execution.getActivity().getActivityBehavior()).getAssignee(null, execution);
+	 		
+				if(users == null || users.indexOf(",") < 0)
+				{
+					taskContext.setOneassignee(true);
+				}
+				else
+					taskContext.setOneassignee(false);
+    		}
+	  } catch (Exception e) {
+			
+			log.error("",e);
+		}
+			return taskContext;
+			
+  }
+  
+  public static void createTaskContextControlParam(TaskContext taskContext,ExecutionEntity execution,String taskKey)
+  {
+	  try {
+	  		ControlParam controlParam = Context.getProcessEngineConfiguration().getKPIService().getControlParam(execution,taskKey);
+			taskContext.setControlParam(controlParam);//设定当前任务的控制变量参数
+			if(Context.enableMixMultiUserTask() )
+    		{
+				String users =((FlowNodeActivityBehavior) execution.getActivity().getActivityBehavior()).getAssignee(null, execution);
+	 		
+				if(users == null || users.indexOf(",") < 0)
+				{
+					taskContext.setOneassignee(true);
+				}
+				else
+					taskContext.setOneassignee(false);
+    		}
+	  } catch (Exception e) {
+			
+			log.error("",e);
+		}
+			
   }
 }
