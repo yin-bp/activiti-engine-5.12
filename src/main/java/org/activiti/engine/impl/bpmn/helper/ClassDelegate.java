@@ -145,8 +145,9 @@ public class ClassDelegate extends AbstractBpmnActivityBehavior implements TaskL
   }
   
   // Adds properties to the given delegation instance (eg multi instance) if needed
+  //@debug by biaoping.yin
   protected ActivityBehavior determineBehaviour(ActivityBehavior delegateInstance, ActivityExecution execution) {
-    if (hasMultiInstanceCharacteristics()) {
+    if (hasMultiInstanceCharacteristics(execution)) {
       multiInstanceActivityBehavior.setInnerActivityBehavior((AbstractBpmnActivityBehavior) delegateInstance);
       return multiInstanceActivityBehavior;
     }

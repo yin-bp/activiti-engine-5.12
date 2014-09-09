@@ -30,9 +30,10 @@ import org.activiti.engine.impl.pvm.runtime.InterpretableExecution;
  * @author Joram Barrez
  */
 public class AbstractBpmnActivityBehavior extends FlowNodeActivityBehavior {
-  
+	
   protected MultiInstanceActivityBehavior multiInstanceActivityBehavior;
   protected boolean useMixUsetask;
+  protected String collectionElementVariable;
   
 //  /**
 //   * Subclasses that call leave() will first pass through this method, before
@@ -61,12 +62,12 @@ public class AbstractBpmnActivityBehavior extends FlowNodeActivityBehavior {
 	    if(hasCompensationHandler(execution)) {
 	      createCompensateEventSubscription(execution);
 	    }
-	    if (!hasLoopCharacteristics()) {
+	    if (!hasLoopCharacteristics( execution)) {
 //	    	if(destinationTaskKey == null || "".equals(destinationTaskKey))
 //	    		super.leave(execution);
 //	    	else
 	    		super.leave(execution);
-	    } else if (hasMultiInstanceCharacteristics()){
+	    } else if (hasMultiInstanceCharacteristics( execution)){
 //	    	if(destinationTaskKey == null || "".equals(destinationTaskKey))
 //	    		multiInstanceActivityBehavior.leave(execution);
 //	    	else
@@ -91,12 +92,17 @@ public class AbstractBpmnActivityBehavior extends FlowNodeActivityBehavior {
     compensateEventSubscriptionEntity.setActivity(compensationHandlder);        
   }
 
-  protected boolean hasLoopCharacteristics() {
-    return hasMultiInstanceCharacteristics();
+  protected boolean hasLoopCharacteristics(ActivityExecution execution) {
+    return hasMultiInstanceCharacteristics(execution);
   }
   
-  protected boolean hasMultiInstanceCharacteristics() {
-    return multiInstanceActivityBehavior != null;
+  protected boolean hasMultiInstanceCharacteristics(ActivityExecution execution) {
+	  if(useMixUsetask)
+	  {
+		  return execution.getTaskContext().isIsmulti();
+	  }
+	  else
+		  return multiInstanceActivityBehavior != null;
   }
 
   public MultiInstanceActivityBehavior getMultiInstanceActivityBehavior() {
@@ -137,5 +143,13 @@ public class AbstractBpmnActivityBehavior extends FlowNodeActivityBehavior {
 	}
 	public void setUseMixUsetask(boolean useMixUsetask) {
 		this.useMixUsetask = useMixUsetask;
+	}
+
+	public String getCollectionElementVariable() {
+		return collectionElementVariable;
+	}
+
+	public void setCollectionElementVariable(String collectionElementVariable) {
+		this.collectionElementVariable = collectionElementVariable;
 	}
 }

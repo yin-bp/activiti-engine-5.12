@@ -128,7 +128,23 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
   protected void handleAssignments(TaskEntity task, ActivityExecution execution) {
 	  boolean parserkpi = false;
     if (taskDefinition.getAssigneeExpression() != null) {
-      String assignee = (String) taskDefinition.getAssigneeExpression().getValue(execution);
+    	  String assignee = null;
+    
+    	if(this.isUseMixUsetask())
+    	{
+    		if(execution.getTaskContext().isIsmulti())
+    		{
+    			assignee = (String)execution.getVariable(this.getCollectionElementVariable());
+    		}
+    		else
+    		{
+    			assignee = (String) taskDefinition.getAssigneeExpression().getValue(execution);
+    		}
+    	}
+    	else
+    	{    	
+    		assignee = (String) taskDefinition.getAssigneeExpression().getValue(execution);
+    	}
       List<String> candiates = new ArrayList<String>();
       if(assignee != null )      
       {

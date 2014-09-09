@@ -64,6 +64,7 @@ public class ParallelMultiInstanceBehavior extends MultiInstanceActivityBehavior
         extraScopedExecution.setScope(true);
         concurrentExecution = extraScopedExecution;
       } 
+      concurrentExecution.setTaskContext(execution.getTaskContext());
       
       concurrentExecutions.add(concurrentExecution);
       logLoopDetails(concurrentExecution, "initialized", loopCounter, 0, nrOfInstances, nrOfInstances);

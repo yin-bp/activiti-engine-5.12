@@ -66,11 +66,20 @@ public abstract class AbstractActivityBpmnParseHandler<T extends FlowNode> exten
 	    AbstractBpmnActivityBehavior bpmnActivityBehavior = (AbstractBpmnActivityBehavior) activity.getActivityBehavior();
 	    if( !(bpmnActivityBehavior instanceof UserTaskActivityBehavior))
 	    	return ;
+	    String assignee = null;
 	    if (StringUtil.isEmpty(modelActivity.getAssignee())) {
 	    	if (StringUtil.isEmpty(modelActivity.getCandidateUsers())) {
 		    	return ;
 		    }
+	    	else
+		    {
+		    	assignee = modelActivity.getCandidateUsers().get(0);
+		    }
 	    	
+	    }
+	    else
+	    {
+	    	assignee = modelActivity.getAssignee();
 	    }
 	    
 	    bpmnActivityBehavior.setUseMixUsetask(true);
@@ -98,7 +107,7 @@ public abstract class AbstractActivityBpmnParseHandler<T extends FlowNode> exten
 //	    }
 	    
 	    // ActivityImpl settings
-	    activity.setScope(true);
+	    activity.setScope(true);//scope主要是用来干嘛呢
 //	    activity.setProperty("multiInstance", loopCharacteristics.isSequential() ? MultiInstanceActivityBehavior.multiInstanceMode_sequential : MultiInstanceActivityBehavior.multiInstanceMode_parallel);
 	    activity.setActivityBehavior(mixUserTaskActivityBehavior);
 	    
@@ -118,15 +127,15 @@ public abstract class AbstractActivityBpmnParseHandler<T extends FlowNode> exten
 	    // activiti:collection
 //	    if (StringUtils.isNotEmpty(modelActivity.getAssignee())) {
 	      if (modelActivity.getAssignee().contains("{")) {
-	        miActivityBehavior.setCollectionExpression(expressionManager.createExpression(modelActivity.getAssignee()));
+	        miActivityBehavior.setCollectionExpression(expressionManager.createExpression(assignee));
 	       
 	       
 	      } else {
-	        miActivityBehavior.setCollectionVariable(modelActivity.getAssignee());
+	        miActivityBehavior.setCollectionVariable(assignee);
 	       
 	      }
 	      miActivityBehavior.setCollectionElementVariable(modelActivity.getId()+"_user");
-	      
+	      bpmnActivityBehavior.setCollectionElementVariable(miActivityBehavior.getCollectionElementVariable());
 //	    }
 
 	    

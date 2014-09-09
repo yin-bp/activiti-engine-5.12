@@ -64,14 +64,14 @@ public class MixUserTaskActivityBehavior extends UserTaskActivityBehavior{
 		userTaskActivityBehavior.createCompensateEventSubscription(execution);
 	}
 	@Override
-	protected boolean hasLoopCharacteristics() {
+	protected boolean hasLoopCharacteristics(ActivityExecution execution) {
 		// TODO Auto-generated method stub
-		return userTaskActivityBehavior.hasLoopCharacteristics();
+		return userTaskActivityBehavior.hasLoopCharacteristics( execution);
 	}
 	@Override
-	protected boolean hasMultiInstanceCharacteristics() {
+	protected boolean hasMultiInstanceCharacteristics(ActivityExecution execution) {
 		// TODO Auto-generated method stub
-		return userTaskActivityBehavior.hasMultiInstanceCharacteristics();
+		return userTaskActivityBehavior.hasMultiInstanceCharacteristics( execution);
 	}
 	@Override
 	public MultiInstanceActivityBehavior getMultiInstanceActivityBehavior() {
