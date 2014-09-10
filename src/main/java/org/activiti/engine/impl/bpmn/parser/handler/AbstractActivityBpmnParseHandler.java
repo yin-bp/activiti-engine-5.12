@@ -81,6 +81,8 @@ public abstract class AbstractActivityBpmnParseHandler<T extends FlowNode> exten
 	    {
 	    	assignee = modelActivity.getAssignee();
 	    }
+	    if(StringUtil.isEmpty(assignee ))
+	    	return ;
 	    
 	    bpmnActivityBehavior.setUseMixUsetask(true);
 	    MixUserTaskActivityBehavior mixUserTaskActivityBehavior = new MixUserTaskActivityBehavior((UserTaskActivityBehavior)bpmnActivityBehavior);
@@ -125,8 +127,8 @@ public abstract class AbstractActivityBpmnParseHandler<T extends FlowNode> exten
 //	    }
 	    
 	    // activiti:collection
-//	    if (StringUtils.isNotEmpty(modelActivity.getAssignee())) {
-	      if (modelActivity.getAssignee().contains("{")) {
+	    if (StringUtil.isNotEmpty(assignee)) {
+	      if (assignee.contains("{")) {
 	        miActivityBehavior.setCollectionExpression(expressionManager.createExpression(assignee));
 	       
 	       
@@ -136,7 +138,7 @@ public abstract class AbstractActivityBpmnParseHandler<T extends FlowNode> exten
 	      }
 	      miActivityBehavior.setCollectionElementVariable(modelActivity.getId()+"_user");
 	      bpmnActivityBehavior.setCollectionElementVariable(miActivityBehavior.getCollectionElementVariable());
-//	    }
+	    }
 
 	    
 	      
