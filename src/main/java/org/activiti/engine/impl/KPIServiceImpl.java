@@ -26,6 +26,13 @@ public class KPIServiceImpl implements KPIService {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public ControlParam getControlParam(String processInstanceId,
+			String activieKey) throws ActivitiException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 	
 

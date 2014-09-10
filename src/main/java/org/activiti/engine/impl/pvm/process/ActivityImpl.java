@@ -13,16 +13,21 @@
 
 package org.activiti.engine.impl.pvm.process;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.activiti.engine.ActivitiException;
+import org.activiti.engine.ControlParam;
+import org.activiti.engine.impl.TaskContext;
 import org.activiti.engine.impl.bpmn.behavior.MailActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.MixMultiInstanceActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.MultiInstanceActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.ParallelMultiInstanceBehavior;
 import org.activiti.engine.impl.bpmn.behavior.SequentialMultiInstanceBehavior;
+import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.pvm.PvmActivity;
 import org.activiti.engine.impl.pvm.PvmException;
 import org.activiti.engine.impl.pvm.PvmTransition;
@@ -104,6 +109,87 @@ public class ActivityImpl extends ScopeImpl implements PvmActivity, HasDIBounds 
 	  return activityBehavior != null && 
 			  (activityBehavior instanceof SequentialMultiInstanceBehavior 
 					  || (activityBehavior instanceof MixMultiInstanceActivityBehavior && ((MixMultiInstanceActivityBehavior)activityBehavior).isSequence()));
+	  
+  }
+  
+  
+  /**
+   * 返回任务类型是否是多实例任务类型
+   * @return
+ * @throws ActivitiException 
+   */
+  public boolean isMultiTask(String procinstanceid,String taskid) throws ActivitiException
+  {
+	  try {
+		boolean  isMultiTask = activityBehavior != null && activityBehavior instanceof MultiInstanceActivityBehavior;
+		  if(isMultiTask)
+			  return isMultiTask;
+		  ControlParam controlParam = Context.getProcessEngineConfiguration().getKPIService().getControlParam(procinstanceid, getId());
+		  if(controlParam == null)
+			  return false;
+		  String assignee = Context.getProcessEngineConfiguration().getExtendExecutor().queryObject(String.class, "getTaskAssignees", procinstanceid, getId());
+		  TaskContext taskContext = new TaskContext();
+		  taskContext.setControlParam(controlParam);
+		  taskContext.setOneassignee(assignee != null && assignee.indexOf(",") < 0);
+		  return taskContext.isIsmulti();
+	} catch (Exception e) {
+		throw new ActivitiException("判断流程"+this.getProcessDefinition().getId()+"实例"+procinstanceid+"任务"+this.getId()+"节点是否是多实例任务失败：",e);
+	}
+  }
+  /**
+   * 返回任务类型是否是并行多实例任务
+   * @return
+   */
+  public boolean isParreal(String procinstanceid,String taskid)
+  {
+	 
+	  try {
+		  
+		  boolean isParreal = activityBehavior != null && 
+				  (activityBehavior instanceof ParallelMultiInstanceBehavior 
+						  || (activityBehavior instanceof MixMultiInstanceActivityBehavior && ((MixMultiInstanceActivityBehavior)activityBehavior).isParreal()));
+			  if(isParreal)
+				  return isParreal;
+			  ControlParam controlParam = Context.getProcessEngineConfiguration().getKPIService().getControlParam(procinstanceid, getId());
+			  if(controlParam == null)
+				  return false;
+			  String assignee = Context.getProcessEngineConfiguration().getExtendExecutor().queryObject(String.class, "getTaskAssignees", procinstanceid, getId());
+			  TaskContext taskContext = new TaskContext();
+			  taskContext.setControlParam(controlParam);
+			  taskContext.setOneassignee(assignee != null && assignee.indexOf(",") < 0);
+			  return taskContext.isIsmulti() && taskContext.isIsparrel();
+		} catch (Exception e) {
+			throw new ActivitiException("判断流程"+this.getProcessDefinition().getId()+"实例"+procinstanceid+"任务"+this.getId()+"节点是否是多实例并行任务失败：",e);
+		}
+	  
+  }
+  
+  /**
+   * 返回任务类型是否是串行多实例任务
+   * @return
+   */
+  public boolean isSequence(String procinstanceid,String taskid)
+  {
+	  
+
+	  try {
+		  boolean isSequence = activityBehavior != null && 
+				  (activityBehavior instanceof SequentialMultiInstanceBehavior 
+						  || (activityBehavior instanceof MixMultiInstanceActivityBehavior && ((MixMultiInstanceActivityBehavior)activityBehavior).isSequence()));
+			  if(isSequence)
+				  return isSequence;
+			  ControlParam controlParam = Context.getProcessEngineConfiguration().getKPIService().getControlParam(procinstanceid, getId());
+			  if(controlParam == null)
+				  return false;
+			  String assignee = Context.getProcessEngineConfiguration().getExtendExecutor().queryObject(String.class, "getTaskAssignees", procinstanceid, getId());
+			  TaskContext taskContext = new TaskContext();
+			  taskContext.setControlParam(controlParam);
+			  taskContext.setOneassignee(assignee != null && assignee.indexOf(",") < 0);
+			  return taskContext.isIsmulti() && !taskContext.isIsparrel();
+		} catch (Exception e) {
+			throw new ActivitiException("判断流程"+this.getProcessDefinition().getId()+"实例"+procinstanceid+"任务"+this.getId()+"节点是否是多实例串行任务失败：",e);
+		}
+	  
 	  
   }
   private List<ActivityImpl> inactivies ;

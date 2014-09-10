@@ -153,4 +153,10 @@
 		]]>
 	</property>
 	
+	<property name="getTaskAssignees" >
+		 <![CDATA[
+			select TEXT_ from ACT_RU_VARIABLE where PROC_INST_ID_ = ? and NAME_ = ?
+		]]>
+	</property>
+	
 </properties>
