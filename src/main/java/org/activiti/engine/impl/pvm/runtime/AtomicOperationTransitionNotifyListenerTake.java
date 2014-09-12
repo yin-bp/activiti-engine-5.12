@@ -15,6 +15,9 @@ package org.activiti.engine.impl.pvm.runtime;
 import java.util.List;
 
 import org.activiti.engine.delegate.ExecutionListener;
+import org.activiti.engine.impl.TaskContext;
+import org.activiti.engine.impl.context.Context;
+import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.pvm.PvmException;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.impl.pvm.process.ScopeImpl;
@@ -62,7 +65,25 @@ public class AtomicOperationTransitionNotifyListenerTake implements AtomicOperat
 
       ActivityImpl activity = (ActivityImpl) execution.getActivity();
       ActivityImpl nextScope = findNextScope(activity.getParent(), transition.getDestination());
+      
       execution.setActivity(nextScope);
+      if(nextScope.isUserTask())
+      {
+    	  TaskContext oldTaskContext = execution.getTaskContext();
+    	  TaskContext newTaskContext = Context.createTaskContext((ExecutionEntity)execution, nextScope.getId());
+    	  if(oldTaskContext != null && oldTaskContext.isIsrejected())
+		  {
+			  newTaskContext.setIsrejected(oldTaskContext.isIsrejected());
+			  newTaskContext.setReturntoreject(oldTaskContext.isReturntoreject());
+			  newTaskContext.setRejecttype(oldTaskContext.getRejecttype());
+			  newTaskContext.setRejectedtaskid(oldTaskContext.getRejectedtaskid());
+			  newTaskContext.setRejectednode(oldTaskContext.getRejectednode());
+		  }
+      }
+      else
+      {
+    	  execution.setTaskContext(null); 
+      }
       execution.performOperation(TRANSITION_CREATE_SCOPE);
     }
   }

@@ -51,7 +51,7 @@ public class AtomicOperationProcessStartInitial extends AbstractEventAtomicOpera
       activity = initialActivityStack.get(index+1);
 
       InterpretableExecution executionToUse = null;
-      if (activity.isScope()) {
+      if (activity.isScope(null,execution.getProcessInstanceId())) {
         executionToUse = (InterpretableExecution) execution.getExecutions().get(0);
       } else {
         executionToUse = execution;

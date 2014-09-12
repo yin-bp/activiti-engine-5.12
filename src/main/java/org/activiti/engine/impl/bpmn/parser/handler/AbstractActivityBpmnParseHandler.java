@@ -109,7 +109,7 @@ public abstract class AbstractActivityBpmnParseHandler<T extends FlowNode> exten
 //	    }
 	    
 	    // ActivityImpl settings
-	    activity.setScope(true);//scope主要是用来干嘛呢
+	    activity.setScope(false);//scope主要是用来干嘛呢
 //	    activity.setProperty("multiInstance", loopCharacteristics.isSequential() ? MultiInstanceActivityBehavior.multiInstanceMode_sequential : MultiInstanceActivityBehavior.multiInstanceMode_parallel);
 	    activity.setActivityBehavior(mixUserTaskActivityBehavior);
 	    

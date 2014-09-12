@@ -13,7 +13,6 @@
 
 package org.activiti.engine.impl.pvm.process;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,14 +23,20 @@ import org.activiti.engine.ControlParam;
 import org.activiti.engine.impl.TaskContext;
 import org.activiti.engine.impl.bpmn.behavior.MailActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.MixMultiInstanceActivityBehavior;
+import org.activiti.engine.impl.bpmn.behavior.MixUserTaskActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.MultiInstanceActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.ParallelMultiInstanceBehavior;
 import org.activiti.engine.impl.bpmn.behavior.SequentialMultiInstanceBehavior;
+import org.activiti.engine.impl.bpmn.behavior.UserTaskActivityBehavior;
 import org.activiti.engine.impl.context.Context;
+import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.pvm.PvmActivity;
 import org.activiti.engine.impl.pvm.PvmException;
 import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.delegate.ActivityBehavior;
+import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
+
+import com.frameworkset.util.StringUtil;
 
 
 /**
@@ -192,6 +197,17 @@ public class ActivityImpl extends ScopeImpl implements PvmActivity, HasDIBounds 
 	  
 	  
   }
+  private Boolean isUserTask =null;
+  public boolean isUserTask()
+  {
+	  if(isUserTask == null)
+	  {
+		  boolean usetask1 = this.activityBehavior != null && this.activityBehavior instanceof UserTaskActivityBehavior ;
+		  boolean usetask2 = this.activityBehavior != null && this.activityBehavior instanceof MultiInstanceActivityBehavior && ((MultiInstanceActivityBehavior)this.activityBehavior ).isUserTask();
+		  this.isUserTask = usetask1 || usetask2;
+	  }
+	  return this.isUserTask.booleanValue();
+  }
   private List<ActivityImpl> inactivies ;
   
   private List<ActivityImpl> outactivies ;
@@ -326,8 +342,62 @@ public class ActivityImpl extends ScopeImpl implements PvmActivity, HasDIBounds 
     return (List) incomingTransitions;
   }
 
-  public boolean isScope() {
-    return isScope;
+  private boolean _isScope(String procinstanceid)
+  {
+	  if(StringUtil.isEmpty(procinstanceid))
+		  return this.isScope;
+	  else
+	  {
+		  if(activityBehavior != null && this.activityBehavior instanceof MixUserTaskActivityBehavior)
+		  {
+			 
+						
+						if(this.isMultiTask(procinstanceid, null))
+							return true;
+						else
+							return false;
+					
+				
+		  }
+		  else
+		  {
+			  return this.isScope;
+		  }
+	  }
+  }
+  
+  private boolean _isScope(ActivityExecution execution,String procinstanceid)
+  {
+	  if(execution != null)
+	  {
+		  if(execution.getTaskContext() != null)
+		  {
+			  if(execution.getTaskContext().isIsmulti())
+				  return true;
+			  else
+				  return false;
+		  }
+		  else
+		  {
+			  return _isScope(execution.getProcessInstanceId());
+		  }
+	  }
+	  else
+		  return _isScope( procinstanceid);
+  }
+  public boolean isScope(ActivityExecution execution,String procinstanceid) {
+	  
+	  if(activityBehavior != null && this.activityBehavior instanceof MixUserTaskActivityBehavior)
+	  {
+		  return _isScope( execution, procinstanceid);
+	  }
+	  else
+	  {
+		  return this.isScope;
+	  }
+		  
+	  
+	
   }
 
   public void setScope(boolean isScope) {

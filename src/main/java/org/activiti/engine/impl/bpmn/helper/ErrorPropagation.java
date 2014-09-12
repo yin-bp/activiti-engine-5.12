@@ -134,7 +134,7 @@ public class ErrorPropagation {
     ScopeImpl catchingScope = errorHandler.getParent();
     if(catchingScope instanceof ActivityImpl) { 
       ActivityImpl catchingScopeActivity = (ActivityImpl) catchingScope;
-      if(!catchingScopeActivity.isScope()) { // event subprocesses
+      if(!catchingScopeActivity.isScope(null,execution.getProcessInstanceId())) { // event subprocesses
         catchingScope = catchingScopeActivity.getParent();
       }
     }

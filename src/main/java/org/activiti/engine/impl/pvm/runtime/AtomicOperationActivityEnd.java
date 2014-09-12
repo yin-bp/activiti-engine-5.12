@@ -42,10 +42,9 @@ public class AtomicOperationActivityEnd extends AbstractEventAtomicOperation {
   protected void eventNotificationsCompleted(InterpretableExecution execution) {
     ActivityImpl activity = (ActivityImpl) execution.getActivity();
     ActivityImpl parentActivity = activity.getParentActivity();
-
     // if the execution is a single path of execution inside the process definition scope
     if ( (parentActivity!=null)
-         &&(!parentActivity.isScope())
+         &&(!parentActivity.isScope(execution.getParent(),execution.getProcessInstanceId()))
           ) {
       execution.setActivity(parentActivity);
       execution.performOperation(ACTIVITY_END);
@@ -59,7 +58,7 @@ public class AtomicOperationActivityEnd extends AbstractEventAtomicOperation {
       if (parentActivityBehavior instanceof CompositeActivityBehavior) {
         CompositeActivityBehavior compositeActivityBehavior = (CompositeActivityBehavior) parentActivity.getActivityBehavior();
         
-        if(activity.isScope() && activity.getOutgoingTransitions().isEmpty()) { 
+        if(activity.isScope(execution,execution.getProcessInstanceId()) && activity.getOutgoingTransitions().isEmpty()) { 
           // there is no transition destroying the scope
           InterpretableExecution parentScopeExecution = (InterpretableExecution) execution.getParent();
           execution.destroy();

@@ -93,7 +93,7 @@ public class ScopeUtil {
       
       // if activity is scope, we need to get the parent at least:
       if(originalExecution == candiadateExecution 
-              && originalExecution.getActivity().isScope() 
+              && originalExecution.getActivity().isScope(originalExecution,originalExecution.getProcessInstanceId()) 
               && !originalExecution.getActivity().equals(scopeActivity)) {
         candiadateExecution = originalExecution.getParent();
       }      

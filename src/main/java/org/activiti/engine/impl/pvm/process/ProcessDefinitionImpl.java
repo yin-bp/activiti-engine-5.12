@@ -69,10 +69,10 @@ public class ProcessDefinitionImpl extends ScopeImpl implements PvmProcessDefini
     List<ActivityImpl> initialActivityStack = getInitialActivityStack(initial);
     
     for (ActivityImpl initialActivity: initialActivityStack) {
-      if (initialActivity.isScope()) {
+      if (initialActivity.isScope(null,processInstance.getProcessInstanceId())) {
         scopeInstance = (InterpretableExecution) scopeInstance.createExecution();
         scopeInstance.setActivity(initialActivity);
-        if (initialActivity.isScope()) {
+        if (initialActivity.isScope(null,processInstance.getProcessInstanceId())) {
           scopeInstance.initialize();
         }
       }

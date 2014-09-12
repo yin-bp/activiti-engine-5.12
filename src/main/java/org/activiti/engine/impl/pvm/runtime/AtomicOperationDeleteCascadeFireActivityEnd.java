@@ -48,7 +48,7 @@ public class AtomicOperationDeleteCascadeFireActivityEnd extends AbstractEventAt
     ActivityImpl activity = (ActivityImpl) execution.getActivity();
     if ( (execution.isScope())
             && (activity!=null)
-            && (!activity.isScope())
+            && (!activity.isScope(execution,execution.getProcessInstanceId()))
           )  {
       execution.setActivity(activity.getParentActivity());
       execution.performOperation(AtomicOperation.DELETE_CASCADE_FIRE_ACTIVITY_END);

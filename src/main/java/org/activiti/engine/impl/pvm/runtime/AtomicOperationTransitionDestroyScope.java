@@ -14,6 +14,7 @@ package org.activiti.engine.impl.pvm.runtime;
 
 import java.util.List;
 
+import org.activiti.engine.impl.TaskContext;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.impl.pvm.process.ScopeImpl;
 import org.activiti.engine.impl.pvm.process.TransitionImpl;
@@ -37,69 +38,95 @@ public class AtomicOperationTransitionDestroyScope implements AtomicOperation {
     InterpretableExecution propagatingExecution = null;
 
     ActivityImpl activity = (ActivityImpl) execution.getActivity();
+    boolean refreshTaskContext = false;
     // if this transition is crossing a scope boundary
-    if (activity.isScope()) {
+    if (activity.isScope(execution,execution.getProcessInstanceId())) {
+//      if(execution.getTaskContext().isIsmulti())
       
-      InterpretableExecution parentScopeInstance = null;
-      // if this is a concurrent execution crossing a scope boundary
-      if (execution.isConcurrent() && !execution.isScope()) {
-        // first remove the execution from the current root
-        InterpretableExecution concurrentRoot = (InterpretableExecution) execution.getParent();
-        parentScopeInstance = (InterpretableExecution) execution.getParent().getParent();
-
-        log.debug("moving concurrent {} one scope up under {}", execution, parentScopeInstance);
-        List<InterpretableExecution> parentScopeInstanceExecutions = (List<InterpretableExecution>) parentScopeInstance.getExecutions();
-        List<InterpretableExecution> concurrentRootExecutions = (List<InterpretableExecution>) concurrentRoot.getExecutions();
-        // if the parent scope had only one single scope child
-        if (parentScopeInstanceExecutions.size()==1) {
-          // it now becomes a concurrent execution
-          parentScopeInstanceExecutions.get(0).setConcurrent(true);
-        }
-        
-        concurrentRootExecutions.remove(execution);
-        parentScopeInstanceExecutions.add(execution);
-        execution.setParent(parentScopeInstance);
-        execution.setActivity(activity);
-        propagatingExecution = execution;
-        
-        // if there is only a single concurrent execution left
-        // in the concurrent root, auto-prune it.  meaning, the 
-        // last concurrent child execution data should be cloned into
-        // the concurrent root.   
-        if (concurrentRootExecutions.size()==1) {
-          InterpretableExecution lastConcurrent = concurrentRootExecutions.get(0);
-          if (lastConcurrent.isScope()) {
-            lastConcurrent.setConcurrent(false);
-            
-          } else {
-            log.debug("merging last concurrent {} into concurrent root {}", lastConcurrent, concurrentRoot);
-            
-            // We can't just merge the data of the lastConcurrent into the concurrentRoot.
-            // This is because the concurrent root might be in a takeAll-loop.  So the 
-            // concurrent execution is the one that will be receiving the take
-            concurrentRoot.setActivity((ActivityImpl) lastConcurrent.getActivity());
-            concurrentRoot.setActive(lastConcurrent.isActive());
-            lastConcurrent.setReplacedBy(concurrentRoot);
-            lastConcurrent.remove();
-          }
-        }
-
-      } else if (execution.isConcurrent() && execution.isScope()) {
-        log.debug("scoped concurrent {} becomes concurrent and remains under {}", execution, execution.getParent());
-
-        // TODO!
-        execution.destroy();
-        propagatingExecution = execution;
-        
-      } else {
-        propagatingExecution = (InterpretableExecution) execution.getParent();
-        propagatingExecution.setActivity((ActivityImpl) execution.getActivity());
-        propagatingExecution.setTransition(execution.getTransition());
-        propagatingExecution.setActive(true);
-        log.debug("destroy scope: scoped {} continues as parent scope {}", execution, propagatingExecution);
-        execution.destroy();
-        execution.remove();
-      }
+	      InterpretableExecution parentScopeInstance = null;
+	      // if this is a concurrent execution crossing a scope boundary
+	      if (execution.isConcurrent() && !execution.isScope()) {
+	        // first remove the execution from the current root
+	        InterpretableExecution concurrentRoot = (InterpretableExecution) execution.getParent();
+	        parentScopeInstance = (InterpretableExecution) execution.getParent().getParent();
+	
+	        log.debug("moving concurrent {} one scope up under {}", execution, parentScopeInstance);
+	        List<InterpretableExecution> parentScopeInstanceExecutions = (List<InterpretableExecution>) parentScopeInstance.getExecutions();
+	        List<InterpretableExecution> concurrentRootExecutions = (List<InterpretableExecution>) concurrentRoot.getExecutions();
+	        // if the parent scope had only one single scope child
+	        if (parentScopeInstanceExecutions.size()==1) {
+	          // it now becomes a concurrent execution
+	          parentScopeInstanceExecutions.get(0).setConcurrent(true);
+	        }
+	        
+	        concurrentRootExecutions.remove(execution);
+	        parentScopeInstanceExecutions.add(execution);
+	        execution.setParent(parentScopeInstance);
+	        execution.setActivity(activity);
+	        propagatingExecution = execution;
+	        
+	        // if there is only a single concurrent execution left
+	        // in the concurrent root, auto-prune it.  meaning, the 
+	        // last concurrent child execution data should be cloned into
+	        // the concurrent root.   
+	        if (concurrentRootExecutions.size()==1) {
+	          InterpretableExecution lastConcurrent = concurrentRootExecutions.get(0);
+	          if (lastConcurrent.isScope()) {
+	            lastConcurrent.setConcurrent(false);
+	            
+	          } else {
+	            log.debug("merging last concurrent {} into concurrent root {}", lastConcurrent, concurrentRoot);
+	            
+	            // We can't just merge the data of the lastConcurrent into the concurrentRoot.
+	            // This is because the concurrent root might be in a takeAll-loop.  So the 
+	            // concurrent execution is the one that will be receiving the take
+	            concurrentRoot.setActivity((ActivityImpl) lastConcurrent.getActivity());
+	            concurrentRoot.setActive(lastConcurrent.isActive());
+	            lastConcurrent.setReplacedBy(concurrentRoot);
+	            lastConcurrent.remove();
+	          }
+	        }
+	
+	      } else if (execution.isConcurrent() && execution.isScope()) {
+	        log.debug("scoped concurrent {} becomes concurrent and remains under {}", execution, execution.getParent());
+	
+	        // TODO!
+	        execution.destroy();
+	        propagatingExecution = execution;
+	        
+	      } else {
+	        propagatingExecution = (InterpretableExecution) execution.getParent();
+	        propagatingExecution.setActivity((ActivityImpl) execution.getActivity());
+	        propagatingExecution.setTransition(execution.getTransition());
+	        TaskContext taskContext = execution.getTaskContext();
+	        propagatingExecution.setActive(true);
+	        TaskContext taskContext1 = propagatingExecution.getTaskContext();
+	        if(taskContext1 != null)
+	        {
+	        	if(taskContext != null)
+	        	{
+			        taskContext1.setIsrejected(taskContext.isIsrejected());
+			        taskContext1.setReturntoreject(taskContext.isReturntoreject());
+			        taskContext1.setRejecttype(taskContext.getRejecttype());
+			        taskContext1.setRejectedtaskid(taskContext.getRejectedtaskid());
+			        taskContext1.setRejectednode(taskContext.getRejectednode());
+			        refreshTaskContext = true;
+	        	}
+	        }
+	        else
+	        {
+	        	if(taskContext != null)
+	        		propagatingExecution.setTaskContext(taskContext);
+	        }
+	        log.debug("destroy scope: scoped {} continues as parent scope {}", execution, propagatingExecution);
+	        execution.destroy();
+	        execution.remove();
+	      }
+      
+//      else
+//      {
+//    	  propagatingExecution = execution;
+//      }
       
     } else {
       propagatingExecution = execution;
@@ -113,6 +140,38 @@ public class AtomicOperationTransitionDestroyScope implements AtomicOperation {
       propagatingExecution.setActivity((ActivityImpl) nextOuterScopeElement);
       propagatingExecution.performOperation(TRANSITION_NOTIFY_LISTENER_END);
     } else {
+//    	ActivityImpl source = (ActivityImpl)propagatingExecution.getActivity();
+//      if(destination.isUserTask())
+//      {
+//    	  
+//    	  if(!refreshTaskContext){
+//    		  if( source.getId().equals(destination.getId()))
+//    		{
+//    		  TaskContext taskContext1 = propagatingExecution.getTaskContext();
+//    		  
+//    		  
+//    		  TaskContext newTaskContext = Context.createTaskContext((ExecutionEntity) propagatingExecution, destination.getId());
+//    		  if(taskContext1 != null)
+//    		  {
+//    			  if(taskContext1.isIsrejected())
+//    			  {
+//    				  newTaskContext.setIsrejected(taskContext1.isIsrejected());
+//    				  newTaskContext.setReturntoreject(taskContext1.isReturntoreject());
+//    				  newTaskContext.setRejecttype(taskContext1.getRejecttype());
+//    				  newTaskContext.setRejectedtaskid(taskContext1.getRejectedtaskid());
+//    				  newTaskContext.setRejectednode(taskContext1.getRejectednode());
+//    			      refreshTaskContext = true;
+//    			  }
+//    		  }
+//    		}
+//    	  }
+//    	  
+//    	 
+//      }
+//      else
+//      {
+//    	  propagatingExecution.setTaskContext(null);
+//      }
       propagatingExecution.performOperation(TRANSITION_NOTIFY_LISTENER_TAKE);
     }
   }

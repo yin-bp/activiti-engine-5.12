@@ -333,6 +333,11 @@ public class MixMultiInstanceActivityBehavior extends
 		// TODO Auto-generated method stub
 		getMultiInstanceActivityBehavior(activityContext).leaveIgnoreConditions(activityContext);
 	}
+	@Override
+	public boolean isUserTask() {
+		// TODO Auto-generated method stub
+		return this.innerParallelActivityBehavior.isUserTask();
+	}
 	
 
 }

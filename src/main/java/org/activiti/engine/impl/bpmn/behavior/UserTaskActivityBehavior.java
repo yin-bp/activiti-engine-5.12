@@ -268,11 +268,33 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
     if (!taskDefinition.getCandidateUserIdExpressions().isEmpty()) {
     
       for (Expression userIdExpr : taskDefinition.getCandidateUserIdExpressions()) {
-        Object value = userIdExpr.getValue(execution);
-        
+        Object value = null;
+        if(this.isUseMixUsetask())
+    	{
+    		if(execution.getTaskContext().isIsmulti())
+    		{
+    			value = (String)execution.getVariable(this.getCollectionElementVariable());
+    		}
+    		else
+    		{
+    			value = userIdExpr.getValue(execution);
+    		}
+    	}
+    	else
+    	{    	
+    		value = userIdExpr.getValue(execution);
+    	}
         if (value instanceof String) {
           List<String> candiates = extractCandidates((String) value);
-          task.addCandidateUsers(candiates);
+          if(candiates.size() == 1)
+          {
+//        	  task.addCandidateUsers(candiates);
+        	  task.setAssignee(candiates.get(0));
+          }
+          else
+          {
+        	  task.addCandidateUsers(candiates);
+          }
           
           if(!parserkpi)//设置流程kpi指标
           {
@@ -297,7 +319,17 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
               parserkpi = true;
           }
         } else if (value instanceof Collection) {
-          task.addCandidateUsers((Collection) value);
+        	Collection c = (Collection)value;
+        	 if(c.size() == 1)
+             {
+//           	  task.addCandidateUsers(candiates);
+           	  	task.setAssignee(String.valueOf(c.iterator().next()));
+             }
+             else
+             {
+            	 task.addCandidateUsers(c);
+             }	
+          
           if(!parserkpi)
           {
         	  KPI kpi = null;

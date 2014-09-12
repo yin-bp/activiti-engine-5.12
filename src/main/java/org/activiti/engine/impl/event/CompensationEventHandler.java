@@ -51,7 +51,7 @@ public class CompensationEventHandler implements EventHandler {
     
     if((compensationHandler.getProperty(BpmnParse.PROPERTYNAME_IS_FOR_COMPENSATION) == null 
         ||!(Boolean)compensationHandler.getProperty(BpmnParse.PROPERTYNAME_IS_FOR_COMPENSATION))
-            && compensationHandler.isScope()) {      
+            && compensationHandler.isScope(compensatingExecution,compensatingExecution.getProcessInstanceId())) {      
    
       // descend into scope:
       List<CompensateEventSubscriptionEntity> eventsForThisScope = compensatingExecution.getCompensateEventSubscriptions();      

@@ -32,15 +32,22 @@ public class AtomicOperationTransitionCreateScope implements AtomicOperation {
   public void execute(InterpretableExecution execution) {
     InterpretableExecution propagatingExecution = null;
     ActivityImpl activity = (ActivityImpl) execution.getActivity();
-    if (activity.isScope()) {
-      propagatingExecution = (InterpretableExecution) execution.createExecution();
-      propagatingExecution.setActivity(activity);
-      propagatingExecution.setTransition(execution.getTransition());
-      execution.setTransition(null);
-      execution.setActivity(null);
-      execution.setActive(false);
-      log.debug("create scope: parent {} continues as execution {}", execution, propagatingExecution);
-      propagatingExecution.initialize();
+    if (activity.isScope(execution,execution.getProcessInstanceId())) {
+//    	if(execution.getTaskContext().isIsmulti())
+    	{
+	      propagatingExecution = (InterpretableExecution) execution.createExecution();
+	      propagatingExecution.setActivity(activity);
+	      propagatingExecution.setTransition(execution.getTransition());
+	      execution.setTransition(null);
+	      execution.setActivity(null);
+	      execution.setActive(false);
+	      log.debug("create scope: parent {} continues as execution {}", execution, propagatingExecution);
+	      propagatingExecution.initialize();
+    	}
+//    	else
+//    	{
+//    		propagatingExecution = execution;
+//    	}
 
     } else {
       propagatingExecution = execution;

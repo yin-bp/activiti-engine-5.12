@@ -238,7 +238,7 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
     createdExecution.setProcessDefinition(getProcessDefinition());
     createdExecution.setProcessInstance(getProcessInstance());
     createdExecution.setActivity(getActivity());
-    
+    createdExecution.setTaskContext(this.getTaskContext());
     if (log.isDebugEnabled()) {
       log.debug("Child execution {} created with parent ", createdExecution, this);
     }
@@ -1024,6 +1024,7 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
     // remove identity links
     removeIdentityLinks();
 
+    this.taskContext = null;
     // finally delete this execution
     Context.getCommandContext()
       .getDbSqlSession()
