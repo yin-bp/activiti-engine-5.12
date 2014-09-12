@@ -15,9 +15,12 @@
  */
 package org.activiti.engine.impl.bpmn.behavior;
 
+import java.util.Collection;
+
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.Expression;
 import org.activiti.engine.delegate.VariableScope;
+import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 
@@ -112,7 +115,13 @@ public class MixMultiInstanceActivityBehavior extends
 		getMultiInstanceActivityBehavior(execution).createInstances(execution);
 
 	}
-
+	 public Collection getAssignee(TaskEntity task, ActivityExecution execution)
+	  {
+		 return getMultiInstanceActivityBehavior(execution).getAssignee(task, execution);
+//		  if (taskDefinition.getAssigneeExpression() != null) 
+//		      return (String) taskDefinition.getAssigneeExpression().getValue(execution);
+//		    return null;
+	  }
 	@Override
 	public void execute(ActivityExecution execution) throws Exception {
 		// TODO Auto-generated method stub

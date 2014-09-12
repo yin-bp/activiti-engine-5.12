@@ -68,7 +68,7 @@ public class AtomicOperationTransitionNotifyListenerStart extends AbstractEventA
 //    			else
 //    				taskContext.setOneassignee(false);
     		 	TaskContext taskContext = Context.createTaskContext((ExecutionEntity)execution, destination.getId());
-				execution.setTaskContext(taskContext);
+//				execution.setTaskContext(taskContext);
 		} catch (ActivitiException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

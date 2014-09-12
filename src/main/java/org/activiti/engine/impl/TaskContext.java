@@ -15,6 +15,7 @@ public class TaskContext {
 	private ControlParam nextNodeControlParam;
 	private boolean oneassignee = true;
 	private boolean nextoneassignee = true;
+	private boolean hasassignee = false;
 	public boolean isReturntoreject() {
 		return returntoreject;
 	}
@@ -188,6 +189,12 @@ public class TaskContext {
 	}
 	public void setNextoneassignee(boolean nextoneassignee) {
 		this.nextoneassignee = nextoneassignee;
+	}
+	public boolean isHasassignee() {
+		return hasassignee;
+	}
+	public void setHasassignee(boolean hasassignee) {
+		this.hasassignee = hasassignee;
 	}
 	
 	

@@ -13,10 +13,15 @@
 package org.activiti.engine.impl.bpmn.behavior;
 
 import org.activiti.engine.ActivitiException;
+import org.activiti.engine.delegate.DelegateExecution;
+import org.activiti.engine.delegate.JavaDelegate;
 import org.activiti.engine.impl.TaskContext;
+import org.activiti.engine.impl.context.Context;
+import org.activiti.engine.impl.delegate.JavaDelegateInvocation;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
 import org.activiti.engine.impl.pvm.delegate.SignallableActivityBehavior;
+import org.activiti.engine.impl.task.TaskDefinition;
 
 
 /**
@@ -30,10 +35,21 @@ import org.activiti.engine.impl.pvm.delegate.SignallableActivityBehavior;
 public abstract class FlowNodeActivityBehavior implements SignallableActivityBehavior {
   
   protected BpmnActivityBehavior bpmnActivityBehavior = new BpmnActivityBehavior();
-  public String getAssignee(TaskEntity task, ActivityExecution execution)
+  protected TaskDefinition taskDefinition;
+  public FlowNodeActivityBehavior()
   {
-	  return null;
+	  
   }
+  public FlowNodeActivityBehavior(TaskDefinition taskDefinition)
+  {
+	  this.taskDefinition = taskDefinition;
+  }
+ 
+  public void execute(DelegateExecution execution,JavaDelegate javaDelegate) throws Exception {
+	    Context.getProcessEngineConfiguration()
+	      .getDelegateInterceptor()
+	      .handleInvocation(new JavaDelegateInvocation(javaDelegate, execution));    
+	  }
   /**
    * Default behaviour: just leave the activity with no extra functionality.
    */

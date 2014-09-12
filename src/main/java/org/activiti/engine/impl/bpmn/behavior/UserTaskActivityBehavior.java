@@ -22,6 +22,7 @@ import org.activiti.engine.ActivitiException;
 import org.activiti.engine.ActivitiIllegalArgumentException;
 import org.activiti.engine.KPI;
 import org.activiti.engine.delegate.Expression;
+import org.activiti.engine.delegate.JavaDelegate;
 import org.activiti.engine.delegate.TaskListener;
 import org.activiti.engine.impl.TaskContext;
 import org.activiti.engine.impl.calendar.DueDateBusinessCalendar;
@@ -32,6 +33,7 @@ import org.activiti.engine.impl.task.TaskDefinition;
 import org.apache.log4j.Logger;
 
 import com.frameworkset.common.poolman.ConfigSQLExecutor;
+import com.frameworkset.util.StringUtil;
 
 /**
  * activity implementation for the user task.
@@ -40,10 +42,58 @@ import com.frameworkset.common.poolman.ConfigSQLExecutor;
  */
 public class UserTaskActivityBehavior extends TaskActivityBehavior {
   private static Logger log = Logger.getLogger(UserTaskActivityBehavior.class);
-  protected TaskDefinition taskDefinition;
+
 
   public UserTaskActivityBehavior(TaskDefinition taskDefinition) {
     this.taskDefinition = taskDefinition;
+  }
+  public List<String> getAssignee(TaskEntity task, ActivityExecution execution)
+  {
+	  List<String> assignees = new ArrayList<String>();
+	  String assign = null;
+	  if (taskDefinition.getAssigneeExpression() != null)
+	  {
+	      assign = (String) taskDefinition.getAssigneeExpression().getValue(execution);
+	      if(!StringUtil.isEmpty(assign))
+	      {
+		      List<String> candiates = extractCandidates(assign);
+		      assignees.addAll(candiates);
+	      }
+	  }
+	  else if (!taskDefinition.getCandidateGroupIdExpressions().isEmpty())
+	  {
+		   
+	      for (Expression groupIdExpr : taskDefinition.getCandidateGroupIdExpressions()) {
+	        Object value = groupIdExpr.getValue(execution);
+	        if (value instanceof String) {
+	          List<String> candiates = extractCandidates((String) value);
+	          assignees.addAll(candiates);
+	        } else if (value instanceof Collection) {
+	        	  assignees.addAll((Collection) value);
+	        } else {
+	          throw new ActivitiIllegalArgumentException("Expression did not resolve to a string or collection of strings");
+	        }
+	      }
+			    
+	  }
+	  else if (!taskDefinition.getCandidateUserIdExpressions().isEmpty()) {
+		    
+	      for (Expression userIdExpr : taskDefinition.getCandidateUserIdExpressions()) {
+	        Object value = userIdExpr.getValue(execution);
+	        
+	        if (value instanceof String) {
+	          List<String> candiates = extractCandidates((String) value);
+	          assignees.addAll(candiates);
+	          
+	          
+	        } else if (value instanceof Collection) {
+	        	 assignees.addAll((Collection) value);
+	        }
+	      }
+	  }
+		  
+	  
+	    return assignees;
   }
   private void recoredrejectedlog(ActivityExecution execution,TaskEntity newtask ) throws Exception
   {
@@ -55,6 +105,24 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
 	  }
   }
   public void execute(ActivityExecution execution) throws Exception {
+	  if(execution.getTaskContext().isHasassignee())
+		{
+		  	_execute(execution);
+		}
+		else
+		{
+			String BUSSINESSCONTROLCLASS = execution.getTaskContext().getBUSSINESSCONTROLCLASS();
+			if(StringUtil.isNotEmpty(BUSSINESSCONTROLCLASS))
+			{
+				JavaDelegate javaDelegate = Context.getJavaDelegate(BUSSINESSCONTROLCLASS);
+				super.execute(execution, javaDelegate);
+			}
+			super.leave(execution);
+				
+		}
+	  
+  }
+  private void _execute(ActivityExecution execution) throws Exception {
     TaskEntity task = TaskEntity.createAndInsert(execution);
     
     recoredrejectedlog( execution, task );
@@ -117,12 +185,7 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
 //	    leave(execution, taskContext);
 //  }
   
-  public String getAssignee(TaskEntity task, ActivityExecution execution)
-  {
-	  if (taskDefinition.getAssigneeExpression() != null) 
-	      return (String) taskDefinition.getAssigneeExpression().getValue(execution);
-	    return null;
-  }
+  
 
   @SuppressWarnings({ "unchecked", "rawtypes" })
   protected void handleAssignments(TaskEntity task, ActivityExecution execution) {

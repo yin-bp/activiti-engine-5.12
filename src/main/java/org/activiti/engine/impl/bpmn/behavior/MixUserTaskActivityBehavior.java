@@ -1,5 +1,7 @@
 package org.activiti.engine.impl.bpmn.behavior;
 
+import java.util.List;
+
 import org.activiti.engine.impl.TaskContext;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
@@ -90,7 +92,7 @@ public class MixUserTaskActivityBehavior extends UserTaskActivityBehavior{
 		getFlowNodeActivityBehavior(activityContext).leaveIgnoreConditions(activityContext);
 	}
 
-	public String getAssignee(TaskEntity task, ActivityExecution execution)
+	public List<String> getAssignee(TaskEntity task, ActivityExecution execution)
 	  {
 		  
 		    return userTaskActivityBehavior.getAssignee(task, execution);

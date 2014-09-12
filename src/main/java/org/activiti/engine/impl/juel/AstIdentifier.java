@@ -26,11 +26,13 @@ import org.activiti.engine.impl.javax.el.MethodNotFoundException;
 import org.activiti.engine.impl.javax.el.PropertyNotFoundException;
 import org.activiti.engine.impl.javax.el.ValueExpression;
 import org.activiti.engine.impl.javax.el.ValueReference;
+import org.apache.log4j.Logger;
 
 
 public class AstIdentifier extends AstNode implements IdentifierNode {
 	private final String name;
 	private final int index;
+	private static Logger log = Logger.getLogger(AstIdentifier.class);
 
 	public AstIdentifier(String name, int index) {
 		this.name = name;
@@ -80,7 +82,10 @@ public class AstIdentifier extends AstNode implements IdentifierNode {
 		context.setPropertyResolved(false);
 		Object result = context.getELResolver().getValue(context, null, name);
 		if (!context.isPropertyResolved()) {
-			throw new PropertyNotFoundException(LocalMessages.get("error.identifier.property.notfound", name));
+//			throw new PropertyNotFoundException(LocalMessages.get("error.identifier.property.notfound", name));
+			log.warn(LocalMessages.get("error.identifier.property.notfound", name));
+			return null;
+			
 		}
 		return result;
 	}

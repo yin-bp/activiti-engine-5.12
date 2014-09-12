@@ -15,9 +15,13 @@ package org.activiti.engine.impl.bpmn.behavior;
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.ActivitiIllegalArgumentException;
 import org.activiti.engine.delegate.BpmnError;
+import org.activiti.engine.delegate.JavaDelegate;
 import org.activiti.engine.impl.TaskContext;
+import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
+
+import com.frameworkset.util.StringUtil;
 
 
 /**
@@ -87,17 +91,35 @@ public class SequentialMultiInstanceBehavior extends MultiInstanceActivityBehavi
       }
     }
   }
-  
+  public static void main(String[] args)
+  {
+	  String aa = "${aa}";
+	  System.out.println(aa.indexOf("{")+","+aa.substring(2,aa.length() -1));
+  }
   @Override
   public void execute(ActivityExecution execution) throws Exception {
-    super.execute(execution);
-    
-    if(innerActivityBehavior instanceof SubProcessActivityBehavior) {
-      // ACT-1185: end-event in subprocess may have inactivated execution
-      if(!execution.isActive() && execution.isEnded() && (execution.getExecutions() == null || execution.getExecutions().size() == 0)) {
-        execution.setActive(true);
-      }
-    }
+	if(execution.getTaskContext().isHasassignee())
+	{
+	    super.execute(execution);
+	    
+	    if(innerActivityBehavior instanceof SubProcessActivityBehavior) {
+	      // ACT-1185: end-event in subprocess may have inactivated execution
+	      if(!execution.isActive() && execution.isEnded() && (execution.getExecutions() == null || execution.getExecutions().size() == 0)) {
+	        execution.setActive(true);
+	      }
+	    }
+	}
+	else
+	{
+		String BUSSINESSCONTROLCLASS = execution.getTaskContext().getBUSSINESSCONTROLCLASS();
+		if(StringUtil.isNotEmpty(BUSSINESSCONTROLCLASS))
+		{
+			JavaDelegate javaDelegate = Context.getJavaDelegate(BUSSINESSCONTROLCLASS);
+			super.execute(execution, javaDelegate);
+		}
+		super.leave(execution);
+			
+	}
   }
 
 }

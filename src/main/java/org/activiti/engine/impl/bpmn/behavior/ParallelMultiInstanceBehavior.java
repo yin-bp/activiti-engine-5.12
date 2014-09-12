@@ -16,11 +16,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.activiti.engine.ActivitiIllegalArgumentException;
+import org.activiti.engine.delegate.JavaDelegate;
 import org.activiti.engine.impl.TaskContext;
+import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
+
+import com.frameworkset.util.StringUtil;
 
 
 /**
@@ -173,5 +177,25 @@ public class ParallelMultiInstanceBehavior extends MultiInstanceActivityBehavior
 	    executionEntity.takeAll(transitionsToTake, joinedExecutions, taskContext);
     } 
   }
+
+@Override
+public void execute(ActivityExecution execution) throws Exception {
+	if(execution.getTaskContext().isHasassignee())
+	{
+		super.execute(execution);
+	}
+	else
+	{
+		String BUSSINESSCONTROLCLASS = execution.getTaskContext().getBUSSINESSCONTROLCLASS();
+		if(StringUtil.isNotEmpty(BUSSINESSCONTROLCLASS))
+		{
+			JavaDelegate javaDelegate = Context.getJavaDelegate(BUSSINESSCONTROLCLASS);
+			super.execute(execution, javaDelegate);
+		}
+		super.leave(execution);
+			
+	}// TODO Auto-generated method stub
+	
+}
 
 }

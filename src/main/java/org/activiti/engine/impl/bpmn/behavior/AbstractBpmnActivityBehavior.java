@@ -21,6 +21,7 @@ import org.activiti.engine.impl.pvm.PvmScope;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.impl.pvm.runtime.InterpretableExecution;
+import org.activiti.engine.impl.task.TaskDefinition;
 
 
 /**
@@ -31,7 +32,9 @@ import org.activiti.engine.impl.pvm.runtime.InterpretableExecution;
  */
 public class AbstractBpmnActivityBehavior extends FlowNodeActivityBehavior {
 	
-  protected MultiInstanceActivityBehavior multiInstanceActivityBehavior;
+ 
+
+protected MultiInstanceActivityBehavior multiInstanceActivityBehavior;
   protected boolean useMixUsetask;
   protected String collectionElementVariable;
   

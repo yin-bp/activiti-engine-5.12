@@ -14,6 +14,7 @@ package org.activiti.engine.impl.bpmn.behavior;
 
 
 
+
 /**
  * Parent class for all BPMN 2.0 task types such as ServiceTask, ScriptTask, UserTask, etc.
  * 
@@ -22,5 +23,7 @@ package org.activiti.engine.impl.bpmn.behavior;
  * @author Joram Barrez
  */
 public class TaskActivityBehavior extends AbstractBpmnActivityBehavior {
+
+	
 
 }

@@ -29,6 +29,7 @@ import org.activiti.engine.impl.bpmn.helper.ScopeUtil;
 import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.delegate.ExecutionListenerInvocation;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
+import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.pvm.delegate.ActivityBehavior;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
 import org.activiti.engine.impl.pvm.delegate.CompositeActivityBehavior;
@@ -77,6 +78,43 @@ public abstract class MultiInstanceActivityBehavior extends FlowNodeActivityBeha
 	public static final String multiInstanceMode_sequential = "sequential";
   public MultiInstanceActivityBehavior()
   {
+	  
+  }
+  
+  public Collection getAssignee(TaskEntity task, ActivityExecution execution)
+  {
+//	  if(this.innerActivityBehavior != null)
+//	  {
+//		  if(innerActivityBehavior instanceof UserTaskActivityBehavior)
+//		  {
+//			  return ((UserTaskActivityBehavior)innerActivityBehavior).getAssignee(task, execution);
+//		  }
+//		  else
+//		  {
+//			  return null;
+//		  }
+//	  }
+//	  else
+//		  return null;
+	  if (collectionExpression != null) {
+//	      Object obj = collectionExpression.getValue(execution);
+//	      if (!(obj instanceof Collection)) {
+//	        throw new ActivitiIllegalArgumentException(collectionExpression.getExpressionText()+"' didn't resolve to a Collection");
+//	      }
+	      Collection obj = getCollectionFromExpress(execution);
+	     return obj;
+	    } else if (collectionVariable != null) {
+//	      Object obj = execution.getVariable(collectionVariable);
+//	      if (obj == null) {
+//	        throw new ActivitiIllegalArgumentException("Variable " + collectionVariable + " is not found");
+//	      }
+//	      if (!(obj instanceof Collection)) {
+//	        throw new ActivitiIllegalArgumentException("Variable " + collectionVariable+"' is not a Collection");
+//	      }
+	      Collection obj = getCollectionFromVariable( execution);
+	     return obj;
+	    }
+	  return null;
 	  
   }
   public boolean isMail()

@@ -262,7 +262,7 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
 //			log.error("",e);
 //		}
     	Context.createTaskContextControlParam(taskContext, execution, this.taskDefinitionKey);
-    	this.execution.setTaskContext(taskContext);
+//    	this.execution.setTaskContext(taskContext);
     	
     }
     boolean customDTask = (destinationTaskKey != null && !destinationTaskKey.equals(""));
