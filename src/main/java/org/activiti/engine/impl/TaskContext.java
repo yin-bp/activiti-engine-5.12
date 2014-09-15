@@ -16,6 +16,10 @@ public class TaskContext {
 	private boolean oneassignee = true;
 	private boolean nextoneassignee = true;
 	private boolean hasassignee = false;
+	/**
+	 * 标识任务是否来自驳回
+	 */
+	private boolean fromreject = false;
 	public boolean isReturntoreject() {
 		return returntoreject;
 	}
@@ -195,6 +199,12 @@ public class TaskContext {
 	}
 	public void setHasassignee(boolean hasassignee) {
 		this.hasassignee = hasassignee;
+	}
+	public boolean isFromreject() {
+		return fromreject;
+	}
+	public void setFromreject(boolean fromreject) {
+		this.fromreject = fromreject;
 	}
 	
 	

@@ -181,6 +181,7 @@ public CompleteTaskCmd(String taskId, Map<String, Object> variables,boolean isre
       task.setExecutionVariables(variables);
     }
     //task.complete();
+    TaskContext taskContext = new TaskContext();
     /**
      * modified by biaoping.yin
      */
@@ -194,10 +195,14 @@ public CompleteTaskCmd(String taskId, Map<String, Object> variables,boolean isre
     	if(destinationTaskKey == null)//查找任务是否有关联的驳回节点，如果有，则任务直接跳转到上次驳回节点
     	{
     		this.destinationTaskKey = findTaskSourceRejectedNode( commandContext);
+    		if(destinationTaskKey != null)
+    		{
+    			taskContext.setFromreject(true);
+    		}
     	}
     		
     }
-    TaskContext taskContext = new TaskContext();
+    
     taskContext.setDestinationTaskKey(destinationTaskKey);
     
     if(isrejected)

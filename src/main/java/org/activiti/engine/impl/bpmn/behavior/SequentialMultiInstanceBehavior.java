@@ -77,7 +77,7 @@ public class SequentialMultiInstanceBehavior extends MultiInstanceActivityBehavi
     setLoopVariable(execution, LOOP_COUNTER, loopCounter);
     setLoopVariable(execution, NUMBER_OF_COMPLETED_INSTANCES, nrOfCompletedInstances);
     logLoopDetails(execution, "instance completed", loopCounter, nrOfCompletedInstances, nrOfActiveInstances, nrOfInstances);
-    boolean reject = taskContext.getDestinationTaskKey() != null && !taskContext.getDestinationTaskKey().equals("");
+    boolean reject = taskContext.getDestinationTaskKey() != null && !taskContext.getDestinationTaskKey().equals("") && !taskContext.isFromreject();
     if (loopCounter == nrOfInstances || completionConditionSatisfied(execution) || reject) {
       super.leave(execution);
     } else {

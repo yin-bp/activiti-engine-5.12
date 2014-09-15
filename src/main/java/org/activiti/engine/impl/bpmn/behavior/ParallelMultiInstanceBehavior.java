@@ -131,7 +131,9 @@ public class ParallelMultiInstanceBehavior extends MultiInstanceActivityBehavior
     logLoopDetails(execution, "instance completed", loopCounter, nrOfCompletedInstances, nrOfActiveInstances, nrOfInstances);
    
     ExecutionEntity executionEntity = (ExecutionEntity) execution;
-    boolean customDTask = (taskContext.getDestinationTaskKey() != null && !taskContext.getDestinationTaskKey().equals(""));
+    boolean customDTask = (taskContext.getDestinationTaskKey() != null 
+    		&& !taskContext.getDestinationTaskKey().equals("")) 
+    		&& !taskContext.isFromreject();
     String deleteReason = executionEntity.getDeleteReason();
    
     
