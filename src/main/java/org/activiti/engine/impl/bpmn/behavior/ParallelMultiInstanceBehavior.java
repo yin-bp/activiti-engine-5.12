@@ -188,6 +188,8 @@ public void execute(ActivityExecution execution) throws Exception {
 	}
 	else
 	{
+		Context.getCommandContext().getHistoryManager()
+	      .recordUseTaskActivityAutoComplete((ExecutionEntity) execution);
 		String BUSSINESSCONTROLCLASS = execution.getTaskContext().getBUSSINESSCONTROLCLASS();
 		if(StringUtil.isNotEmpty(BUSSINESSCONTROLCLASS))
 		{

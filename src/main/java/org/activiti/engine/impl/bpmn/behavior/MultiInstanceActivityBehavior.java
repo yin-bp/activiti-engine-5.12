@@ -179,7 +179,10 @@ public abstract class MultiInstanceActivityBehavior extends FlowNodeActivityBeha
   {
 	  Object obj = collectionExpression.getValue(execution);
 	  if(obj == null)
-		  throw new ActivitiIllegalArgumentException("collectionExpression " + collectionExpression.getExpressionText() + " eval result is null.");
+	  {
+		  return null;
+//		  throw new ActivitiIllegalArgumentException("collectionExpression " + collectionExpression.getExpressionText() + " eval result is null.");
+	  }
       if (obj instanceof String) {
     	  String sobj = (String)(obj);
     	  String[] vs = sobj.split("\\,");
@@ -189,7 +192,9 @@ public abstract class MultiInstanceActivityBehavior extends FlowNodeActivityBeha
     	  return (Collection)obj;
       else
       {
-    	  throw new ActivitiIllegalArgumentException(collectionExpression.getExpressionText()+"' didn't resolve to a Collection");
+    	  LOGGER.warn(collectionExpression.getExpressionText()+"' didn't resolve to a Collection");
+    	  return null;
+    	  //throw new ActivitiIllegalArgumentException(collectionExpression.getExpressionText()+"' didn't resolve to a Collection");
       }
   }
   
@@ -197,7 +202,8 @@ public abstract class MultiInstanceActivityBehavior extends FlowNodeActivityBeha
   {
 	  Object obj = execution.getVariable(collectionVariable);
       if (obj == null) {
-        throw new ActivitiIllegalArgumentException("Variable " + collectionVariable + " is not found");
+//        throw new ActivitiIllegalArgumentException("Variable " + collectionVariable + " is not found");
+    	  return null;
       }
       if (obj instanceof String) {
     	  String sobj = (String)(obj);
@@ -206,8 +212,12 @@ public abstract class MultiInstanceActivityBehavior extends FlowNodeActivityBeha
       }
       else if(obj instanceof Collection)
     	  return (Collection)obj;
-      else 
-        throw new ActivitiIllegalArgumentException("Variable " + collectionVariable+"' is not a Collection");
+      else
+      {
+    	  LOGGER.warn("Variable " + collectionVariable+"' is not a Collection");
+    	  return null;
+        
+      }
       
   }
   @SuppressWarnings("rawtypes")

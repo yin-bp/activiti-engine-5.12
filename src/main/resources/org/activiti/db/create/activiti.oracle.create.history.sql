@@ -272,4 +272,10 @@ create table td_wf_rejectlog
 alter table td_wf_rejectlog
   add constraint rejectlog_pk primary key (NEWTASKID);
 
+ALTER TABLE ACT_HI_ACTINST
+ ADD (IS_AUTO_COMPLETE  NUMBER(1)                   DEFAULT 0);
+
+ALTER TABLE ACT_HI_ACTINST
+ ADD (AUTO_HANDLER  NVARCHAR2(255));
+
 

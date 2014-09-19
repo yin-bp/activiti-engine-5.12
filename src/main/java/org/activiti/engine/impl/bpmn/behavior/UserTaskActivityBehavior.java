@@ -27,6 +27,7 @@ import org.activiti.engine.delegate.TaskListener;
 import org.activiti.engine.impl.TaskContext;
 import org.activiti.engine.impl.calendar.DueDateBusinessCalendar;
 import org.activiti.engine.impl.context.Context;
+import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
 import org.activiti.engine.impl.task.TaskDefinition;
@@ -111,6 +112,8 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
 		}
 		else
 		{
+			 Context.getCommandContext().getHistoryManager()
+		      .recordUseTaskActivityAutoComplete((ExecutionEntity) execution);
 			String BUSSINESSCONTROLCLASS = execution.getTaskContext().getBUSSINESSCONTROLCLASS();
 			if(StringUtil.isNotEmpty(BUSSINESSCONTROLCLASS))
 			{

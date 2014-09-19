@@ -43,6 +43,8 @@ import org.activiti.engine.task.IdentityLink;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.frameworkset.util.StringUtil;
+
 /**
  * Manager class that centralises recording of all history-related operations
  * that are originated from inside the engine.
@@ -185,6 +187,22 @@ public class HistoryManager extends AbstractManager {
       HistoricActivityInstanceEntity historicActivityInstance = findActivityInstance(executionEntity);
       if (historicActivityInstance!=null) {
         historicActivityInstance.markEnded(null);
+      }
+    }
+  }
+  
+  /**
+   * Record the auto complete of an activitiy, if activity history is enabled.
+   */
+  public void recordUseTaskActivityAutoComplete(ExecutionEntity executionEntity) {
+    if(isHistoryLevelAtLeast(HistoryLevel.ACTIVITY)) {
+      HistoricActivityInstanceEntity historicActivityInstance = findActivityInstance(executionEntity);
+      if (historicActivityInstance!=null) {
+    	  historicActivityInstance.setAutoComplete(1);
+    	  if(StringUtil.isNotEmpty(executionEntity.getTaskContext().getBUSSINESSCONTROLCLASS()))
+    	  {
+    		  historicActivityInstance.setAutoCompleteHandler(executionEntity.getTaskContext().getBUSSINESSCONTROLCLASS());
+    	  }
       }
     }
   }

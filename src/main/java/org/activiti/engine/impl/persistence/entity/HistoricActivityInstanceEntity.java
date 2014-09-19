@@ -69,6 +69,10 @@ public HistoricActivityInstanceEntity()
    * '节假日策略，1-考虑节假日，不考虑作息时间，0-不考虑节假日，不考虑作息时间，2-考虑节假日，考虑作息时间，默认值为1';
    */
   protected int IS_CONTAIN_HOLIDAY;
+  
+  protected int autoComplete;
+  protected String autoCompleteHandler;
+  
   public Object getPersistentState() {
     Map<String, Object> persistentState = (Map<String, Object>) new HashMap<String, Object>();
     persistentState.put("endTime", endTime);
@@ -190,6 +194,22 @@ public int getIS_CONTAIN_HOLIDAY() {
 
 public void setIS_CONTAIN_HOLIDAY(int iS_CONTAIN_HOLIDAY) {
 	IS_CONTAIN_HOLIDAY = iS_CONTAIN_HOLIDAY;
+}
+
+public int getAutoComplete() {
+	return autoComplete;
+}
+
+public void setAutoComplete(int autoComplete) {
+	this.autoComplete = autoComplete;
+}
+
+public String getAutoCompleteHandler() {
+	return autoCompleteHandler;
+}
+
+public void setAutoCompleteHandler(String autoCompleteHandler) {
+	this.autoCompleteHandler = autoCompleteHandler;
 }
 
 }

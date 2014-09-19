@@ -18,6 +18,7 @@ import org.activiti.engine.delegate.BpmnError;
 import org.activiti.engine.delegate.JavaDelegate;
 import org.activiti.engine.impl.TaskContext;
 import org.activiti.engine.impl.context.Context;
+import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 
@@ -111,6 +112,8 @@ public class SequentialMultiInstanceBehavior extends MultiInstanceActivityBehavi
 	}
 	else
 	{
+		Context.getCommandContext().getHistoryManager()
+	      .recordUseTaskActivityAutoComplete((ExecutionEntity) execution);
 		String BUSSINESSCONTROLCLASS = execution.getTaskContext().getBUSSINESSCONTROLCLASS();
 		if(StringUtil.isNotEmpty(BUSSINESSCONTROLCLASS))
 		{
