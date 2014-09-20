@@ -47,6 +47,10 @@
 	<classpathentry kind="lib" path="lib-log/slf4j-api-1.7.2.jar"/>
 	<classpathentry kind="lib" path="lib-log/slf4j-log4j12-1.7.2.jar"/>
 	<classpathentry kind="lib" path="libs-test/jgraphx-1.10.4.2.jar"/>
-	<classpathentry kind="lib" path="lib/bboss-core.jar"/>
+	<classpathentry kind="lib" path="lib/bboss-core.jar" sourcepath="/bboss-core"/>
+	<classpathentry kind="lib" path="lib/bboss-velocity.jar"/>
+	<classpathentry kind="lib" path="lib/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="lib" path="lib/frameworkset-pool-sources.jar"/>
+	<classpathentry kind="lib" path="lib/log4j-1.2.14.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
