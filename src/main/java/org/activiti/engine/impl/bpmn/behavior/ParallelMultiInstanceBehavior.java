@@ -162,11 +162,11 @@ public class ParallelMultiInstanceBehavior extends MultiInstanceActivityBehavior
         }
         executionToRemove.inactivate();
         if(!customDTask)
-        	executionToRemove.deleteCascade("multi-instance completed");
+        	executionToRemove.deleteCascade("multi-instance completed",execution.getBussinessop(),execution.getBussinessRemark());
         else
         {
         	
-        	executionToRemove.deleteCascade(deleteReason);
+        	executionToRemove.deleteCascade(deleteReason,execution.getBussinessop(),execution.getBussinessRemark());
         }
       }
      

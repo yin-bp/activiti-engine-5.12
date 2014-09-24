@@ -82,8 +82,8 @@ public class RuntimeServiceImpl extends ServiceImpl implements RuntimeService {
     return commandExecutor.execute(new StartProcessInstanceCmd<ProcessInstance>(null, processDefinitionId, businessKey, variables));
   }
   
-  public void deleteProcessInstance(String processInstanceId, String deleteReason) {
-    commandExecutor.execute(new DeleteProcessInstanceCmd(processInstanceId, deleteReason));
+  public void deleteProcessInstance(String processInstanceId, String deleteReason,String bussinessOperation,String bussinessRemark) {
+    commandExecutor.execute(new DeleteProcessInstanceCmd(processInstanceId, deleteReason,  bussinessOperation,  bussinessRemark));
   }
 
   public ExecutionQuery createExecutionQuery() {

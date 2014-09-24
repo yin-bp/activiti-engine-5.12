@@ -140,6 +140,8 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
   
   protected boolean deleteRoot;
   protected String deleteReason;
+  protected String bussinessop;
+  protected String bussinessRemark;
   
   // replaced by //////////////////////////////////////////////////////////////
   
@@ -1010,7 +1012,7 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
     deleteVariablesInstanceForLeavingScope();
     
     // delete all the tasks
-    removeTasks(null);
+    removeTasks(null,null,null);
     
     // remove all jobs
     removeJobs();
@@ -1031,7 +1033,7 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
       .delete(this);
   }
 
-  public void destroyScope(String reason) {
+  public void destroyScope(String reason,String bussinessop,String bussinessRemark) {
     
     if(log.isDebugEnabled()) {
       log.debug("performing destroy scope behavior for execution {}", this);
@@ -1041,12 +1043,12 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
     List<InterpretableExecution> executions = new ArrayList<InterpretableExecution>(getExecutions());
     for (InterpretableExecution childExecution : executions) {
       if (childExecution.getSubProcessInstance()!=null) {
-        childExecution.getSubProcessInstance().deleteCascade(reason);
+        childExecution.getSubProcessInstance().deleteCascade(reason,  bussinessop,  bussinessRemark);
       }      
-      childExecution.deleteCascade(reason);
+      childExecution.deleteCascade(reason,  bussinessop,  bussinessRemark);
     } 
     
-    removeTasks(reason);
+    removeTasks(reason,  bussinessop,  bussinessRemark);
     removeJobs();
     // Daniel thought this would be needed, but it seems not: removeEventSubscriptions();
   } 
@@ -1082,7 +1084,7 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
     }
   }
 
-  private void removeTasks(String reason) {    
+  private void removeTasks(String reason,String bussinessop,String bussinessRemark) {    
      if(this.deleteReason == null)
      {
     	 if(reason == null) {
@@ -1104,7 +1106,7 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
       } else {
         Context.getCommandContext()
           .getTaskEntityManager()
-          .deleteTask(task, reason, false);
+          .deleteTask(task, reason, false,  bussinessop,  bussinessRemark);
       }
     }
   }
@@ -1237,9 +1239,11 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
       .insert(this);
   }
   
-  public void deleteCascade(String deleteReason) {
+  public void deleteCascade(String deleteReason,String bussinessop,String bussinessRemark) {
     this.deleteReason = deleteReason;
     this.deleteRoot = true;
+    this.bussinessop = bussinessop;
+    this.bussinessRemark = bussinessRemark;
     performOperation(AtomicOperation.DELETE_CASCADE);
   }
   
@@ -1588,6 +1592,22 @@ public TaskContext getTaskContext() {
 public void setTaskContext(TaskContext taskContext) {
 	// TODO Auto-generated method stub
 	this.taskContext = taskContext;
+}
+
+public String getBussinessop() {
+	return bussinessop;
+}
+
+public void setBussinessop(String bussinessop) {
+	this.bussinessop = bussinessop;
+}
+
+public String getBussinessRemark() {
+	return bussinessRemark;
+}
+
+public void setBussinessRemark(String bussinessRemark) {
+	this.bussinessRemark = bussinessRemark;
 }
   
 }

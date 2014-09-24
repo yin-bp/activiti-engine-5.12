@@ -32,7 +32,7 @@ import org.activiti.engine.task.Task;
 public class TaskEntityManager extends AbstractManager {
 
   @SuppressWarnings({ "unchecked", "rawtypes" })
-  public void deleteTasksByProcessInstanceId(String processInstanceId, String deleteReason, boolean cascade) {
+  public void deleteTasksByProcessInstanceId(String processInstanceId, String deleteReason, boolean cascade,String bussinessop,String bussinessRemark) {
     List<TaskEntity> tasks = (List) getDbSqlSession()
       .createTaskQuery()
       .processInstanceId(processInstanceId)
@@ -41,11 +41,11 @@ public class TaskEntityManager extends AbstractManager {
     String reason = (deleteReason == null || deleteReason.length() == 0) ? TaskEntity.DELETE_REASON_DELETED : deleteReason;
     
     for (TaskEntity task: tasks) {
-      deleteTask(task, reason, cascade);
+      deleteTask(task, reason, cascade,  bussinessop,  bussinessRemark);
     }
   }
 
-  public void deleteTask(TaskEntity task, String deleteReason, boolean cascade) {
+  public void deleteTask(TaskEntity task, String deleteReason, boolean cascade,String bussinessop,String bussinessRemark) {
     if (!task.isDeleted()) {
       task.setDeleted(true);
       
@@ -54,7 +54,7 @@ public class TaskEntityManager extends AbstractManager {
       
       List<Task> subTasks = findTasksByParentTaskId(taskId);
       for (Task subTask: subTasks) {
-        deleteTask((TaskEntity) subTask, deleteReason, cascade);
+        deleteTask((TaskEntity) subTask, deleteReason, cascade,  bussinessop,  bussinessRemark);
       }
       
       commandContext
@@ -72,7 +72,7 @@ public class TaskEntityManager extends AbstractManager {
       } else {
         commandContext
           .getHistoryManager()
-          .recordTaskEnd(taskId, deleteReason);
+          .recordTaskEnd(taskId, deleteReason,  bussinessop,  bussinessRemark);
       }
         
       getDbSqlSession().delete(task);
@@ -128,7 +128,7 @@ public class TaskEntityManager extends AbstractManager {
     return getDbSqlSession().selectList("selectTasksByParentTaskId", parentTaskId);
   }
 
-  public void deleteTask(String taskId, String deleteReason, boolean cascade) {
+  public void deleteTask(String taskId, String deleteReason, boolean cascade,String bussinessop,String bussinessRemark) {
     TaskEntity task = Context
       .getCommandContext()
       .getTaskEntityManager()
@@ -140,7 +140,7 @@ public class TaskEntityManager extends AbstractManager {
       }
       
       String reason = (deleteReason == null || deleteReason.length() == 0) ? TaskEntity.DELETE_REASON_DELETED : deleteReason;
-      deleteTask(task, reason, cascade);
+      deleteTask(task, reason, cascade,  bussinessop,  bussinessRemark);
     } else if (cascade) {
       Context
         .getCommandContext()

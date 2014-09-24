@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.activiti.engine.ActivitiException;
 import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.activiti.engine.impl.AbstractVariableQueryImpl;
 import org.activiti.engine.impl.Page;
@@ -34,12 +33,12 @@ import org.activiti.engine.runtime.ProcessInstance;
 public class ExecutionEntityManager extends AbstractManager {
   
   @SuppressWarnings("unchecked")
-  public void deleteProcessInstancesByProcessDefinition(String processDefinitionId, String deleteReason, boolean cascade) {
+  public void deleteProcessInstancesByProcessDefinition(String processDefinitionId, String deleteReason, boolean cascade,String bussinessOperation,String bussinessRemark) {
     List<String> processInstanceIds = getDbSqlSession()
       .selectList("selectProcessInstanceIdsByProcessDefinitionId", processDefinitionId);
   
     for (String processInstanceId: processInstanceIds) {
-      deleteProcessInstance(processInstanceId, deleteReason, cascade);
+      deleteProcessInstance(processInstanceId, deleteReason, cascade,  bussinessOperation,  bussinessRemark);
     }
     
     if (cascade) {
@@ -50,24 +49,26 @@ public class ExecutionEntityManager extends AbstractManager {
     }
   }
 
-  public void deleteProcessInstance(String processInstanceId, String deleteReason) {
-    deleteProcessInstance(processInstanceId, deleteReason, false);
+  public void deleteProcessInstance(String processInstanceId, String deleteReason,String bussinessOperation,String bussinessRemark) {
+    deleteProcessInstance(processInstanceId, deleteReason, false,  bussinessOperation,  bussinessRemark);
   }
 
-  public void deleteProcessInstance(String processInstanceId, String deleteReason, boolean cascade) {
+  public void deleteProcessInstance(String processInstanceId, String deleteReason, boolean cascade,String bussinessOperation,String bussinessRemark) {
     ExecutionEntity execution = findExecutionById(processInstanceId);
     
     if(execution == null) {
       throw new ActivitiObjectNotFoundException("No process instance found for id '" + processInstanceId + "'", ProcessInstance.class);
     }
-    
+    execution.setDeleteReason(deleteReason);
+    execution.setBussinessop(bussinessOperation);
+    execution.setBussinessRemark(bussinessRemark);
     CommandContext commandContext = Context.getCommandContext();
     commandContext
       .getTaskEntityManager()
-      .deleteTasksByProcessInstanceId(processInstanceId, deleteReason, cascade);
+      .deleteTasksByProcessInstanceId(processInstanceId, deleteReason, cascade,  bussinessOperation,  bussinessRemark);
     
     // delete the execution BEFORE we delete the history, otherwise we will produce orphan HistoricVariableInstance instances
-    execution.deleteCascade(deleteReason);
+    execution.deleteCascade(deleteReason, bussinessOperation,  bussinessRemark);
     
     if (cascade) {
       commandContext

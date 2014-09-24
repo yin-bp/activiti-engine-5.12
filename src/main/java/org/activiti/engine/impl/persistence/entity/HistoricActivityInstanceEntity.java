@@ -80,6 +80,19 @@ public HistoricActivityInstanceEntity()
     persistentState.put("deleteReason", deleteReason);
     persistentState.put("executionId", executionId);
     persistentState.put("assignee", assignee);
+    
+    persistentState.put("owner", owner);    
+    
+    if (claimTime != null) {
+      persistentState.put("claimTime", claimTime);
+    }
+    if(this.bussinessOperation != null)
+    	persistentState.put("bussinessOperation", bussinessOperation);
+    if(this.bussinessRemark != null)
+    {
+    	persistentState.put("bussinessRemark", bussinessRemark);
+    }
+    
     return persistentState;
   }
 

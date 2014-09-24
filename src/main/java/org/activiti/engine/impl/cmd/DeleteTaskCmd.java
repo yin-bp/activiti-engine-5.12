@@ -63,6 +63,6 @@ public class DeleteTaskCmd implements Command<Void>, Serializable {
     Context
       .getCommandContext()
       .getTaskEntityManager()
-      .deleteTask(taskId, deleteReason, cascade);
+      .deleteTask(taskId, deleteReason, cascade,null,null);
   }
 }

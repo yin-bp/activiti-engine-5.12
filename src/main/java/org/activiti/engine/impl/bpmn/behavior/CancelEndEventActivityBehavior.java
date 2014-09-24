@@ -41,7 +41,7 @@ public class CancelEndEventActivityBehavior extends FlowNodeActivityBehavior {
     ActivityExecution scopeExecution = ScopeUtil.findScopeExecutionForScope((ExecutionEntity)execution, cancelBoundaryEvent.getParentActivity());    
     
     // end all executions and process instances in the scope of the transaction
-    scopeExecution.destroyScope("cancel end event fired");
+    scopeExecution.destroyScope("cancel end event fired",execution.getBussinessop(),execution.getBussinessRemark());
     
     // the scope execution executes the boundary event
     InterpretableExecution outgoingExecution = (InterpretableExecution)scopeExecution;

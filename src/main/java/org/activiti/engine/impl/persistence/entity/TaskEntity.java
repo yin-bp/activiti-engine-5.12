@@ -141,16 +141,15 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
 		  this.historicTaskInstanceEntity.setIS_CONTAIN_HOLIDAY(getIS_CONTAIN_HOLIDAY());
 		  this.historicTaskInstanceEntity.setDURATION_NODE(getDURATION_NODE());
 		  this.historicTaskInstanceEntity.setNOTICERATE(getNOTICERATE());
+		  CommandContext commandContext = Context.getCommandContext();
+		    // if there is no command context, then it means that the user is calling the 
+		    // setAssignee outside a service method.  E.g. while creating a new task.
+		    if (commandContext!=null) {
+		      commandContext
+		        .getHistoryManager()
+		        .recordTaskKPIChange(this);
+		    }
 		  
-		  if(historicActivityInstanceEntity != null)
-		  {
-			  this.historicActivityInstanceEntity.setALERTTIME(getALERTTIME());
-		      this.historicActivityInstanceEntity.setOVERTIME(getOVERTIME());
-			  this.historicActivityInstanceEntity.setIS_CONTAIN_HOLIDAY(getIS_CONTAIN_HOLIDAY());
-			  this.historicActivityInstanceEntity.setDURATION_NODE(getDURATION_NODE());
-			  this.historicActivityInstanceEntity.setNOTICERATE(getNOTICERATE());
-			    
-		  }
   }
   
   /** creates and initializes a new persistent task. */
@@ -222,13 +221,13 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
   
   public void complete(TaskContext taskContext )
   {
-	  complete(taskContext,null );
+	  complete(taskContext,(String)null ,(String)null,(String)null);
   }
   /**
    * 任务完成时特定的跳转目标地址
    */
   private String destinationTaskKey;
-  public void complete(TaskContext taskContext ,String completeReason) {
+  public void complete(TaskContext taskContext ,String completeReason,String bussinessop,String bussinessRemark) {
 	this.destinationTaskKey = taskContext.getDestinationTaskKey();
     fireEvent(TaskListener.EVENTNAME_COMPLETE);
 
@@ -356,14 +355,17 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
     Context
       .getCommandContext()
       .getTaskEntityManager()
-      .deleteTask(this, deleteReason, false);
+      .deleteTask(this, deleteReason, false,  bussinessop,  bussinessRemark);
     
     if (execution!=null) {
 //      execution = getExecution();
       if(customDTask || completeReason != null)
       {
     	  execution.setDeleteReason(deleteReason);
+    	 
       }
+      execution.setBussinessop(bussinessop);
+	  execution.setBussinessRemark(bussinessRemark);
       
       execution.removeTask(this);
 //      execution.signal(null, null);
@@ -678,7 +680,7 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
     if (commandContext!=null) {
       commandContext
         .getHistoryManager()
-        .recordTaskOwnerChange(id, owner);
+        .recordTaskOwnerChange(this, owner);
       
       if (owner != null && processInstanceId != null) {
         getProcessInstance().involveUser(owner, IdentityLinkType.PARTICIPANT);

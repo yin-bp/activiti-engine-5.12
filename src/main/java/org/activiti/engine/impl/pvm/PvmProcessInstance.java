@@ -29,5 +29,5 @@ public interface PvmProcessInstance extends PvmExecution {
   
   boolean isEnded();
 
-  void deleteCascade(String deleteReason);
+  void deleteCascade(String deleteReason,String bussinessop,String bussinessRemark);
 }

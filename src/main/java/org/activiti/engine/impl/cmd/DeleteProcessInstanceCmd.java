@@ -27,10 +27,14 @@ public class DeleteProcessInstanceCmd implements Command<Void>, Serializable {
   private static final long serialVersionUID = 1L;
   protected String processInstanceId;
   protected String deleteReason;
+  protected String bussinessOperation;
+  protected String bussinessRemark;
 
-  public DeleteProcessInstanceCmd(String processInstanceId, String deleteReason) {
+  public DeleteProcessInstanceCmd(String processInstanceId, String deleteReason,String bussinessOperation,String bussinessRemark) {
     this.processInstanceId = processInstanceId;
     this.deleteReason = deleteReason;
+    this.bussinessOperation = bussinessOperation;
+    this.bussinessRemark = bussinessRemark;
   }
 
   public Void execute(CommandContext commandContext) { 
@@ -40,7 +44,7 @@ public class DeleteProcessInstanceCmd implements Command<Void>, Serializable {
     
     commandContext
       .getExecutionEntityManager()
-      .deleteProcessInstance(processInstanceId, deleteReason);
+      .deleteProcessInstance(processInstanceId, deleteReason,  bussinessOperation,  bussinessRemark);
     return null;
   }
 

@@ -47,7 +47,7 @@ public class EventSubProcessStartEventActivityBehavior extends NoneStartEventAct
     ActivityExecution outgoingExecution = execution;
     
     if(isInterrupting) {
-      execution.destroyScope("Event subprocess triggered using activity "+ activityId);
+      execution.destroyScope("Event subprocess triggered using activity "+ activityId,execution.getBussinessop(),execution.getBussinessRemark());
     } else{ 
       outgoingExecution = execution.createExecution();
       outgoingExecution.setActive(true);

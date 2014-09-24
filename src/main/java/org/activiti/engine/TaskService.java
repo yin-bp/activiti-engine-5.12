@@ -140,7 +140,7 @@ public interface TaskService {
    * @throws ActivitiException when this task is {@link DelegationState#PENDING} delegation.
    */
   void complete(String taskId);
-  void completeWithReason(String taskId,String completeReason);
+  void completeWithReason(String taskId,String completeReason,String bussinessop,String bussinessRemark);
   
   /**
    * Called when the task is successfully executed.
@@ -150,7 +150,7 @@ public interface TaskService {
    * @throws ActivitiException when this task is {@link DelegationState#PENDING} delegation.
    */
   void completeWithDest(String taskId,String destinationTaskKey);
-  void completeWithDestReason(String taskId,String destinationTaskKey,String completeReason);
+  void completeWithDestReason(String taskId,String destinationTaskKey,String completeReason,String bussinessop,String bussinessRemark);
   /**
    * 用于任务驳回操作
    * @param taskId the id of the task to complete, cannot be null.
@@ -158,7 +158,7 @@ public interface TaskService {
    * @param rejected true 表示驳回操作，false表示正常完成任务
    */
   void complete(String taskId, Map<String, Object> variables,boolean rejected);
-  void completeWithReason(String taskId, Map<String, Object> variables,boolean rejected,String reason);
+  void completeWithReason(String taskId, Map<String, Object> variables,boolean rejected,String reason,String bussinessop,String bussinessRemark);
   /**
    * Delegates the task to another user. This means that the assignee is set 
    * and the delegation state is set to {@link DelegationState#PENDING}.
@@ -187,7 +187,7 @@ public interface TaskService {
    * @throws ActivitiObjectNotFoundException when no task exists with the given id.
    */
   void complete(String taskId, Map<String, Object> variables);
-  void completeWithReason(String taskId, Map<String, Object> variables,String completeReason);
+  void completeWithReason(String taskId, Map<String, Object> variables,String completeReason,String bussinessop,String bussinessRemark);
   /**
    * Called when the task is successfully executed, 
    * and the required task parameters are given by the end-user.
@@ -209,7 +209,7 @@ public interface TaskService {
    * @throws ActivitiObjectNotFoundException when no task exists with the given id.
    */
   void complete(String taskId, Map<String, Object> variables,String destinationTaskKey);
-  void completeWithReason(String taskId, Map<String, Object> variables,String destinationTaskKey,String reason);
+  void completeWithReason(String taskId, Map<String, Object> variables,String destinationTaskKey,String reason,String bussinessop,String bussinessRemark);
   
   
   /**
@@ -232,13 +232,13 @@ public interface TaskService {
    * @param variables
  * @return 
    */
-  boolean rejecttoPreTask(String taskId, Map<String, Object> variables,String rejectReason);
+  boolean rejecttoPreTask(String taskId, Map<String, Object> variables,String rejectReason,String bussinessop,String bussinessRemark);
   
   /**
    * 将当前任务驳回到上一个任务处理人处
    * @param taskId
    */
-  boolean rejecttoPreTask(String taskId,String rejectReason);
+  boolean rejecttoPreTask(String taskId,String rejectReason,String bussinessop,String bussinessRemark);
 
 
   /**
@@ -477,7 +477,7 @@ public interface TaskService {
   * @param rejectedtype 0-驳回上一个任务对应的节点 1-驳回到当前节点的上一个节点（多条路径暂时不支持）
   * @return
   */
- public boolean rejecttoPreTask(String taskId, Map<String, Object> variables,String rejectReason,int rejectedtype);
+ public boolean rejecttoPreTask(String taskId, Map<String, Object> variables,String rejectReason,int rejectedtype,String bussinessop,String bussinessRemark);
  
  
  /**
@@ -491,7 +491,7 @@ public interface TaskService {
   * 将当前任务驳回到上一个任务处理人处
   * @param taskId
   */
- public boolean rejecttoPreTask(String taskId,String rejectReason,int rejectedtype);
+ public boolean rejecttoPreTask(String taskId,String rejectReason,int rejectedtype,String bussinessop,String bussinessRemark);
  
  
  /**
@@ -511,7 +511,7 @@ public boolean rejecttoTask(String taskId, Map<String, Object> variables,String 
  * @param rejectedtype 0-驳回上一个任务对应的节点 1-驳回到当前节点的上一个节点（多条路径暂时不支持）
  * @return
  */
-public boolean rejecttoTask(String taskId, Map<String, Object> variables,String rejectReason,String desttaskkey);
+public boolean rejecttoTask(String taskId, Map<String, Object> variables,String rejectReason,String desttaskkey,String bussinessop,String bussinessRemark);
 
 
 /**
@@ -525,7 +525,7 @@ public boolean rejecttoTask(String taskId,String desttaskkey);
  * 将当前任务驳回到上一个任务处理人处
  * @param taskId
  */
-public boolean rejecttoTask(String taskId,String rejectReason,String desttaskkey);
+public boolean rejecttoTask(String taskId,String rejectReason,String desttaskkey,String bussinessop,String bussinessRemark);
  
  /**
   * 获取当前任务的驳回节点 
@@ -591,7 +591,7 @@ public boolean rejecttoTask(String taskId, Map<String, Object> variables,String 
 * @param rejectedtype 0-驳回上一个任务对应的节点 1-驳回到当前节点的上一个节点（多条路径暂时不支持）
 * @return
 */
-public boolean rejecttoTask(String taskId, Map<String, Object> variables,String rejectReason,String desttaskkey,boolean returntoreject);
+public boolean rejecttoTask(String taskId, Map<String, Object> variables,String rejectReason,String desttaskkey,boolean returntoreject,String bussinessop,String bussinessRemark);
 
 
 /**
@@ -605,6 +605,6 @@ public boolean rejecttoTask(String taskId,String desttaskkey,boolean returntorej
 * 将当前任务驳回到上一个任务处理人处
 * @param taskId
 */
-public boolean rejecttoTask(String taskId,String rejectReason,String desttaskkey,boolean returntoreject);
+public boolean rejecttoTask(String taskId,String rejectReason,String desttaskkey,boolean returntoreject,String bussinessop,String bussinessRemark);
 
 }

@@ -50,7 +50,6 @@ import org.activiti.engine.impl.cmd.SaveAttachmentCmd;
 import org.activiti.engine.impl.cmd.SaveTaskCmd;
 import org.activiti.engine.impl.cmd.SetTaskPriorityCmd;
 import org.activiti.engine.impl.cmd.SetTaskVariablesCmd;
-import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
@@ -171,9 +170,10 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
 //  public void complete( boolean returntoreject,String taskId) {
 //	    commandExecutor.execute(new CompleteTaskCmd(taskId, returntoreject, (Map<String, Object>) null));
 //	  }
-  public void completeWithReason(String taskId,String completeReason)
+  public void completeWithReason(String taskId,String completeReason,String bussinessop,String bussinessRemark)
   {
-	  commandExecutor.execute(new CompleteTaskCmd(taskId, null,completeReason));
+//	  commandExecutor.execute(new CompleteTaskCmd(taskId, null,completeReason));
+	  commandExecutor.execute(new CompleteTaskCmd(taskId,completeReason, ( Map<String, Object>)null,(String)null, bussinessop, bussinessRemark));
   }
   
 //  public void completeWithReason( boolean returntoreject,String taskId,String completeReason)
@@ -191,9 +191,9 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
   {
 	  commandExecutor.execute(new CompleteTaskCmd(taskId, null,destinationTaskKey));
   }
-  public void completeWithDestReason(String taskId,String destinationTaskKey,String completeReason)
+  public void completeWithDestReason(String taskId,String destinationTaskKey,String completeReason,String bussinessop,String bussinessRemark)
   {
-	  commandExecutor.execute(new CompleteTaskCmd(taskId,completeReason, null,destinationTaskKey));
+	  commandExecutor.execute(new CompleteTaskCmd(taskId,completeReason, null,destinationTaskKey, bussinessop, bussinessRemark));
   }
   public void complete(String taskId, Map<String, Object> variables) {
     commandExecutor.execute(new CompleteTaskCmd(taskId, variables));
@@ -202,9 +202,9 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
 //  public void complete( boolean returntoreject,String taskId, Map<String, Object> variables) {
 //	    commandExecutor.execute(new CompleteTaskCmd(taskId, returntoreject, variables));
 //	  }
-  public void completeWithReason(String taskId, Map<String, Object> variables,String completeReason)
+  public void completeWithReason(String taskId, Map<String, Object> variables,String completeReason,String bussinessop,String bussinessRemark)
   {
-	  commandExecutor.execute(new CompleteTaskCmd(taskId,completeReason, variables));
+	  commandExecutor.execute(new CompleteTaskCmd(taskId,completeReason, variables,  bussinessop,  bussinessRemark));
   }
   
 //  public void completeWithReason(boolean returntoreject,String taskId, Map<String, Object> variables,String completeReason)
@@ -236,35 +236,35 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
   {
 	  commandExecutor.execute(new CompleteTaskCmd(taskId, variables,destinationTaskKey));
   }
-  public void completeWithReason(String taskId, Map<String, Object> variables,String destinationTaskKey,String reason)
+  public void completeWithReason(String taskId, Map<String, Object> variables,String destinationTaskKey,String reason,String bussinessop,String bussinessRemark)
   {
-	  commandExecutor.execute(new CompleteTaskCmd(taskId, reason,variables,destinationTaskKey));
+	  commandExecutor.execute(new CompleteTaskCmd(taskId, reason,variables,destinationTaskKey,  bussinessop,  bussinessRemark));
   }
   public void complete(String taskId, Map<String, Object> variables,boolean rejected)
   {
 	  commandExecutor.execute(new CompleteTaskCmd(taskId, variables,rejected));
   }
-  public void completeWithReason(String taskId, Map<String, Object> variables,boolean rejected,String reason)
+  public void completeWithReason(String taskId, Map<String, Object> variables,boolean rejected,String reason,String bussinessop,String bussinessRemark)
   {
-	  commandExecutor.execute(new CompleteTaskCmd(taskId, variables,rejected,reason));
+	  commandExecutor.execute(new CompleteTaskCmd(taskId, variables,rejected,reason,  bussinessop,  bussinessRemark));
   }
   
   public void complete(String taskId, Map<String, Object> variables,boolean rejected,int rejectedtype)
   {
 	  commandExecutor.execute(new CompleteTaskCmd(taskId, variables,rejected, rejectedtype));
   }
-  public void completeWithReason(String taskId, Map<String, Object> variables,boolean rejected,int rejectedtype,String reason)
+  public void completeWithReason(String taskId, Map<String, Object> variables,boolean rejected,int rejectedtype,String reason,String bussinessop,String bussinessRemark)
   {
-	  commandExecutor.execute(new CompleteTaskCmd(taskId, variables,rejected, rejectedtype,reason));
+	  commandExecutor.execute(new CompleteTaskCmd(taskId, variables,rejected, rejectedtype,reason,  bussinessop,  bussinessRemark));
   }
   
-  public void completeWithReason(String taskId, Map<String, Object> variables,boolean rejected,String rejecttonode,String reason)
+  public void completeWithReason(String taskId, Map<String, Object> variables,boolean rejected,String rejecttonode,String reason,String bussinessop,String bussinessRemark)
   {
-	  commandExecutor.execute(new CompleteTaskCmd(taskId,rejected,rejecttonode, variables,reason,false));
+	  commandExecutor.execute(new CompleteTaskCmd(taskId,rejected,rejecttonode, variables,reason,false,  bussinessop,  bussinessRemark));
   }
-  public void completeWithReason(String taskId, Map<String, Object> variables,boolean rejected,String rejecttonode,String reason,boolean returntoreject)
+  public void completeWithReason(String taskId, Map<String, Object> variables,boolean rejected,String rejecttonode,String reason,boolean returntoreject,String bussinessop,String bussinessRemark)
   {
-	  commandExecutor.execute(new CompleteTaskCmd(taskId,rejected,rejecttonode, variables,reason,returntoreject));
+	  commandExecutor.execute(new CompleteTaskCmd(taskId,rejected,rejecttonode, variables,reason,returntoreject,  bussinessop,  bussinessRemark));
   }
   public void delegateTask(String taskId, String userId) {
     commandExecutor.execute(new DelegateTaskCmd(taskId, userId));
@@ -445,13 +445,13 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
 	  		tm.release();
 	  	}
   }
-  public boolean rejecttoPreTask(String taskId, Map<String, Object> variables,String rejectReason)
+  public boolean rejecttoPreTask(String taskId, Map<String, Object> variables,String rejectReason,String bussinessop,String bussinessRemark)
   {
 	  TransactionManager tm = new TransactionManager();
 	  try {
 		  tm.begin();
 		 
-			this.completeWithReason(taskId, variables,true, rejectReason);
+			this.completeWithReason(taskId, variables,true, rejectReason,  bussinessop,  bussinessRemark);
 			tm.commit();
 			return true;
 		}
@@ -482,9 +482,9 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
    * 将当前任务驳回到上一个任务处理人处
    * @param taskId
    */
-  public boolean rejecttoPreTask(String taskId,String rejectReason)
+  public boolean rejecttoPreTask(String taskId,String rejectReason,String bussinessop,String bussinessRemark)
   {
-	  return rejecttoPreTask(taskId,(Map<String, Object>)null, rejectReason);
+	  return rejecttoPreTask(taskId,(Map<String, Object>)null, rejectReason,  bussinessop,  bussinessRemark);
   }
   
   
@@ -527,13 +527,13 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
   * @param rejectedtype 0-驳回上一个任务对应的节点 1-驳回到当前节点的上一个节点（多条路径暂时不支持）
   * @return
   */
- public boolean rejecttoPreTask(String taskId, Map<String, Object> variables,String rejectReason,int rejectedtype)
+ public boolean rejecttoPreTask(String taskId, Map<String, Object> variables,String rejectReason,int rejectedtype,String bussinessop,String bussinessRemark)
  {
 	  TransactionManager tm = new TransactionManager();
 	  try {
 		    tm.begin();
 		 
-			this.completeWithReason(taskId, variables,true,rejectedtype, rejectReason);
+			this.completeWithReason(taskId, variables,true,rejectedtype, rejectReason,  bussinessop,  bussinessRemark);
 			tm.commit();
 			return true;
 		}
@@ -565,9 +565,9 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
   * 将当前任务驳回到上一个任务处理人处
   * @param taskId
   */
- public boolean rejecttoPreTask(String taskId,String rejectReason,int rejectedtype)
+ public boolean rejecttoPreTask(String taskId,String rejectReason,int rejectedtype,String bussinessop,String bussinessRemark)
  {
-	  return rejecttoPreTask(taskId,(Map<String, Object>)null, rejectReason, rejectedtype);
+	  return rejecttoPreTask(taskId,(Map<String, Object>)null, rejectReason, rejectedtype,  bussinessop,  bussinessRemark);
  }
  
  /**
@@ -578,9 +578,9 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
  * @param taskId
  * @param variables
  */
-public boolean rejecttoTask(String taskId, Map<String, Object> variables,String desttaskkey )
+public boolean rejecttoTask(String taskId, Map<String, Object> variables,String desttaskkey)
 {
-	return rejecttoTask( taskId,  variables,(String)null,desttaskkey);
+	return rejecttoTask( taskId,  variables,(String)null,desttaskkey, (String) null, (String) null);
 }
 /**
  * 
@@ -590,13 +590,13 @@ public boolean rejecttoTask(String taskId, Map<String, Object> variables,String 
  * @param rejectedtype 0-驳回上一个任务对应的节点 1-驳回到当前节点的上一个节点（多条路径暂时不支持）
  * @return
  */
-public boolean rejecttoTask(String taskId, Map<String, Object> variables,String rejectReason,String desttaskkey)
+public boolean rejecttoTask(String taskId, Map<String, Object> variables,String rejectReason,String desttaskkey,String bussinessop,String bussinessRemark)
 {
 	TransactionManager tm = new TransactionManager();
 	  try {
 		    tm.begin();
 		 
-			this.completeWithReason(taskId, variables,true,desttaskkey, rejectReason);
+			this.completeWithReason(taskId, variables,true,desttaskkey, rejectReason,  bussinessop,  bussinessRemark);
 			tm.commit();
 			return true;
 		}
@@ -621,16 +621,16 @@ public boolean rejecttoTask(String taskId, Map<String, Object> variables,String 
  */
 public boolean rejecttoTask(String taskId,String desttaskkey)
 {
-	return rejecttoTask( taskId,  (Map<String, Object>)null,(String)null,desttaskkey);
+	return rejecttoTask( taskId,  (Map<String, Object>)null,(String)null,desttaskkey,(String )null,(String)null);
 }
 
 /**
  * 将当前任务驳回到上一个任务处理人处
  * @param taskId
  */
-public boolean rejecttoTask(String taskId,String rejectReason,String desttaskkey)
+public boolean rejecttoTask(String taskId,String rejectReason,String desttaskkey,String bussinessop,String bussinessRemark)
 {
-	return rejecttoTask( taskId,  (Map<String, Object>)null,rejectReason,desttaskkey);
+	return rejecttoTask( taskId,  (Map<String, Object>)null,rejectReason,desttaskkey,  bussinessop,  bussinessRemark);
 }
  /**
   * 获取当前任务的驳回节点 
@@ -796,7 +796,6 @@ public ActivityImpl findFirstNodeByteTask(String taskId) {
 @Override
 public ActivityImpl findFirstNodeByDefID(String processdefid) {
 	try {
-		ConfigSQLExecutor executor = findProcessEngineConfigurationImpl().getExtendExecutor();
   		
 		ProcessDefinitionEntity def = (ProcessDefinitionEntity) ((RepositoryServiceImpl) this.findProcessEngineConfigurationImpl().getRepositoryService())
 				.getDeployedProcessDefinition(processdefid);
@@ -840,17 +839,17 @@ public ActivityImpl findFirstNodeByDefKey(String processdefKey) {
 public boolean rejecttoTask(String taskId, Map<String, Object> variables,
 		String desttaskkey, boolean returntoreject) {
 	return rejecttoTask( taskId, variables,
-			(String)null, desttaskkey, returntoreject);
+			(String)null, desttaskkey, returntoreject,(String)null,(String)null);
 }
 
 @Override
 public boolean rejecttoTask(String taskId, Map<String, Object> variables,
-		String rejectReason, String desttaskkey, boolean returntoreject) {
+		String rejectReason, String desttaskkey, boolean returntoreject,String bussinessop,String bussinessRemark) {
 	TransactionManager tm = new TransactionManager();
 	  try {
 		  tm.begin();
 		 
-		  completeWithReason( taskId,  variables,true,desttaskkey,rejectReason, returntoreject);
+		  completeWithReason( taskId,  variables,true,desttaskkey,rejectReason, returntoreject,  bussinessop,  bussinessRemark);
 			tm.commit();
 			return true;
 		}
@@ -871,13 +870,17 @@ public boolean rejecttoTask(String taskId, Map<String, Object> variables,
 public boolean rejecttoTask(String taskId, String desttaskkey,
 		boolean returntoreject) {
 	return rejecttoTask( taskId, (Map<String, Object>)null,
-			(String)null, desttaskkey, returntoreject);
+			(String)null, desttaskkey, returntoreject,(String )null,(String)null);
 }
 
 @Override
 public boolean rejecttoTask(String taskId, String rejectReason,
-		String desttaskkey, boolean returntoreject) {
+		String desttaskkey, boolean returntoreject,String bussinessop,String bussinessRemark) {
 	return rejecttoTask( taskId, (Map<String, Object>)null,
-			rejectReason, desttaskkey, returntoreject);
+			rejectReason, desttaskkey, returntoreject,  bussinessop,  bussinessRemark);
 }
+
+
+
+
 }

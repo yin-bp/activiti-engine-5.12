@@ -68,7 +68,7 @@ public class DeploymentEntityManager extends AbstractManager {
         String processDefinitionId = processDefinition.getId();
         
         getProcessInstanceManager()
-          .deleteProcessInstancesByProcessDefinition(processDefinitionId, "deleted deployment", cascade);
+          .deleteProcessInstancesByProcessDefinition(processDefinitionId, "deleted deployment", cascade,"删除流程部署记录","删除流程部署记录时级联删除流程实例");
     
       }
     }

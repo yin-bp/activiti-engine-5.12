@@ -57,7 +57,7 @@ public interface InterpretableExecution extends ActivityExecution, ExecutionList
 
   InterpretableExecution getSuperExecution();
 
-  void deleteCascade(String deleteReason);
+  void deleteCascade(String deleteReason,String bussinessop,String bussinessRemark);
   
   boolean isDeleteRoot();
 

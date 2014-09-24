@@ -182,7 +182,7 @@ act_hi_actinst
 			for(int j = 0; procinsts != null && j < procinsts.size(); j ++)
 			{
 				HashMap procinst = procinsts.get(j);
-				runtimeService.deleteProcessInstance((String)procinst.get("PROC_INST_ID_"), "流程部署"+deployment.getName()+"使用删除历史版本未完成任务策略.");
+				runtimeService.deleteProcessInstance((String)procinst.get("PROC_INST_ID_"), "流程部署"+deployment.getName()+"使用删除历史版本未完成任务策略.","部署删除","部署流程时选择删除旧版本实例");
 			}
 			
 			for(int j =0; deployPolicyBeans != null && j < deployPolicyBeans.size();j ++)

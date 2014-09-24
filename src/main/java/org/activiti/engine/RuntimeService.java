@@ -245,7 +245,7 @@ public interface RuntimeService {
    * @param deleteReason reason for deleting, can be null.
    * @throws ActivitiObjectNotFoundException when no process instance is found with the given id.
    */
-  void deleteProcessInstance(String processInstanceId, String deleteReason);
+  void deleteProcessInstance(String processInstanceId, String deleteReason,String bussinessOperation,String bussinessRemark);
     
   /** Finds the activity ids for all executions that are waiting in activities. 
    * This is a list because a single activity can be active multiple times.

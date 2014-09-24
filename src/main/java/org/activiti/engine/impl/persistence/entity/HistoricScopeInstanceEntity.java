@@ -34,13 +34,29 @@ public abstract class HistoricScopeInstanceEntity implements PersistentObject, S
   protected Date endTime;
   protected Long durationInMillis;
   protected String deleteReason;
-
-  public void markEnded(String deleteReason) {
+  protected String bussinessRemark;
+  protected String bussinessOperation;
+  protected String owner;
+  protected Date claimTime;
+  public void markEnded(String deleteReason,String bussinessop,String bussinessRemark) {
     this.deleteReason = deleteReason;
     this.endTime = ClockUtil.getCurrentTime();
     this.durationInMillis = endTime.getTime() - startTime.getTime();
+    this.bussinessOperation = bussinessop;
+    this.bussinessRemark = bussinessRemark;
   }
-  
+  public Date getClaimTime() {
+	    return claimTime;
+	  }
+	  public void setClaimTime(Date claimTime) {
+	    this.claimTime = claimTime;
+	  }
+  public String getOwner() {
+	    return owner;
+	  }
+	  public void setOwner(String owner) {
+	    this.owner = owner;
+	  }
   // getters and setters //////////////////////////////////////////////////////
 
   public String getProcessInstanceId() {
@@ -85,4 +101,24 @@ public abstract class HistoricScopeInstanceEntity implements PersistentObject, S
   public void setDeleteReason(String deleteReason) {
     this.deleteReason = deleteReason;
   }
+
+	public String getBussinessRemark() {
+		return bussinessRemark;
+	}
+	
+	public void setBussinessRemark(String bussinessRemark) {
+		this.bussinessRemark = bussinessRemark;
+	}
+	
+	public String getBussinessOperation() {
+		return bussinessOperation;
+	}
+	
+	public void setBussinessOperation(String bussinessOperation) {
+		this.bussinessOperation = bussinessOperation;
+	}
+
+
+
+	
 }

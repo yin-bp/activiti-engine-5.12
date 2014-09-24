@@ -34,13 +34,13 @@ public class HistoricTaskInstanceEntity extends HistoricScopeInstanceEntity impl
   protected String name;
   protected String parentTaskId;
   protected String description;
-  protected String owner;
+  
   protected String assignee;
   protected String taskDefinitionKey;
   protected String formKey;
   protected int priority;
   protected Date dueDate;
-  protected Date claimTime;
+ 
   /**
    * 超时是否已经发送
    */
@@ -117,6 +117,12 @@ public class HistoricTaskInstanceEntity extends HistoricScopeInstanceEntity impl
     if (claimTime != null) {
       persistentState.put("claimTime", claimTime);
     }
+    if(this.bussinessOperation != null)
+    	persistentState.put("bussinessOperation", bussinessOperation);
+    if(this.bussinessRemark != null)
+    {
+    	persistentState.put("bussinessRemark", bussinessRemark);
+    }
     return persistentState;
   }
 
@@ -169,24 +175,14 @@ public class HistoricTaskInstanceEntity extends HistoricScopeInstanceEntity impl
   public void setDueDate(Date dueDate) {
     this.dueDate = dueDate;
   }
-  public String getOwner() {
-    return owner;
-  }
-  public void setOwner(String owner) {
-    this.owner = owner;
-  }
+  
   public String getParentTaskId() {
     return parentTaskId;
   }
   public void setParentTaskId(String parentTaskId) {
     this.parentTaskId = parentTaskId;
   }
-  public Date getClaimTime() {
-    return claimTime;
-  }
-  public void setClaimTime(Date claimTime) {
-    this.claimTime = claimTime;
-  }
+ 
   public Long getWorkTimeInMillis() {
     if (endTime == null || claimTime == null) {
       return null;

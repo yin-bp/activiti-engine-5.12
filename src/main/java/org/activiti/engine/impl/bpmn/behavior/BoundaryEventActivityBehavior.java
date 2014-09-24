@@ -52,12 +52,12 @@ public class BoundaryEventActivityBehavior extends FlowNodeActivityBehavior {
     
     if (interrupting) {
       if (executionEntity.getSubProcessInstance()!=null) {
-        executionEntity.getSubProcessInstance().deleteCascade(executionEntity.getDeleteReason());
+        executionEntity.getSubProcessInstance().deleteCascade(executionEntity.getDeleteReason(),execution.getBussinessop(),execution.getBussinessRemark());
       }
       
       interruptedExecutions = new ArrayList<ExecutionEntity>(executionEntity.getExecutions());
       for (ExecutionEntity interruptedExecution: interruptedExecutions) {
-        interruptedExecution.deleteCascade("interrupting boundary event '"+execution.getActivity().getId()+"' fired");
+        interruptedExecution.deleteCascade("interrupting boundary event '"+execution.getActivity().getId()+"' fired",execution.getBussinessop(),execution.getBussinessRemark());
       }
       
       execution.takeAll(outgoingTransitions, (List) interruptedExecutions);

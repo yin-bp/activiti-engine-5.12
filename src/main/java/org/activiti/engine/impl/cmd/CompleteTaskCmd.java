@@ -34,6 +34,8 @@ public class CompleteTaskCmd extends NeedsActiveTaskCmd<Void> {
   protected Map<String, Object> variables;
   
   protected String completeReason;
+  protected String bussinessop;
+  protected String bussinessRemark;
   protected boolean returntoreject; 
   
  
@@ -42,10 +44,12 @@ public class CompleteTaskCmd extends NeedsActiveTaskCmd<Void> {
 	    super(taskId);
 	    this.variables = variables;
 	  }
-	  public CompleteTaskCmd(String taskId, String completeReason,Map<String, Object> variables) {
+	  public CompleteTaskCmd(String taskId, String completeReason,Map<String, Object> variables,String bussinessop,String bussinessRemark) {
 	    super(taskId);
 	    this.variables = variables;
 	    this.completeReason = completeReason;
+	    this.bussinessop = bussinessop;
+	    this.bussinessRemark = bussinessRemark;
 	  }
   /**
    * 完成任务指定跳转目标节点
@@ -60,10 +64,12 @@ public class CompleteTaskCmd extends NeedsActiveTaskCmd<Void> {
     
   }
   
-  public CompleteTaskCmd(String taskId, String completeReason, Map<String, Object> variables,String destinationTaskKey) {
+  public CompleteTaskCmd(String taskId, String completeReason, Map<String, Object> variables,String destinationTaskKey,String bussinessop,String bussinessRemark) {
 	    super(taskId,destinationTaskKey);
 	    this.variables = variables;
 	    this.completeReason = completeReason;
+	    this.bussinessop = bussinessop;
+	    this.bussinessRemark = bussinessRemark;
 	  }
   protected String findTaskSourceRejectedNode(CommandContext commandContext)
   {
@@ -137,10 +143,12 @@ public class CompleteTaskCmd extends NeedsActiveTaskCmd<Void> {
 	    this.variables = variables;
 	    
 	  }
-  public CompleteTaskCmd(String taskId, Map<String, Object> variables,boolean isrejected,String reason) {
+  public CompleteTaskCmd(String taskId, Map<String, Object> variables,boolean isrejected,String reason,String bussinessop,String bussinessRemark) {
 	    super(taskId,isrejected,0);
 	    this.variables = variables;
 	    this.completeReason = reason;
+	    this.bussinessop = bussinessop;
+	    this.bussinessRemark = bussinessRemark;
 	  }
   public CompleteTaskCmd(String taskId,boolean isrejected,String destinationTaskKey, Map<String, Object> variables) {
 	  super( taskId, isrejected, destinationTaskKey);  
@@ -148,10 +156,12 @@ public class CompleteTaskCmd extends NeedsActiveTaskCmd<Void> {
 	  
 }
   
-  public CompleteTaskCmd(String taskId,boolean isrejected,String destinationTaskKey, Map<String, Object> variables,String reason,boolean returntoreject) {
+  public CompleteTaskCmd(String taskId,boolean isrejected,String destinationTaskKey, Map<String, Object> variables,String reason,boolean returntoreject,String bussinessop,String bussinessRemark) {
 	  super( taskId, isrejected, destinationTaskKey);  
 	  this.variables = variables;
 	  this.completeReason = reason;
+	  this.bussinessop = bussinessop;
+	    this.bussinessRemark = bussinessRemark;
 	  this.returntoreject = returntoreject;
 	  
 }
@@ -171,10 +181,12 @@ public class CompleteTaskCmd extends NeedsActiveTaskCmd<Void> {
 	    this.variables = variables;
 	    
 	  }
-public CompleteTaskCmd(String taskId, Map<String, Object> variables,boolean isrejected,int rejecttype,String reason) {
+public CompleteTaskCmd(String taskId, Map<String, Object> variables,boolean isrejected,int rejecttype,String reason,String bussinessop,String bussinessRemark) {
 	    super(taskId,isrejected,rejecttype);
 	    this.variables = variables;
 	    this.completeReason = reason;
+	    this.bussinessop = bussinessop;
+	    this.bussinessRemark = bussinessRemark;
 	  }
   protected Void execute(CommandContext commandContext, TaskEntity task) {
     if (variables!=null) {
@@ -213,20 +225,21 @@ public CompleteTaskCmd(String taskId, Map<String, Object> variables,boolean isre
 	    taskContext.setRejecttype(this.rejectedtype);
 	    taskContext.setReturntoreject(returntoreject);
     }
-    if(completeReason == null)
-    {
-//	    if(this.destinationTaskKey == null || this.destinationTaskKey.equals(""))
-//	    	task.complete();
-//	    else
-	    	task.complete(taskContext);
-    }
-    else
-    {
-//    	if(this.destinationTaskKey == null || this.destinationTaskKey.equals(""))
-//	    	task.complete(null,this.completeReason);
-//	    else
-	    	task.complete(taskContext,this.completeReason);
-    }
+//    if(completeReason == null)
+//    {
+////	    if(this.destinationTaskKey == null || this.destinationTaskKey.equals(""))
+////	    	task.complete();
+////	    else
+//	    	task.complete(taskContext,this.completeReason,this.bussinessop,this.bussinessRemark);
+//    }
+//    else
+//    {
+////    	if(this.destinationTaskKey == null || this.destinationTaskKey.equals(""))
+////	    	task.complete(null,this.completeReason);
+////	    else
+//	    	task.complete(taskContext,this.completeReason,this.bussinessop,this.bussinessRemark);
+//    }
+    task.complete(taskContext,this.completeReason,this.bussinessop,this.bussinessRemark);
     return null;
   }
   

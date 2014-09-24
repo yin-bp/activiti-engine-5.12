@@ -39,7 +39,8 @@
         TASK_DEF_KEY_,
         FORM_KEY_,
         PRIORITY_,
-        DUE_DATE_,OVERTIMESEND,DURATION_NODE,ADVANCESEND,ALERTTIME,OVERTIME,NOTICERATE,IS_CONTAIN_HOLIDAY
+        DUE_DATE_,OVERTIMESEND,DURATION_NODE,ADVANCESEND,ALERTTIME,OVERTIME,NOTICERATE,IS_CONTAIN_HOLIDAY,
+        BUSSINESS_OP,BUSSINESS_REMARK  
       ) values (
         #{id ,jdbcType=VARCHAR},
         #{processDefinitionId, jdbcType=VARCHAR},
@@ -65,7 +66,9 @@
         #{ALERTTIME, jdbcType=TIMESTAMP},
         #{OVERTIME, jdbcType=TIMESTAMP},
         #{NOTICERATE, jdbcType=INTEGER},
-        #{IS_CONTAIN_HOLIDAY, jdbcType=INTEGER}
+        #{IS_CONTAIN_HOLIDAY, jdbcType=INTEGER},
+        #{bussinessOperation ,jdbcType=VARCHAR},
+        #{bussinessRemark ,jdbcType=VARCHAR}
       )
   </insert>
 
@@ -86,7 +89,8 @@
       TASK_DEF_KEY_ = #{taskDefinitionKey ,jdbcType=VARCHAR},
       FORM_KEY_ = #{formKey ,jdbcType=VARCHAR},
       PRIORITY_ = #{priority, jdbcType=INTEGER},
-      DUE_DATE_ = #{dueDate, jdbcType=TIMESTAMP}
+      DUE_DATE_ = #{dueDate, jdbcType=TIMESTAMP},
+      BUSSINESS_OP =  #{bussinessOperation ,jdbcType=VARCHAR},BUSSINESS_REMARK= #{bussinessRemark ,jdbcType=VARCHAR}
     where ID_ = #{id}
   </update>
 
@@ -117,6 +121,9 @@
     <result property="formKey" column="FORM_KEY_" jdbcType="VARCHAR" />
     <result property="priority" column="PRIORITY_" jdbcType="INTEGER" />
     <result property="dueDate" column="DUE_DATE_" jdbcType="TIMESTAMP" />
+     <result property="bussinessOperation" column="BUSSINESS_OP" jdbcType="VARCHAR" />
+     <result property="bussinessRemark" column="BUSSINESS_REMARK" jdbcType="VARCHAR" />
+     
   </resultMap>
 
   <!-- HISTORIC TASK INSTANCE SELECT -->

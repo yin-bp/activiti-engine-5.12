@@ -28,7 +28,11 @@ import org.activiti.engine.impl.pvm.PvmTransition;
  * @author Falko Menge
  */
 public interface ActivityExecution extends DelegateExecution {
-  
+	public String getBussinessop() ;
+
+	;
+
+	public String getBussinessRemark() ;
   /* Process instance/activity/transition retrieval */
 
   /**
@@ -145,7 +149,7 @@ public interface ActivityExecution extends DelegateExecution {
    * Performs destroy scope behavior: all child executions and sub-process instances and other related
    * resources are removed. The execution itself can continue execution. 
    */
-  void destroyScope(String string);
+  void destroyScope(String string,String bussinessop,String bussinessRemark);
   
   TaskContext getTaskContext();
   public void setTaskContext(TaskContext taskContext);

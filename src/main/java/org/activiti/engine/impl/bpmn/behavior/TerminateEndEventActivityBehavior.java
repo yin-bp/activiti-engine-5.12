@@ -29,7 +29,7 @@ public class TerminateEndEventActivityBehavior extends FlowNodeActivityBehavior 
     ActivityExecution scopeExecution = ScopeUtil.findScopeExecution(execution);
     
     // destroy the scope
-    scopeExecution.destroyScope("terminate end event fired");
+    scopeExecution.destroyScope("terminate end event fired",execution.getBussinessop(),execution.getBussinessRemark());
     
     // set the scope execution to the terminate end event and make it end here.
     // (the history should reflect that the execution ended here and we want an 'end time' for the 

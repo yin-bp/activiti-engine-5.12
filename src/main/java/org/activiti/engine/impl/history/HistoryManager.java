@@ -95,7 +95,7 @@ public class HistoryManager extends AbstractManager {
               .findHistoricProcessInstance(processInstanceId);
       
       if (historicProcessInstance!=null) {
-        historicProcessInstance.markEnded(deleteReason);
+        historicProcessInstance.markEnded(deleteReason,null,null);
         historicProcessInstance.setEndActivityId(activityId);
       }
     }
@@ -186,7 +186,7 @@ public class HistoryManager extends AbstractManager {
     if(isHistoryLevelAtLeast(HistoryLevel.ACTIVITY)) {
       HistoricActivityInstanceEntity historicActivityInstance = findActivityInstance(executionEntity);
       if (historicActivityInstance!=null) {
-        historicActivityInstance.markEnded(null);
+        historicActivityInstance.markEnded(executionEntity.getDeleteReason(),executionEntity.getBussinessop(),executionEntity.getBussinessRemark());
       }
     }
   }
@@ -225,7 +225,7 @@ public class HistoryManager extends AbstractManager {
                 && (activityId.equals(cachedHistoricActivityInstance.getActivityId()))
                 && (cachedHistoricActivityInstance.getEndTime()==null)
                 ) {
-          cachedHistoricActivityInstance.markEnded(null);
+          cachedHistoricActivityInstance.markEnded(null,null,null);
           return;
         }
       }
@@ -333,7 +333,9 @@ public class HistoryManager extends AbstractManager {
         HistoricActivityInstanceEntity historicActivityInstance = findActivityInstance(executionEntity);
         if(historicActivityInstance != null) {
           historicActivityInstance.setAssignee(task.getAssignee());
+         
         }
+       
       }
     }
   }
@@ -343,12 +345,30 @@ public class HistoryManager extends AbstractManager {
    * @param taskId
    */
 
-  public void recordTaskClaim(String taskId) {
+  public void recordTaskClaim(TaskEntity task) {
     if (isHistoryLevelAtLeast(HistoryLevel.AUDIT)) {
-      HistoricTaskInstanceEntity historicTaskInstance = getDbSqlSession().selectById(HistoricTaskInstanceEntity.class, taskId);
+      HistoricTaskInstanceEntity historicTaskInstance = getDbSqlSession().selectById(HistoricTaskInstanceEntity.class, task.getId());
+      Date ctime = ClockUtil.getCurrentTime();
       if (historicTaskInstance != null) {
-        historicTaskInstance.setClaimTime( ClockUtil.getCurrentTime());
+        historicTaskInstance.setClaimTime( ctime);
       }
+//      ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
+//      try {
+//		executor.update("updateActHistoryClaimTime", new Timestamp(ctime.getTime()),taskId);
+//	  } catch (Exception e) {
+//			throw new ActivitiException("update ActHistory ClaimTime of "+taskId+" failed:", e);
+//	  }
+      ExecutionEntity executionEntity = task.getExecution();
+      
+        if (executionEntity != null) {
+          HistoricActivityInstanceEntity historicActivityInstance = findActivityInstance(executionEntity);
+          if(historicActivityInstance != null) {
+            historicActivityInstance.setClaimTime( ctime);
+           
+          }
+         
+        }
+     
     }    
   }
 
@@ -371,12 +391,18 @@ public class HistoryManager extends AbstractManager {
   /**
    * Record task as ended, if audit history is enabled.
    */
-  public void recordTaskEnd(String taskId, String deleteReason) {
+  public void recordTaskEnd(String taskId, String deleteReason,String bussinessop,String bussinessRemark) {
     if (isHistoryLevelAtLeast(HistoryLevel.AUDIT)) {
       HistoricTaskInstanceEntity historicTaskInstance = getDbSqlSession().selectById(HistoricTaskInstanceEntity.class, taskId);
       if (historicTaskInstance!=null) {
-        historicTaskInstance.markEnded(deleteReason);
+        historicTaskInstance.markEnded(deleteReason,  bussinessop,  bussinessRemark);
+        
       }
+//      HistoricActivityInstanceEntity historicActInstance = getDbSqlSession().selectById(HistoricActivityInstanceEntity.class, taskId);
+//      if (historicActInstance!=null) {
+//    	  historicActInstance.markEnded(deleteReason,  bussinessop,  bussinessRemark);
+//          
+//        }
     }
   }
   
@@ -389,17 +415,38 @@ public class HistoryManager extends AbstractManager {
       if (historicTaskInstance!=null) {
         historicTaskInstance.setAssignee(assignee);
       }
+//      HistoricActivityInstanceEntity historicActInstance = getDbSqlSession().selectById(HistoricActivityInstanceEntity.class, taskId);
+//      if (historicActInstance!=null) {
+//    	  historicActInstance.setAssignee(assignee);
+//          
+//        }
+//      ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
+//      try {
+//		executor.update("recordhistoricActInstanceAssigneeChange", assignee,taskId);
+//	  } catch (Exception e) {
+//			throw new ActivitiException("record historicActInstance Assignee Change of "+taskId+" failed:", e);
+//	  }
     }
   }
   
   /**
    * Record task owner change, if audit history is enabled.
    */
-  public void recordTaskOwnerChange(String taskId, String owner) {
+  public void recordTaskOwnerChange(TaskEntity task, String owner) {
     if (isHistoryLevelAtLeast(HistoryLevel.AUDIT)) {
-      HistoricTaskInstanceEntity historicTaskInstance = getDbSqlSession().selectById(HistoricTaskInstanceEntity.class, taskId);
+      HistoricTaskInstanceEntity historicTaskInstance = getDbSqlSession().selectById(HistoricTaskInstanceEntity.class, task.getId());
       if (historicTaskInstance!=null) {
         historicTaskInstance.setOwner(owner);
+      }
+      ExecutionEntity executionEntity = task.getExecution();
+      
+      if (executionEntity != null) {
+        HistoricActivityInstanceEntity historicActivityInstance = findActivityInstance(executionEntity);
+        if(historicActivityInstance != null) {
+          historicActivityInstance.setOwner(owner);
+         
+        }
+       
       }
     }
   }
@@ -631,4 +678,22 @@ public class HistoryManager extends AbstractManager {
       }
     }
   }
+
+	public void recordTaskKPIChange(TaskEntity taskEntity) {
+		 ExecutionEntity executionEntity = taskEntity.getExecution();
+	     
+	     if (executionEntity != null) {
+	        HistoricActivityInstanceEntity historicActivityInstanceEntity = findActivityInstance(executionEntity);
+			if(historicActivityInstanceEntity != null)
+			  {
+				  historicActivityInstanceEntity.setALERTTIME(taskEntity.getALERTTIME());
+			      historicActivityInstanceEntity.setOVERTIME(taskEntity.getOVERTIME());
+				  historicActivityInstanceEntity.setIS_CONTAIN_HOLIDAY(taskEntity.getIS_CONTAIN_HOLIDAY());
+				  historicActivityInstanceEntity.setDURATION_NODE(taskEntity.getDURATION_NODE());
+				  historicActivityInstanceEntity.setNOTICERATE(taskEntity.getNOTICERATE());
+				    
+			  }
+	     }
+		
+	}
 }

@@ -49,7 +49,7 @@ public class ClaimTaskCmd extends NeedsActiveTaskCmd<Void> {
     }
     
     // Add claim time
-    commandContext.getHistoryManager().recordTaskClaim( taskId);
+    commandContext.getHistoryManager().recordTaskClaim( task);
 
     return null;
   }

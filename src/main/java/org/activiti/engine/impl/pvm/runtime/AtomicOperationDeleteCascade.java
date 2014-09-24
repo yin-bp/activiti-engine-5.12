@@ -29,7 +29,7 @@ public class AtomicOperationDeleteCascade implements AtomicOperation {
     InterpretableExecution firstLeaf = findFirstLeaf(execution);
     
     if (firstLeaf.getSubProcessInstance()!=null) {
-      firstLeaf.getSubProcessInstance().deleteCascade(execution.getDeleteReason());
+      firstLeaf.getSubProcessInstance().deleteCascade(execution.getDeleteReason(),execution.getBussinessop(),execution.getBussinessRemark());
     }
 
     firstLeaf.performOperation(AtomicOperation.DELETE_CASCADE_FIRE_ACTIVITY_END);

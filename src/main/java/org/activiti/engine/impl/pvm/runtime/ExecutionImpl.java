@@ -115,6 +115,8 @@ public class ExecutionImpl implements
   
   protected boolean deleteRoot;
   protected String deleteReason;
+  protected String bussinessop;
+  protected String bussinessRemark;
   
   // replaced by //////////////////////////////////////////////////////////////
   
@@ -205,7 +207,7 @@ public class ExecutionImpl implements
     }
   }
   
-  public void destroyScope(String reason) {
+  public void destroyScope(String reason,String bussinessop,String bussinessRemark) {
     
    log.debug("performing destroy scope behavior for execution {}", this);
     
@@ -213,9 +215,9 @@ public class ExecutionImpl implements
     List<InterpretableExecution> executions = new ArrayList<InterpretableExecution>(getExecutions());
     for (InterpretableExecution childExecution : executions) {
       if (childExecution.getSubProcessInstance()!=null) {
-        childExecution.getSubProcessInstance().deleteCascade(reason);
+        childExecution.getSubProcessInstance().deleteCascade(reason,  bussinessop,  bussinessRemark);
       }      
-      childExecution.deleteCascade(reason);
+      childExecution.deleteCascade(reason,  bussinessop,  bussinessRemark);
     } 
     
   }
@@ -283,9 +285,11 @@ public class ExecutionImpl implements
   protected void ensureSubProcessInstanceInitialized() {
   }
 
-  public void deleteCascade(String deleteReason) {
+  public void deleteCascade(String deleteReason,String bussinessop,String bussinessRemark) {
     this.deleteReason = deleteReason;
     this.deleteRoot = true;
+    this.bussinessop = bussinessop;
+    this.bussinessRemark = bussinessRemark;
     performOperation(AtomicOperation.DELETE_CASCADE);
   }
   
@@ -891,4 +895,22 @@ public class ExecutionImpl implements
 		// TODO Auto-generated method stub
 		this.taskContext = taskContext;
 	}
+
+	public String getBussinessop() {
+		return bussinessop;
+	}
+
+	public void setBussinessop(String bussinessop) {
+		this.bussinessop = bussinessop;
+	}
+
+	public String getBussinessRemark() {
+		return bussinessRemark;
+	}
+
+	public void setBussinessRemark(String bussinessRemark) {
+		this.bussinessRemark = bussinessRemark;
+	}
+
+	
 }
