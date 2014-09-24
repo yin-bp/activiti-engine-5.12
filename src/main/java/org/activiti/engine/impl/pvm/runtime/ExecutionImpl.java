@@ -912,5 +912,13 @@ public class ExecutionImpl implements
 		this.bussinessRemark = bussinessRemark;
 	}
 
+	@Override
+	public void removeBussinessLog() {
+		this.bussinessop = null;
+		this.bussinessRemark = null;
+		this.deleteRoot =false;
+		this.deleteReason = null;
+	}
+
 	
 }

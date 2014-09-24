@@ -67,6 +67,7 @@ public class AtomicOperationTransitionNotifyListenerTake implements AtomicOperat
       ActivityImpl nextScope = findNextScope(activity.getParent(), transition.getDestination());
       
       execution.setActivity(nextScope);
+      execution.removeBussinessLog();
       if(nextScope.isUserTask())
       {
     	  TaskContext oldTaskContext = execution.getTaskContext();

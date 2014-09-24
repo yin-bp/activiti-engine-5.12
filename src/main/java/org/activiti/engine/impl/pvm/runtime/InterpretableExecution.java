@@ -40,6 +40,7 @@ public interface InterpretableExecution extends ActivityExecution, ExecutionList
   ProcessDefinitionImpl getProcessDefinition();
 
   void setActivity(ActivityImpl activity);
+  void removeBussinessLog();
 
   void performOperation(AtomicOperation etomicOperation);
 

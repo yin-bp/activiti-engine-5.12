@@ -393,6 +393,9 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
       throw new PvmException("transition is null");
     }
     setActivity((ActivityImpl)transition.getSource());
+//    this.taskContext = null;
+//    this.bussinessop = null;
+//    this.bussinessRemark = null;
     setTransition((TransitionImpl) transition);
     performOperation(AtomicOperation.TRANSITION_NOTIFY_LISTENER_END);
   }
@@ -1608,6 +1611,15 @@ public String getBussinessRemark() {
 
 public void setBussinessRemark(String bussinessRemark) {
 	this.bussinessRemark = bussinessRemark;
+}
+
+@Override
+public void removeBussinessLog() {
+	this.bussinessop = null;
+	this.bussinessRemark = null;
+	this.deleteReason = null;
+	this.deleteRoot =false;
+	 
 }
   
 }
