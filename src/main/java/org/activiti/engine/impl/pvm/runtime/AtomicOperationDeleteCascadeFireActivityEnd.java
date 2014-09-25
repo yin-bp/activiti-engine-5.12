@@ -62,8 +62,12 @@ public class AtomicOperationDeleteCascadeFireActivityEnd extends AbstractEventAt
 
       if (!execution.isDeleteRoot()) {
         InterpretableExecution parent = (InterpretableExecution) execution.getParent();
+        
         if (parent!=null) {
-          parent.performOperation(AtomicOperation.DELETE_CASCADE);
+        	parent.setBussinessop(execution.getBussinessop());
+        	parent.setBussinessRemark(execution.getBussinessRemark());
+        	parent.setDeleteReason(execution.getDeleteReason());
+            parent.performOperation(AtomicOperation.DELETE_CASCADE);
         }
       }
     }

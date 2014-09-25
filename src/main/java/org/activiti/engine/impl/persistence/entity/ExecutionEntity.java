@@ -241,6 +241,9 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
     createdExecution.setProcessInstance(getProcessInstance());
     createdExecution.setActivity(getActivity());
     createdExecution.setTaskContext(this.getTaskContext());
+    createdExecution.setBussinessop(  getBussinessop());
+    createdExecution.setBussinessRemark( getBussinessRemark());
+    
     if (log.isDebugEnabled()) {
       log.debug("Child execution {} created with parent ", createdExecution, this);
     }
@@ -600,11 +603,22 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
 		        if(!prunedExecution.isEnded())
 		        	prunedExecution.end();
 		      }
-		      ExecutionEntity concurrentRoot = ((isConcurrent && !isScope) ? getParent() : this);
-		      if((isConcurrent && !isScope))
+		      ExecutionEntity concurrentRoot = null;
+		      if(isConcurrent && !isScope )
 		      {
+		    	  concurrentRoot = getParent();
 		    	  concurrentRoot.setDeleteReason(this.getDeleteReason());
+		    	  concurrentRoot.setBussinessop(bussinessop);
+		    	  concurrentRoot.setBussinessRemark(bussinessRemark);
 		      }
+		      else
+		      {
+		    	  concurrentRoot = this;
+		      }
+//		      if((isConcurrent && !isScope))
+//		      {
+//		    	  concurrentRoot.setDeleteReason(this.getDeleteReason());
+//		      }
 		      TransitionImpl transition = ((ActivityImpl)concurrentRoot.getActivity()).createCustomOutgoingTransition(null, taskContext.getDestinationTaskKey());    	
 		      concurrentRoot.take(transition);
 		      
@@ -1015,7 +1029,7 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
     deleteVariablesInstanceForLeavingScope();
     
     // delete all the tasks
-    removeTasks(null,null,null);
+    removeTasks(this.deleteReason,this.bussinessop,this.bussinessRemark);
     
     // remove all jobs
     removeJobs();
@@ -1247,6 +1261,7 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
     this.deleteRoot = true;
     this.bussinessop = bussinessop;
     this.bussinessRemark = bussinessRemark;
+//    this.initializeLogs();
     performOperation(AtomicOperation.DELETE_CASCADE);
   }
   
@@ -1619,7 +1634,39 @@ public void removeBussinessLog() {
 	this.bussinessRemark = null;
 	this.deleteReason = null;
 	this.deleteRoot =false;
-	 
+//	 List<InterpretableExecution> executions = (List<InterpretableExecution>)((InterpretableExecution)this).getExecutions();
+//	    
+//	    if (executions.size()>0) {
+//	     
+//	    	for(InterpretableExecution exe:executions)
+//	    	{
+//	    		exe.removeBussinessLog();
+//	    	}
+//	    }
+}
+
+public void initializeLogs() {
+		    List<InterpretableExecution> executions = (List<InterpretableExecution>)((InterpretableExecution)this).getExecutions();
+		    
+		    if (executions.size()>0) {
+		     
+		    	for(InterpretableExecution exe:executions)
+		    	{
+		    		exe.setBussinessop(this.getBussinessop());
+		    		exe.setBussinessRemark(this.getBussinessRemark());
+		    		exe.setDeleteReason(this.getDeleteReason());
+		    		exe.setDeleteRoot(this.deleteRoot);
+		    		exe.initializeLogs();
+		    	}
+		      
+		    
+		    
+		  }
+	
+}
+
+public void setDeleteRoot(boolean deleteRoot) {
+	this.deleteRoot = deleteRoot;
 }
   
 }

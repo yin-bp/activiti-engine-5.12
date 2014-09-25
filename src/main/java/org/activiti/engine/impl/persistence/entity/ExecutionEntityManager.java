@@ -62,6 +62,7 @@ public class ExecutionEntityManager extends AbstractManager {
     execution.setDeleteReason(deleteReason);
     execution.setBussinessop(bussinessOperation);
     execution.setBussinessRemark(bussinessRemark);
+//    execution.initializeLogs();
     CommandContext commandContext = Context.getCommandContext();
     commandContext
       .getTaskEntityManager()

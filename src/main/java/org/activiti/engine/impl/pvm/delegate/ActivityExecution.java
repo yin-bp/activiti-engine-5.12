@@ -30,9 +30,15 @@ import org.activiti.engine.impl.pvm.PvmTransition;
 public interface ActivityExecution extends DelegateExecution {
 	public String getBussinessop() ;
 
-	;
+	
 
 	public String getBussinessRemark() ;
+	
+	public void setBussinessop(String bussinessop) ;
+
+	
+
+	public void setBussinessRemark(String bussinessRemark) ;
   /* Process instance/activity/transition retrieval */
 
   /**

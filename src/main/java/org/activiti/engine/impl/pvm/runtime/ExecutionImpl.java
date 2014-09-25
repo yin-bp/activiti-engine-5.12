@@ -159,7 +159,9 @@ public class ExecutionImpl implements
     createdExecution.setProcessDefinition(getProcessDefinition());
     createdExecution.setProcessInstance(getProcessInstance());
     createdExecution.setActivity(getActivity());
-    
+    createdExecution.setTaskContext(this.getTaskContext());
+    createdExecution.setBussinessop(  getBussinessop());
+    createdExecution.setBussinessRemark( getBussinessRemark());
     return createdExecution;
   }
   
@@ -918,7 +920,38 @@ public class ExecutionImpl implements
 		this.bussinessRemark = null;
 		this.deleteRoot =false;
 		this.deleteReason = null;
+//		 List<InterpretableExecution> executions = (List<InterpretableExecution>)((InterpretableExecution)this).getExecutions();
+//		    
+//		    if (executions.size()>0) {
+//		     
+//		    	for(InterpretableExecution exe:executions)
+//		    	{
+//		    		exe.removeBussinessLog();
+//		    	}
+//		    }
 	}
 
-	
+	public void initializeLogs() {
+	    List<InterpretableExecution> executions = (List<InterpretableExecution>)((InterpretableExecution)this).getExecutions();
+	    
+	    if (executions.size()>0) {
+	     
+	    	for(InterpretableExecution exe:executions)
+	    	{
+	    		exe.setBussinessop(this.getBussinessop());
+	    		exe.setBussinessRemark(this.getBussinessRemark());
+	    		exe.setDeleteReason(this.getDeleteReason());
+	    		exe.setDeleteRoot(deleteRoot);
+	    		exe.initializeLogs();
+	    	}
+	      
+	    
+	    
+	  }
+
+}
+
+	public void setDeleteRoot(boolean deleteRoot) {
+		this.deleteRoot = deleteRoot;
+	}
 }

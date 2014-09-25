@@ -88,14 +88,14 @@ public class HistoryManager extends AbstractManager {
   /**
    * Record a process-instance ended. Updates the historic process instance if activity history is enabled.
    */
-  public void recordProcessInstanceEnd(String processInstanceId, String deleteReason, String activityId) {
+  public void recordProcessInstanceEnd(String processInstanceId, String deleteReason, String activityId,String bussinessop,String ussinessRemark) {
     
     if(isHistoryLevelAtLeast(HistoryLevel.ACTIVITY)) {
       HistoricProcessInstanceEntity historicProcessInstance = getHistoricProcessInstanceManager()
               .findHistoricProcessInstance(processInstanceId);
       
       if (historicProcessInstance!=null) {
-        historicProcessInstance.markEnded(deleteReason,null,null);
+        historicProcessInstance.markEnded(deleteReason,bussinessop, ussinessRemark);
         historicProcessInstance.setEndActivityId(activityId);
       }
     }

@@ -41,6 +41,7 @@ public class AtomicOperationTransitionCreateScope implements AtomicOperation {
 	      execution.setTransition(null);
 	      execution.setActivity(null);
 	      execution.setActive(false);
+	      execution.removeBussinessLog();
 	      log.debug("create scope: parent {} continues as execution {}", execution, propagatingExecution);
 	      propagatingExecution.initialize();
     	}
