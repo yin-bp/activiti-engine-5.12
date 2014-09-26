@@ -81,6 +81,6 @@ public interface InterpretableExecution extends ActivityExecution, ExecutionList
   
   void disposeStartingExecution();
   public void setDeleteReason(String deleteReason);
-  public void initializeLogs();
-  public void setDeleteRoot(boolean deleteRoot);
+//  public void initializeLogs();
+//  public void setDeleteRoot(boolean deleteRoot);
 }

@@ -33,6 +33,13 @@ public class KPIServiceImpl implements KPIService {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public void archiveProcessRuntimedata(DelegateExecution currentexecution,
+			String processInstanceID) throws ActivitiException {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	
 

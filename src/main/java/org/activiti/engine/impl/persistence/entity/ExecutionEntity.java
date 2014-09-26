@@ -1645,28 +1645,28 @@ public void removeBussinessLog() {
 //	    }
 }
 
-public void initializeLogs() {
-		    List<InterpretableExecution> executions = (List<InterpretableExecution>)((InterpretableExecution)this).getExecutions();
-		    
-		    if (executions.size()>0) {
-		     
-		    	for(InterpretableExecution exe:executions)
-		    	{
-		    		exe.setBussinessop(this.getBussinessop());
-		    		exe.setBussinessRemark(this.getBussinessRemark());
-		    		exe.setDeleteReason(this.getDeleteReason());
-		    		exe.setDeleteRoot(this.deleteRoot);
-		    		exe.initializeLogs();
-		    	}
-		      
-		    
-		    
-		  }
-	
-}
-
-public void setDeleteRoot(boolean deleteRoot) {
-	this.deleteRoot = deleteRoot;
-}
+//public void initializeLogs() {
+//		    List<InterpretableExecution> executions = (List<InterpretableExecution>)((InterpretableExecution)this).getExecutions();
+//		    
+//		    if (executions.size()>0) {
+//		     
+//		    	for(InterpretableExecution exe:executions)
+//		    	{
+//		    		exe.setBussinessop(this.getBussinessop());
+//		    		exe.setBussinessRemark(this.getBussinessRemark());
+//		    		exe.setDeleteReason(this.getDeleteReason());
+//		    		exe.setDeleteRoot(this.deleteRoot);
+//		    		exe.initializeLogs();
+//		    	}
+//		      
+//		    
+//		    
+//		  }
+//	
+//}
+//
+//public void setDeleteRoot(boolean deleteRoot) {
+//	this.deleteRoot = deleteRoot;
+//}
   
 }

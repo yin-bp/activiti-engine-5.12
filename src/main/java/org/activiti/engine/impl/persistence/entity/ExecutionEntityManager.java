@@ -70,7 +70,7 @@ public class ExecutionEntityManager extends AbstractManager {
     
     // delete the execution BEFORE we delete the history, otherwise we will produce orphan HistoricVariableInstance instances
     execution.deleteCascade(deleteReason, bussinessOperation,  bussinessRemark);
-    
+    Context.getProcessEngineConfiguration().getKPIService().archiveProcessRuntimedata(execution, processInstanceId);
     if (cascade) {
       commandContext
       .getHistoricProcessInstanceEntityManager()
