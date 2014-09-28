@@ -625,7 +625,19 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
 	    }
 	    else
 	    {
-	    	ExecutionEntity concurrentRoot = ((isConcurrent && !isScope) ? getParent() : this);
+//	    	ExecutionEntity concurrentRoot = ((isConcurrent && !isScope) ? getParent() : this);
+	    	 ExecutionEntity concurrentRoot = null;
+		      if(isConcurrent && !isScope )
+		      {
+		    	  concurrentRoot = getParent();
+		    	  concurrentRoot.setDeleteReason(this.getDeleteReason());
+		    	  concurrentRoot.setBussinessop(bussinessop);
+		    	  concurrentRoot.setBussinessRemark(bussinessRemark);
+		      }
+		      else
+		      {
+		    	  concurrentRoot = this;
+		      }
 		    List<ExecutionEntity> concurrentActiveExecutions = new ArrayList<ExecutionEntity>();
 		    List<ExecutionEntity> concurrentInActiveExecutions = new ArrayList<ExecutionEntity>();
 		    for (ExecutionEntity execution: concurrentRoot.getExecutions()) {
