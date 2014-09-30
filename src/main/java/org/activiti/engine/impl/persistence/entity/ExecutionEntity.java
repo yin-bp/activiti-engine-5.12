@@ -610,6 +610,7 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
 		    	  concurrentRoot.setDeleteReason(this.getDeleteReason());
 		    	  concurrentRoot.setBussinessop(bussinessop);
 		    	  concurrentRoot.setBussinessRemark(bussinessRemark);
+		    	  concurrentRoot.setTaskContext(taskContext);
 		      }
 		      else
 		      {
@@ -620,6 +621,9 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
 //		    	  concurrentRoot.setDeleteReason(this.getDeleteReason());
 //		      }
 		      TransitionImpl transition = ((ActivityImpl)concurrentRoot.getActivity()).createCustomOutgoingTransition(null, taskContext.getDestinationTaskKey());    	
+		      concurrentRoot.setActive(true);
+		      concurrentRoot.setActivity(activity);
+		      concurrentRoot.setConcurrent(false);
 		      concurrentRoot.take(transition);
 		      
 	    }
@@ -633,6 +637,7 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
 		    	  concurrentRoot.setDeleteReason(this.getDeleteReason());
 		    	  concurrentRoot.setBussinessop(bussinessop);
 		    	  concurrentRoot.setBussinessRemark(bussinessRemark);
+		    	  concurrentRoot.setTaskContext(taskContext);
 		      }
 		      else
 		      {
