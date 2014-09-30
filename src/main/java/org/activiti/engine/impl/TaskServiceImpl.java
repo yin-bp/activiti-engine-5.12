@@ -240,31 +240,42 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
   {
 	  commandExecutor.execute(new CompleteTaskCmd(taskId, reason,variables,destinationTaskKey,  bussinessop,  bussinessRemark));
   }
-  public void complete(String taskId, Map<String, Object> variables,boolean rejected)
+  public void complete(String taskId, Map<String, Object> variables,int op)
   {
-	  commandExecutor.execute(new CompleteTaskCmd(taskId, variables,rejected));
+	  commandExecutor.execute(new CompleteTaskCmd(taskId, variables,op));
   }
-  public void completeWithReason(String taskId, Map<String, Object> variables,boolean rejected,String reason,String bussinessop,String bussinessRemark)
+  public void completeWithReason(String taskId, Map<String, Object> variables,int op,String reason,String bussinessop,String bussinessRemark)
   {
-	  commandExecutor.execute(new CompleteTaskCmd(taskId, variables,rejected,reason,  bussinessop,  bussinessRemark));
-  }
-  
-  public void complete(String taskId, Map<String, Object> variables,boolean rejected,int rejectedtype)
-  {
-	  commandExecutor.execute(new CompleteTaskCmd(taskId, variables,rejected, rejectedtype));
-  }
-  public void completeWithReason(String taskId, Map<String, Object> variables,boolean rejected,int rejectedtype,String reason,String bussinessop,String bussinessRemark)
-  {
-	  commandExecutor.execute(new CompleteTaskCmd(taskId, variables,rejected, rejectedtype,reason,  bussinessop,  bussinessRemark));
+	  commandExecutor.execute(new CompleteTaskCmd(taskId, variables,op,reason,  bussinessop,  bussinessRemark));
   }
   
-  public void completeWithReason(String taskId, Map<String, Object> variables,boolean rejected,String rejecttonode,String reason,String bussinessop,String bussinessRemark)
+  public void complete(String taskId, Map<String, Object> variables,int op,int rejectedtype)
   {
-	  commandExecutor.execute(new CompleteTaskCmd(taskId,rejected,rejecttonode, variables,reason,false,  bussinessop,  bussinessRemark));
+	  commandExecutor.execute(new CompleteTaskCmd(taskId, variables,op, rejectedtype));
   }
-  public void completeWithReason(String taskId, Map<String, Object> variables,boolean rejected,String rejecttonode,String reason,boolean returntoreject,String bussinessop,String bussinessRemark)
+  public void completeWithReason(String taskId, Map<String, Object> variables,int op,int rejectedtype,String reason,String bussinessop,String bussinessRemark)
   {
-	  commandExecutor.execute(new CompleteTaskCmd(taskId,rejected,rejecttonode, variables,reason,returntoreject,  bussinessop,  bussinessRemark));
+	  commandExecutor.execute(new CompleteTaskCmd(taskId, variables,op, rejectedtype,reason,  bussinessop,  bussinessRemark));
+  }
+  
+  public void completeWithReason(String taskId, Map<String, Object> variables,int op,String rejecttonode,String reason,String bussinessop,String bussinessRemark)
+  {
+	  commandExecutor.execute(new CompleteTaskCmd(taskId,op,rejecttonode, variables,reason,false,  bussinessop,  bussinessRemark));
+  }
+  /**
+   * 
+   * @param taskId
+   * @param variables
+   * @param op 0 rejected 1 withdraw 2 jump
+   * @param rejecttonode
+   * @param reason
+   * @param returntoreject
+   * @param bussinessop
+   * @param bussinessRemark
+   */
+  public void completeWithReason(String taskId, Map<String, Object> variables,int op,String rejecttonode,String reason,boolean returntoreject,String bussinessop,String bussinessRemark)
+  {
+	  commandExecutor.execute(new CompleteTaskCmd(taskId,op,rejecttonode, variables,reason,returntoreject,  bussinessop,  bussinessRemark));
   }
   public void delegateTask(String taskId, String userId) {
     commandExecutor.execute(new DelegateTaskCmd(taskId, userId));
@@ -429,7 +440,7 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
 	  try {
 		  tm.begin();
 		 
-			this.complete(taskId, variables,true);
+			this.complete(taskId, variables,TaskService.op_rejected);
 			tm.commit();
 			return true;
 		}
@@ -451,7 +462,7 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
 	  try {
 		  tm.begin();
 		 
-			this.completeWithReason(taskId, variables,true, rejectReason,  bussinessop,  bussinessRemark);
+			this.completeWithReason(taskId, variables,TaskService.op_rejected, rejectReason,  bussinessop,  bussinessRemark);
 			tm.commit();
 			return true;
 		}
@@ -503,7 +514,7 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
 	  try {
 		  tm.begin();
 		 
-			this.complete(taskId, variables,true, rejectedtype);
+			this.complete(taskId, variables,TaskService.op_rejected, rejectedtype);
 			tm.commit();
 			return true;
 		}
@@ -533,7 +544,7 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
 	  try {
 		    tm.begin();
 		 
-			this.completeWithReason(taskId, variables,true,rejectedtype, rejectReason,  bussinessop,  bussinessRemark);
+			this.completeWithReason(taskId, variables,TaskService.op_rejected,rejectedtype, rejectReason,  bussinessop,  bussinessRemark);
 			tm.commit();
 			return true;
 		}
@@ -596,7 +607,7 @@ public boolean rejecttoTask(String taskId, Map<String, Object> variables,String 
 	  try {
 		    tm.begin();
 		 
-			this.completeWithReason(taskId, variables,true,desttaskkey, rejectReason,  bussinessop,  bussinessRemark);
+			this.completeWithReason(taskId, variables,TaskService.op_rejected,desttaskkey, rejectReason,  bussinessop,  bussinessRemark);
 			tm.commit();
 			return true;
 		}
@@ -849,7 +860,7 @@ public boolean rejecttoTask(String taskId, Map<String, Object> variables,
 	  try {
 		  tm.begin();
 		 
-		  completeWithReason( taskId,  variables,true,desttaskkey,rejectReason, returntoreject,  bussinessop,  bussinessRemark);
+		  completeWithReason( taskId,  variables,TaskService.op_rejected,desttaskkey,rejectReason, returntoreject,  bussinessop,  bussinessRemark);
 			tm.commit();
 			return true;
 		}
@@ -880,7 +891,39 @@ public boolean rejecttoTask(String taskId, String rejectReason,
 			rejectReason, desttaskkey, returntoreject,  bussinessop,  bussinessRemark);
 }
 
-
+/**
+ * 撤销任务时调用的方法
+ * @param taskId
+ * @param variables
+ * @param rejectReason
+ * @param desttaskkey
+ * @param returntoreject
+ * @param bussinessop
+ * @param bussinessRemark
+ * @return
+ */
+public boolean withdrawTask(String taskId, Map<String, Object> variables,
+		String withdrawReason, String desttaskkey,String bussinessop,String bussinessRemark) {
+	TransactionManager tm = new TransactionManager();
+	  try {
+		  tm.begin();
+		 
+		  completeWithReason( taskId,  variables,TaskService.op_withdraw,desttaskkey,withdrawReason, bussinessop,  bussinessRemark);
+			tm.commit();
+			return true;
+		}
+	  	catch(ActivitiException w)
+	  	{
+	  		throw w;
+	  	}
+	  	catch (Exception e) {
+			throw new ActivitiException("驳回任务失败：taskId="+taskId ,e);
+		}
+	  	finally
+	  	{
+	  		tm.release();
+	  	}
+}
 
 
 }

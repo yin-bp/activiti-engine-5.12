@@ -6,6 +6,9 @@ import org.activiti.engine.impl.cfg.BeansConfigurationHelper;
 public class TaskContext {
 	private String destinationTaskKey;
 	private boolean isrejected;
+	private boolean iswithdraw;
+	private boolean isjump;
+	private int op = -1;
 	private String rejectednode;
 	private String rejectedtaskid;
 	private String newtaskid;
@@ -205,6 +208,24 @@ public class TaskContext {
 	}
 	public void setFromreject(boolean fromreject) {
 		this.fromreject = fromreject;
+	}
+	public boolean isIswithdraw() {
+		return iswithdraw;
+	}
+	public void setIswithdraw(boolean iswithdraw) {
+		this.iswithdraw = iswithdraw;
+	}
+	public int getOp() {
+		return op;
+	}
+	public void setOp(int op) {
+		this.op = op;
+	}
+	public boolean isIsjump() {
+		return isjump;
+	}
+	public void setIsjump(boolean isjump) {
+		this.isjump = isjump;
 	}
 	
 	

@@ -72,13 +72,26 @@ public class AtomicOperationTransitionNotifyListenerTake implements AtomicOperat
       {
     	  TaskContext oldTaskContext = execution.getTaskContext();
     	  TaskContext newTaskContext = Context.createTaskContext((ExecutionEntity)execution, nextScope.getId());
-    	  if(oldTaskContext != null && oldTaskContext.isIsrejected())
+    	  if(oldTaskContext != null )
 		  {
-			  newTaskContext.setIsrejected(oldTaskContext.isIsrejected());
-			  newTaskContext.setReturntoreject(oldTaskContext.isReturntoreject());
-			  newTaskContext.setRejecttype(oldTaskContext.getRejecttype());
-			  newTaskContext.setRejectedtaskid(oldTaskContext.getRejectedtaskid());
-			  newTaskContext.setRejectednode(oldTaskContext.getRejectednode());
+    		  
+//			  newTaskContext.setIsrejected(oldTaskContext.isIsrejected());
+//			  newTaskContext.setReturntoreject(oldTaskContext.isReturntoreject());
+//			  newTaskContext.setRejecttype(oldTaskContext.getRejecttype());
+//			  newTaskContext.setRejectedtaskid(oldTaskContext.getRejectedtaskid());
+//			  newTaskContext.setRejectednode(oldTaskContext.getRejectednode());
+    		  if(oldTaskContext.isIsrejected() || oldTaskContext.isIsjump() || oldTaskContext.isIswithdraw())
+    		  {
+			  
+				  newTaskContext.setIsrejected(oldTaskContext.isIsrejected());
+				  newTaskContext.setIswithdraw(oldTaskContext.isIswithdraw());
+				  newTaskContext.setIsjump(oldTaskContext.isIsjump());
+				  newTaskContext.setOp(oldTaskContext.getOp());
+				  newTaskContext.setReturntoreject(oldTaskContext.isReturntoreject());
+				  newTaskContext.setRejecttype(oldTaskContext.getRejecttype());
+				  newTaskContext.setRejectedtaskid(oldTaskContext.getRejectedtaskid());
+				  newTaskContext.setRejectednode(oldTaskContext.getRejectednode());
+    		  }
 		  }
       }
       else

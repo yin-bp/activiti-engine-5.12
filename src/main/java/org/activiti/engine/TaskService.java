@@ -35,7 +35,10 @@ import org.activiti.engine.task.TaskQuery;
  * @author Joram Barrez
  */
 public interface TaskService {
-
+  public static final int  op_rejected = 3;
+  public static final int  op_withdraw = 1;
+  public static final int  op_jump = 2;
+  public static final int  op_returntorejected = 0;
 	/**
 	 * Creates a new task that is not related to any process instance.
 	 * 
@@ -157,8 +160,8 @@ public interface TaskService {
    * @param variables the  destination taskKey of the task where trans to, if be null see method complete(String taskId).
    * @param rejected true 表示驳回操作，false表示正常完成任务
    */
-  void complete(String taskId, Map<String, Object> variables,boolean rejected);
-  void completeWithReason(String taskId, Map<String, Object> variables,boolean rejected,String reason,String bussinessop,String bussinessRemark);
+  void complete(String taskId, Map<String, Object> variables,int op);
+  void completeWithReason(String taskId, Map<String, Object> variables,int op,String reason,String bussinessop,String bussinessRemark);
   /**
    * Delegates the task to another user. This means that the assignee is set 
    * and the delegation state is set to {@link DelegationState#PENDING}.
@@ -606,5 +609,17 @@ public boolean rejecttoTask(String taskId,String desttaskkey,boolean returntorej
 * @param taskId
 */
 public boolean rejecttoTask(String taskId,String rejectReason,String desttaskkey,boolean returntoreject,String bussinessop,String bussinessRemark);
-
+/**
+ * 撤销任务时调用的方法
+ * @param taskId
+ * @param variables
+ * @param rejectReason
+ * @param desttaskkey
+ * @param returntoreject
+ * @param bussinessop
+ * @param bussinessRemark
+ * @return
+ */
+public boolean withdrawTask(String taskId, Map<String, Object> variables,
+		String withdrawReason, String desttaskkey,String bussinessop,String bussinessRemark);
 }

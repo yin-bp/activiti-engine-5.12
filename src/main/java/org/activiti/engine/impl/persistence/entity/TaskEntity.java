@@ -284,18 +284,29 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
 		}
 	    else
 	    {
-	    	if(!taskContext.isIsrejected())
+	    	if(taskContext.isIswithdraw())
 	    	{
 		    	if(dtaskName != null)
 		    	{
-		    		deleteReason = "转到节点["+dtaskName + "-" + destinationTaskKey + "]";//转到即自由跳转的意思
+		    		deleteReason = "撤销到节点["+dtaskName + "-" + destinationTaskKey + "]";//转到即自由跳转的意思
 		    	}
 		    	else
 		    	{
-		    		deleteReason = "转到节点[" + destinationTaskKey + "]";//转到即自由跳转的意思
+		    		deleteReason = "撤销到节点[" + destinationTaskKey + "]";//转到即自由跳转的意思
 		    	}
 	    	}
-	    	else
+	    	else if(taskContext.isIsjump())
+	    	{
+		    	if(dtaskName != null)
+		    	{
+		    		deleteReason = "跳转到节点["+dtaskName + "-" + destinationTaskKey + "]";//转到即自由跳转的意思
+		    	}
+		    	else
+		    	{
+		    		deleteReason = "跳转到节点[" + destinationTaskKey + "]";//转到即自由跳转的意思
+		    	}
+	    	}
+	    	else if(taskContext.isIsrejected())
 	    	{
 	    		if(dtaskName != null)
 		    	{
@@ -304,6 +315,17 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
 		    	else
 		    	{
 		    		deleteReason = "驳回到节点[" + destinationTaskKey + "]";//转到即自由跳转的意思
+		    	}
+	    	}
+	    	else
+	    	{
+	    		if(dtaskName != null)
+		    	{
+		    		deleteReason = "跳转到节点["+dtaskName + "-" + destinationTaskKey + "]";//转到即自由跳转的意思
+		    	}
+		    	else
+		    	{
+		    		deleteReason = "跳转到节点[" + destinationTaskKey + "]";//转到即自由跳转的意思
 		    	}
 	    	}
 	    		

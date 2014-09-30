@@ -35,7 +35,7 @@ public abstract class NeedsActiveTaskCmd<T> implements Command<T>, Serializable 
   
   protected String taskId;
   protected String destinationTaskKey;
-  protected boolean isrejected;
+  protected int op = -1;
   /**0-驳回上一个任务对应的节点 1-驳回到当前节点的上一个节点（多条路径暂时不支持）*/
   protected int rejectedtype;
   public NeedsActiveTaskCmd(String taskId) {
@@ -51,15 +51,15 @@ public abstract class NeedsActiveTaskCmd<T> implements Command<T>, Serializable 
 	    this.destinationTaskKey = destinationTaskKey;
   }
   
-  public NeedsActiveTaskCmd(String taskId,boolean isrejected,int rejectedtype) {
+  public NeedsActiveTaskCmd(String taskId,int op,int rejectedtype) {
 	    this.taskId = taskId;
-	    this.isrejected = isrejected;
+	    this.op = op;
 	    this.rejectedtype = rejectedtype;
 }
   
-  public NeedsActiveTaskCmd(String taskId,boolean isrejected,String destinationTaskKey) {
+  public NeedsActiveTaskCmd(String taskId,int op,String destinationTaskKey) {
 	    this.taskId = taskId;
-	    this.isrejected = isrejected;
+	    this.  op =   op;
 	    this.destinationTaskKey = destinationTaskKey;
 }
   

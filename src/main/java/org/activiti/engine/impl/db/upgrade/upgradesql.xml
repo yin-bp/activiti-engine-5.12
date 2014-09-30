@@ -144,12 +144,12 @@
 	</property>
 	<property name="findTaskSourceRejectedNode" >
 		 <![CDATA[
-			select rejectnode from td_wf_rejectlog t where newtaskid = ?
+			select rejectnode from td_wf_rejectlog t where newtaskid = ? and optype=?
 		]]>
 	</property>
 	<property name="recoredrejectedlog" >
 		 <![CDATA[
-			insert into td_wf_rejectlog(rejectnode,rejecttaskid,newtaskid) values(?,?,?)
+			insert into td_wf_rejectlog(rejectnode,rejecttaskid,newtaskid,optype) values(?,?,?,?)
 		]]>
 	</property>
 	

@@ -106,6 +106,9 @@ public class AtomicOperationTransitionDestroyScope implements AtomicOperation {
 	        	if(taskContext != null)
 	        	{
 			        taskContext1.setIsrejected(taskContext.isIsrejected());
+			        taskContext1.setIswithdraw(taskContext.isIswithdraw());
+			        taskContext1.setIsjump(taskContext.isIsjump());
+			        taskContext1.setOp(taskContext.getOp());
 			        taskContext1.setReturntoreject(taskContext.isReturntoreject());
 			        taskContext1.setRejecttype(taskContext.getRejecttype());
 			        taskContext1.setRejectedtaskid(taskContext.getRejectedtaskid());

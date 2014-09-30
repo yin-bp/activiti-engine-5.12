@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.activiti.engine.ActivitiException;
+import org.activiti.engine.TaskService;
 import org.activiti.engine.impl.TaskContext;
 import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.interceptor.CommandContext;
@@ -60,12 +61,20 @@ public class CompleteTaskCmd extends NeedsActiveTaskCmd<Void> {
    */
   public CompleteTaskCmd(String taskId, Map<String, Object> variables,String destinationTaskKey) {
     super(taskId,destinationTaskKey);
+    if(destinationTaskKey != null)
+    {
+    	this.op = TaskService.op_jump;
+    }
     this.variables = variables;
     
   }
   
   public CompleteTaskCmd(String taskId, String completeReason, Map<String, Object> variables,String destinationTaskKey,String bussinessop,String bussinessRemark) {
 	    super(taskId,destinationTaskKey);
+	    if(destinationTaskKey != null)
+	    {
+	    	this.op = TaskService.op_jump;
+	    }
 	    this.variables = variables;
 	    this.completeReason = completeReason;
 	    this.bussinessop = bussinessop;
@@ -80,7 +89,7 @@ public class CompleteTaskCmd extends NeedsActiveTaskCmd<Void> {
 				
 				ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
 				
-				pretaskKey = executor.queryObject(String.class,"findTaskSourceRejectedNode", taskId);
+				pretaskKey = executor.queryObject(String.class,"findTaskSourceRejectedNode", taskId,TaskService.op_returntorejected);
 					  		
 			return pretaskKey;
 		} catch (Exception e) {
@@ -138,26 +147,26 @@ public class CompleteTaskCmd extends NeedsActiveTaskCmd<Void> {
 			throw new ActivitiException("驳回任务失败："+task.getTaskDefinitionKey()+"["+taskId+"]",e);
 		}
   }
-  public CompleteTaskCmd(String taskId, Map<String, Object> variables,boolean isrejected) {
-	    super(taskId,isrejected,0);
+  public CompleteTaskCmd(String taskId, Map<String, Object> variables,int op) {
+	    super(taskId,op,0);
 	    this.variables = variables;
 	    
 	  }
-  public CompleteTaskCmd(String taskId, Map<String, Object> variables,boolean isrejected,String reason,String bussinessop,String bussinessRemark) {
-	    super(taskId,isrejected,0);
+  public CompleteTaskCmd(String taskId, Map<String, Object> variables,int op,String reason,String bussinessop,String bussinessRemark) {
+	    super(taskId,op,0);
 	    this.variables = variables;
 	    this.completeReason = reason;
 	    this.bussinessop = bussinessop;
 	    this.bussinessRemark = bussinessRemark;
 	  }
-  public CompleteTaskCmd(String taskId,boolean isrejected,String destinationTaskKey, Map<String, Object> variables) {
-	  super( taskId, isrejected, destinationTaskKey);  
+  public CompleteTaskCmd(String taskId,int op,String destinationTaskKey, Map<String, Object> variables) {
+	  super( taskId, op, destinationTaskKey);  
 	  this.variables = variables;
 	  
 }
   
-  public CompleteTaskCmd(String taskId,boolean isrejected,String destinationTaskKey, Map<String, Object> variables,String reason,boolean returntoreject,String bussinessop,String bussinessRemark) {
-	  super( taskId, isrejected, destinationTaskKey);  
+  public CompleteTaskCmd(String taskId,int op,String destinationTaskKey, Map<String, Object> variables,String reason,boolean returntoreject,String bussinessop,String bussinessRemark) {
+	  super( taskId,   op, destinationTaskKey);  
 	  this.variables = variables;
 	  this.completeReason = reason;
 	  this.bussinessop = bussinessop;
@@ -165,8 +174,8 @@ public class CompleteTaskCmd extends NeedsActiveTaskCmd<Void> {
 	  this.returntoreject = returntoreject;
 	  
 }
-  public CompleteTaskCmd(String taskId,boolean isrejected,String destinationTaskKey) {
-	  super( taskId, isrejected, destinationTaskKey);  
+  public CompleteTaskCmd(String taskId,int op,String destinationTaskKey) {
+	  super( taskId,   op, destinationTaskKey);  
 	  
 }
   /**
@@ -176,13 +185,13 @@ public class CompleteTaskCmd extends NeedsActiveTaskCmd<Void> {
    * @param isrejected
    * @param rejecttype 0-驳回上一个任务对应的节点 1-驳回到当前节点的上一个节点（多条路径暂时不支持）
    */
-  public CompleteTaskCmd(String taskId, Map<String, Object> variables,boolean isrejected,int rejecttype) {
-	    super(taskId,isrejected,rejecttype);
+  public CompleteTaskCmd(String taskId, Map<String, Object> variables,int op,int rejecttype) {
+	    super(taskId,  op,rejecttype);
 	    this.variables = variables;
 	    
 	  }
-public CompleteTaskCmd(String taskId, Map<String, Object> variables,boolean isrejected,int rejecttype,String reason,String bussinessop,String bussinessRemark) {
-	    super(taskId,isrejected,rejecttype);
+public CompleteTaskCmd(String taskId, Map<String, Object> variables,int op,int rejecttype,String reason,String bussinessop,String bussinessRemark) {
+	    super(taskId,  op,rejecttype);
 	    this.variables = variables;
 	    this.completeReason = reason;
 	    this.bussinessop = bussinessop;
@@ -197,10 +206,14 @@ public CompleteTaskCmd(String taskId, Map<String, Object> variables,boolean isre
     /**
      * modified by biaoping.yin
      */
-    if(this.isrejected )
+    if(this.op == TaskService.op_rejected )
     {
     	if(destinationTaskKey == null)
     		this.destinationTaskKey = findRejectedNode( commandContext,  task);
+    }
+    else if(this.op == TaskService.op_withdraw)
+    {
+    	
     }
     else// if(this.returntoreject)
     {
@@ -217,11 +230,14 @@ public CompleteTaskCmd(String taskId, Map<String, Object> variables,boolean isre
     
     taskContext.setDestinationTaskKey(destinationTaskKey);
     
-    if(isrejected)
+    if(this.op == TaskService.op_rejected || this.op == TaskService.op_withdraw || this.op == TaskService.op_jump)
     {
 	    taskContext.setRejectedtaskid(this.taskId);
 	    taskContext.setRejectednode(task.getTaskDefinitionKey());
-	    taskContext.setIsrejected(isrejected);
+	    taskContext.setIsrejected(this.op == TaskService.op_rejected);
+	    taskContext.setIswithdraw(this.op == TaskService.op_withdraw);
+	    taskContext.setIsjump(this.op == TaskService.op_jump);
+	    taskContext.setOp(op);
 	    taskContext.setRejecttype(this.rejectedtype);
 	    taskContext.setReturntoreject(returntoreject);
     }

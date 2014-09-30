@@ -21,6 +21,7 @@ import java.util.List;
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.ActivitiIllegalArgumentException;
 import org.activiti.engine.KPI;
+import org.activiti.engine.TaskService;
 import org.activiti.engine.delegate.Expression;
 import org.activiti.engine.delegate.JavaDelegate;
 import org.activiti.engine.delegate.TaskListener;
@@ -99,10 +100,39 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
   private void recoredrejectedlog(ActivityExecution execution,TaskEntity newtask ) throws Exception
   {
 	  TaskContext taskContext = execution.getTaskContext();
-	  if(taskContext != null && taskContext.isIsrejected() && taskContext.isReturntoreject())
+	  if(taskContext != null )
 	  {
-		  ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
-		  executor.insert("recoredrejectedlog", taskContext.getRejectednode(),taskContext.getRejectedtaskid(),newtask.getId());//rejectnode,rejecttaskid,newtaskid
+		  if(taskContext.isIsrejected() )
+		  {
+			  if(taskContext.isReturntoreject())
+			  {
+				  ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
+				  executor.insert("recoredrejectedlog", taskContext.getRejectednode(),taskContext.getRejectedtaskid(),newtask.getId(),TaskService.op_returntorejected);//rejectnode,rejecttaskid,newtaskid
+			  }
+			  else
+			  {
+				  ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
+				  executor.insert("recoredrejectedlog", taskContext.getRejectednode(),taskContext.getRejectedtaskid(),newtask.getId(),taskContext.getOp());//rejectnode,rejecttaskid,newtaskid
+			  }
+		  }
+		  else if(taskContext.isIswithdraw())
+		  {
+			  ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
+			  executor.insert("recoredrejectedlog", 
+					  taskContext.getRejectednode(),
+					  taskContext.getRejectedtaskid(),
+					  newtask.getId(),
+					  taskContext.getOp());//rejectnode,rejecttaskid,newtaskid
+		  }
+		  else if(taskContext.isIsjump())
+		  {
+			  ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
+			  executor.insert("recoredrejectedlog", 
+					  taskContext.getRejectednode(),
+					  taskContext.getRejectedtaskid(),
+					  newtask.getId(),
+					  taskContext.getOp());//rejectnode,rejecttaskid,newtaskid
+		  }
 	  }
   }
   public void execute(ActivityExecution execution) throws Exception {
