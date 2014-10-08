@@ -144,12 +144,12 @@
 	</property>
 	<property name="findTaskSourceRejectedNode" >
 		 <![CDATA[
-			select rejectnode from td_wf_rejectlog t where newtaskid = ? and optype=?
+			select * from td_wf_rejectlog t where newtaskid = ? and optype=?
 		]]>
 	</property>
 	<property name="recoredrejectedlog" >
 		 <![CDATA[
-			insert into td_wf_rejectlog(rejectnode,rejecttaskid,newtaskid,optype) values(?,?,?,?)
+			insert into td_wf_rejectlog(rejectnode,rejecttaskid,newtaskid,optype,PROCESS_ID) values(?,?,?,?,?)
 		]]>
 	</property>
 	
@@ -160,5 +160,34 @@
 	</property>
 	
 		
+	<property name="backuprejectlogToHi_wf-oracle">
+		<![CDATA[
+		    INSERT INTO TD_WF_HI_REJECTLOG (
+				   NEWTASKID, REJECTTASKID, REJECTNODE, OPTYPE, PROCESS_ID, 
+				   BACKUPTIME) 
+				  ( SELECT 
+				   NEWTASKID, REJECTTASKID, REJECTNODE, OPTYPE, PROCESS_ID,to_date(#[backuptime],'YYYY-MM-dd HH24:mi:ss')
+			FROM TD_WF_REJECTLOG  T WHERE T.PROCESS_ID = #[processId])
+			
+		]]>
+	</property>
+	
+	<property name="backuprejectlogToHi_wf-mysql">
+		<![CDATA[
+		INSERT INTO TD_WF_HI_REJECTLOG (
+				   NEWTASKID, REJECTTASKID, REJECTNODE, OPTYPE, PROCESS_ID, 
+				   BACKUPTIME) 
+				  ( SELECT 
+				   NEWTASKID, REJECTTASKID, REJECTNODE, OPTYPE, PROCESS_ID,str_to_date(#[backuptime],'%Y-%m-%d %H-%i-%s')
+			FROM TD_WF_REJECTLOG  T WHERE T.PROCESS_ID = #[processId]
+			
+		]]>
+	</property>	
+	
+	<property name="deleterejectlog">
+		<![CDATA[
+			 delete from td_wf_rejectlog where PROCESS_ID=?
+		]]>
+	</property>	
 	
 </properties>

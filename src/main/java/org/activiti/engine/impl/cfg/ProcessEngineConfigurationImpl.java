@@ -424,7 +424,8 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
 	  }
 	  else
 	  {
-		  return;
+		  KPIService KPIService_ = new KPIServiceImpl(KPIService);
+		  this.KPIService = KPIService_;
 	  }
   }
   protected void initInstanceUpgrade()

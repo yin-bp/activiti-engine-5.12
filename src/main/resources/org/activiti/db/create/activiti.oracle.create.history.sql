@@ -303,3 +303,19 @@ ALTER TABLE ACT_HI_ACTINST
  
     ALTER TABLE td_wf_rejectlog
  ADD   (optype  NUMBER(1)   DEFAULT 0); 
+ALTER TABLE TD_WF_REJECTLOG
+ ADD (PROCESS_ID  NVARCHAR2(100));
+ -- Create table
+create table td_wf_hi_rejectlog
+(
+  newtaskid    nvarchar2(64),
+  rejecttaskid nvarchar2(64),
+  rejectnode   nvarchar2(100),
+   BACKUPTIME  TIMESTAMP(6), 
+  optype  NUMBER(1)  DEFAULT 0,
+  PROCESS_ID  NVARCHAR2(100)
+)
+;
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table td_wf_hi_rejectlog
+  add constraint hi_rejectlog_pk primary key (NEWTASKID);

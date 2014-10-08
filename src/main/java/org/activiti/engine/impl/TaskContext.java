@@ -2,6 +2,7 @@ package org.activiti.engine.impl;
 
 import org.activiti.engine.ControlParam;
 import org.activiti.engine.impl.cfg.BeansConfigurationHelper;
+import org.activiti.engine.impl.persistence.entity.TaskRejectLog;
 
 public class TaskContext {
 	private String destinationTaskKey;
@@ -19,6 +20,7 @@ public class TaskContext {
 	private boolean oneassignee = true;
 	private boolean nextoneassignee = true;
 	private boolean hasassignee = false;
+	private TaskRejectLog taskRejectLog;
 	/**
 	 * 标识任务是否来自驳回
 	 */
@@ -226,6 +228,12 @@ public class TaskContext {
 	}
 	public void setIsjump(boolean isjump) {
 		this.isjump = isjump;
+	}
+	public TaskRejectLog getTaskRejectLog() {
+		return taskRejectLog;
+	}
+	public void setTaskRejectLog(TaskRejectLog taskRejectLog) {
+		this.taskRejectLog = taskRejectLog;
 	}
 	
 	

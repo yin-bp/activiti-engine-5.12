@@ -22,7 +22,17 @@ create table td_wf_rejectlog
   newtaskid    varchar(64) not null,
   rejecttaskid varchar(64) not null,
   rejectnode   varchar(100) not null,
-   primary key (newtaskid),
+   primary key (newtaskid)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
+create table td_wf_hi_rejectlog
+(
+  newtaskid    varchar(64) not null,
+  rejecttaskid varchar(64) not null,
+  rejectnode   varchar(100) not null,
+  BACKUPTIME   TIMESTAMP  NULL DEFAULT NULL, 
+  optype  decimal(1)  NULL DEFAULT 0,
+  PROCESS_ID  VARCHAR(100), 
+   primary key (newtaskid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
 
 create table ACT_HI_ACTINST (
@@ -229,9 +239,11 @@ ALTER TABLE ACT_HI_ACTINST
 ALTER TABLE ACT_HI_ACTINST
  ADD COLUMN (DELETE_REASON_  NVARCHAR2(2000)); 
 ALTER TABLE ACT_HI_ACTINST
- ADD COLUMN (OWNER_  NVARCHAR2(255)); 
+ ADD COLUMN (OWNER_  VARCHAR(255)); 
  
    ALTER TABLE ACT_HI_ACTINST
  ADD COLUMN (CLAIM_TIME_  TIMESTAMP   NULL DEFAULT NULL); 
     ALTER TABLE td_wf_rejectlog
  ADD COLUMN (optype  decimal(1)  NULL DEFAULT 0); 
+ ALTER TABLE TD_WF_REJECTLOG
+ ADD (PROCESS_ID  VARCHAR(100));

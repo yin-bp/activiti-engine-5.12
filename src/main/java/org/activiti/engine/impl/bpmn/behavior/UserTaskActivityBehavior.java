@@ -30,6 +30,7 @@ import org.activiti.engine.impl.calendar.DueDateBusinessCalendar;
 import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
+import org.activiti.engine.impl.persistence.entity.TaskRejectLog;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
 import org.activiti.engine.impl.task.TaskDefinition;
 import org.apache.log4j.Logger;
@@ -97,22 +98,23 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
 	  
 	    return assignees;
   }
-  private void recoredrejectedlog(ActivityExecution execution,TaskEntity newtask ) throws Exception
+  private void recoredrejectedlog(ActivityExecution execution,TaskEntity newtask,boolean fromsequnce ) throws Exception
   {
 	  TaskContext taskContext = execution.getTaskContext();
 	  if(taskContext != null )
 	  {
+		  
 		  if(taskContext.isIsrejected() )
 		  {
 			  if(taskContext.isReturntoreject())
 			  {
 				  ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
-				  executor.insert("recoredrejectedlog", taskContext.getRejectednode(),taskContext.getRejectedtaskid(),newtask.getId(),TaskService.op_returntorejected);//rejectnode,rejecttaskid,newtaskid
+				  executor.insert("recoredrejectedlog", taskContext.getRejectednode(),taskContext.getRejectedtaskid(),newtask.getId(),TaskService.op_returntorejected,execution.getProcessInstanceId());//rejectnode,rejecttaskid,newtaskid
 			  }
 			  else
 			  {
 				  ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
-				  executor.insert("recoredrejectedlog", taskContext.getRejectednode(),taskContext.getRejectedtaskid(),newtask.getId(),taskContext.getOp());//rejectnode,rejecttaskid,newtaskid
+				  executor.insert("recoredrejectedlog", taskContext.getRejectednode(),taskContext.getRejectedtaskid(),newtask.getId(),taskContext.getOp(),execution.getProcessInstanceId());//rejectnode,rejecttaskid,newtaskid
 			  }
 		  }
 		  else if(taskContext.isIswithdraw())
@@ -122,7 +124,7 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
 					  taskContext.getRejectednode(),
 					  taskContext.getRejectedtaskid(),
 					  newtask.getId(),
-					  taskContext.getOp());//rejectnode,rejecttaskid,newtaskid
+					  taskContext.getOp(),execution.getProcessInstanceId());//rejectnode,rejecttaskid,newtaskid
 		  }
 		  else if(taskContext.isIsjump())
 		  {
@@ -131,14 +133,29 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
 					  taskContext.getRejectednode(),
 					  taskContext.getRejectedtaskid(),
 					  newtask.getId(),
-					  taskContext.getOp());//rejectnode,rejecttaskid,newtaskid
+					  taskContext.getOp(),execution.getProcessInstanceId());//rejectnode,rejecttaskid,newtaskid
 		  }
+		  else if(fromsequnce)
+		  {
+			  TaskRejectLog taskRejectLog = taskContext.getTaskRejectLog();//串行多实例任务，后续任务记录驳回点轨迹记录（从前面的的任务复制驳回点轨迹）
+			  if(taskRejectLog != null)
+			  {
+				  ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
+				  executor.insert("recoredrejectedlog", taskRejectLog.getREJECTNODE(),taskRejectLog.getREJECTTASKID(),newtask.getId(),taskRejectLog.getOPTYPE(),execution.getProcessInstanceId());//rejectnode,rejecttaskid,newtaskid
+			  }
+		  }
+			  
 	  }
   }
   public void execute(ActivityExecution execution) throws Exception {
+	  execute( execution,false);
+	  
+  }
+  
+  public void execute(ActivityExecution execution,boolean fromsequence) throws Exception {
 	  if(execution.getTaskContext().isHasassignee())
 		{
-		  	_execute(execution);
+		  	_execute(execution,fromsequence);
 		}
 		else
 		{
@@ -155,10 +172,10 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
 		}
 	  
   }
-  private void _execute(ActivityExecution execution) throws Exception {
+  private void _execute(ActivityExecution execution,boolean fromsequnce) throws Exception {
     TaskEntity task = TaskEntity.createAndInsert(execution);
     
-    recoredrejectedlog( execution, task );
+    recoredrejectedlog( execution, task ,  fromsequnce);
     task.setExecution(execution);
     task.setTaskDefinition(taskDefinition);
 

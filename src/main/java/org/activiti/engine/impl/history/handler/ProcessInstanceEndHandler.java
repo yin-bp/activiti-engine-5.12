@@ -27,5 +27,6 @@ public class ProcessInstanceEndHandler implements ExecutionListener {
   public void notify(DelegateExecution execution) {
     Context.getCommandContext().getHistoryManager().recordProcessInstanceEnd(
             execution.getProcessInstanceId(), ((ExecutionEntity) execution).getDeleteReason(), ((ExecutionEntity) execution).getActivityId(),((ExecutionEntity) execution).getBussinessop(),((ExecutionEntity) execution).getBussinessRemark());
+    Context.getProcessEngineConfiguration().getKPIService().archiveProcessRuntimedata(execution, execution.getProcessInstanceId());
   }
 }

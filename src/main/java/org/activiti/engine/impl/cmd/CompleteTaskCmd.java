@@ -21,6 +21,7 @@ import org.activiti.engine.impl.TaskContext;
 import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.interceptor.CommandContext;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
+import org.activiti.engine.impl.persistence.entity.TaskRejectLog;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 
 import com.frameworkset.common.poolman.ConfigSQLExecutor;
@@ -80,18 +81,18 @@ public class CompleteTaskCmd extends NeedsActiveTaskCmd<Void> {
 	    this.bussinessop = bussinessop;
 	    this.bussinessRemark = bussinessRemark;
 	  }
-  protected String findTaskSourceRejectedNode(CommandContext commandContext)
+  protected TaskRejectLog findTaskSourceRejectedNode(CommandContext commandContext)
   {
 	 
 	  	try {
-	  		String pretaskKey = null;
+//	  		String pretaskKey = null;
 	  				  	
 				
 				ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
 				
-				pretaskKey = executor.queryObject(String.class,"findTaskSourceRejectedNode", taskId,TaskService.op_returntorejected);
+				TaskRejectLog	taskRejectLog = executor.queryObject(TaskRejectLog.class,"findTaskSourceRejectedNode", taskId,TaskService.op_returntorejected);
 					  		
-			return pretaskKey;
+			return taskRejectLog;
 		} catch (Exception e) {
 			throw new ActivitiException("",e);
 		}
@@ -219,10 +220,15 @@ public CompleteTaskCmd(String taskId, Map<String, Object> variables,int op,int r
     {
     	if(destinationTaskKey == null)//查找任务是否有关联的驳回节点，如果有，则任务直接跳转到上次驳回节点
     	{
-    		this.destinationTaskKey = findTaskSourceRejectedNode( commandContext);
-    		if(destinationTaskKey != null)
+    		TaskRejectLog taskRejectLog = findTaskSourceRejectedNode( commandContext);
+    		if(taskRejectLog != null)
     		{
-    			taskContext.setFromreject(true);
+	    		this.destinationTaskKey = taskRejectLog.getREJECTNODE();
+	    		if(destinationTaskKey != null)
+	    		{
+	    			taskContext.setFromreject(true);
+	    			taskContext.setTaskRejectLog(taskRejectLog);
+	    		}
     		}
     	}
     		

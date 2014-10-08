@@ -137,16 +137,27 @@ public abstract class MultiInstanceActivityBehavior extends FlowNodeActivityBeha
   }
   
   public void execute(ActivityExecution execution) throws Exception {
-    if (getLoopVariable(execution, LOOP_COUNTER) == null) {
-      try {
-        createInstances(execution);
-      } catch (BpmnError error) {
-        ErrorPropagation.propagateError(error, execution);
-      }
-    } else {
-        innerActivityBehavior.execute(execution);
-    }
+	  execute(execution,false);
   }
+  
+  public void execute(ActivityExecution execution,boolean fromsequence) throws Exception {
+	    if (getLoopVariable(execution, LOOP_COUNTER) == null) {
+	      try {
+	        createInstances(execution);
+	      } catch (BpmnError error) {
+	        ErrorPropagation.propagateError(error, execution);
+	      }
+	    } else {
+	    	if(innerActivityBehavior instanceof UserTaskActivityBehavior)
+	    	{
+	    		((UserTaskActivityBehavior)innerActivityBehavior).execute(execution,fromsequence);
+	    	}
+	    	else
+	    	{
+	    		innerActivityBehavior.execute(execution);
+	    	}
+	    }
+	  }
   
   protected abstract void createInstances(ActivityExecution execution) throws Exception;
   
