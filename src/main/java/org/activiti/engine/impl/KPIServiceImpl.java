@@ -1,6 +1,6 @@
 package org.activiti.engine.impl;
 
-import java.text.SimpleDateFormat;
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -61,9 +61,8 @@ public class KPIServiceImpl implements KPIService {
 			tm.begin();
 			Map condition = new HashMap();
 			condition.put("processId", processInstanceID);
-			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			String backuptime = format.format(new Date());
-			condition.put("backuptime", backuptime);
+			
+			condition.put("backuptime", new Timestamp(new Date().getTime()));
 			
 			 ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
 			  executor.insertBean("backuprejectlogToHi_wf", condition);
