@@ -41,6 +41,8 @@ public abstract class HistoricScopeInstanceEntity implements PersistentObject, S
   public void markEnded(String deleteReason,String bussinessop,String bussinessRemark) {
     this.deleteReason = deleteReason;
     this.endTime = ClockUtil.getCurrentTime();
+//    if(this.startTime.after(this.endTime))
+//    	this.startTime = this.endTime;
     this.durationInMillis = endTime.getTime() - startTime.getTime();
     this.bussinessOperation = bussinessop;
     this.bussinessRemark = bussinessRemark;

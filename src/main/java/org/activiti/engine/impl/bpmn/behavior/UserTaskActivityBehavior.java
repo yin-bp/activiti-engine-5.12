@@ -159,6 +159,7 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
 		}
 		else
 		{
+			Thread.sleep(1000);
 			 Context.getCommandContext().getHistoryManager()
 		      .recordUseTaskActivityAutoComplete((ExecutionEntity) execution);
 			String BUSSINESSCONTROLCLASS = execution.getTaskContext().getBUSSINESSCONTROLCLASS();
@@ -168,7 +169,7 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
 				super.execute(execution, javaDelegate);
 			}
 			super.leave(execution);
-				
+			
 		}
 	  
   }

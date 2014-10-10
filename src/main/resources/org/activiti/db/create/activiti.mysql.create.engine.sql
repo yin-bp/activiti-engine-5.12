@@ -28,7 +28,7 @@ create table ACT_RE_DEPLOYMENT (
     ID_ varchar(64),
     NAME_ varchar(255),
     CATEGORY_ varchar(255),
-    DEPLOY_TIME_ timestamp,
+    DEPLOY_TIME_ timestamp  NULL DEFAULT NULL,
     primary key (ID_)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
 
@@ -38,8 +38,8 @@ create table ACT_RE_MODEL (
     NAME_ varchar(255),
     KEY_ varchar(255),
     CATEGORY_ varchar(255),
-    CREATE_TIME_ timestamp null,
-    LAST_UPDATE_TIME_ timestamp null,
+    CREATE_TIME_ timestamp  NULL DEFAULT NULL,
+    LAST_UPDATE_TIME_ timestamp  NULL DEFAULT NULL,
     VERSION_ integer,
     META_INFO_ varchar(4000),
     DEPLOYMENT_ID_ varchar(64),
@@ -71,7 +71,7 @@ create table ACT_RU_JOB (
     ID_ varchar(64) NOT NULL,
   REV_ integer,
     TYPE_ varchar(255) NOT NULL,
-    LOCK_EXP_TIME_ timestamp NULL,
+    LOCK_EXP_TIME_ timestamp  NULL DEFAULT NULL,
     LOCK_OWNER_ varchar(255),
     EXCLUSIVE_ boolean,
     EXECUTION_ID_ varchar(64),
@@ -80,7 +80,7 @@ create table ACT_RU_JOB (
     RETRIES_ integer,
     EXCEPTION_STACK_ID_ varchar(64),
     EXCEPTION_MSG_ varchar(4000),
-    DUEDATE_ timestamp NULL,
+    DUEDATE_ timestamp  NULL DEFAULT NULL,
     REPEAT_ varchar(255),
     HANDLER_TYPE_ varchar(255),
     HANDLER_CFG_ varchar(4000),
@@ -117,7 +117,7 @@ create table ACT_RU_TASK (
     ASSIGNEE_ varchar(255),
     DELEGATION_ varchar(64),
     PRIORITY_ integer,
-    CREATE_TIME_ timestamp,
+    CREATE_TIME_ timestamp  NULL DEFAULT NULL,
     DUE_DATE_ datetime,
     SUSPENSION_STATE_ integer,
     primary key (ID_)
@@ -160,7 +160,7 @@ create table ACT_RU_EVENT_SUBSCR (
     PROC_INST_ID_ varchar(64),
     ACTIVITY_ID_ varchar(64),
     CONFIGURATION_ varchar(255),
-    CREATED_ timestamp not null,
+    CREATED_ timestamp  NULL DEFAULT NULL,
     primary key (ID_)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
 

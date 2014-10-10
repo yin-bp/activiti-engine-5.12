@@ -31,9 +31,9 @@ public class ClockUtil {
   } 
   
   public static Date getCurrentTime() {
-    if (CURRENT_TIME != null) {
-      return CURRENT_TIME;
-    }
+//    if (CURRENT_TIME != null) {
+//      return CURRENT_TIME;
+//    }
     return new Date();
   }
 

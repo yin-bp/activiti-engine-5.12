@@ -199,6 +199,7 @@ public class HistoryManager extends AbstractManager {
       HistoricActivityInstanceEntity historicActivityInstance = findActivityInstance(executionEntity);
       if (historicActivityInstance!=null) {
     	  historicActivityInstance.setAutoComplete(1);
+//    	  historicActivityInstance.setStartTime(new Date());
     	  if(StringUtil.isNotEmpty(executionEntity.getTaskContext().getBUSSINESSCONTROLCLASS()))
     	  {
     		  historicActivityInstance.setAutoCompleteHandler(executionEntity.getTaskContext().getBUSSINESSCONTROLCLASS());
