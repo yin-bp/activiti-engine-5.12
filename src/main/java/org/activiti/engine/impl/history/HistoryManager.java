@@ -128,6 +128,7 @@ public class HistoryManager extends AbstractManager {
       historicActivityInstance.setActivityType((String) processInstance.getActivity().getProperty("type"));
       Date now = ClockUtil.getCurrentTime();
       historicActivityInstance.setStartTime(now);
+      historicActivityInstance.setStartTimeLong(historicActivityInstance.getStartTime().getTime());
       
       getDbSqlSession()
         .insert(historicActivityInstance);
@@ -174,6 +175,7 @@ public class HistoryManager extends AbstractManager {
       historicActivityInstance.setActivityName((String) executionEntity.getActivity().getProperty("name"));
       historicActivityInstance.setActivityType((String) executionEntity.getActivity().getProperty("type"));
       historicActivityInstance.setStartTime(ClockUtil.getCurrentTime());
+      historicActivityInstance.setStartTimeLong(historicActivityInstance.getStartTime().getTime());
       
       getDbSqlSession().insert(historicActivityInstance);
     }

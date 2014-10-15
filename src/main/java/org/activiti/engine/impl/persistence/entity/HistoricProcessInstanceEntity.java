@@ -44,6 +44,7 @@ public class HistoricProcessInstanceEntity extends HistoricScopeInstanceEntity i
     businessKey = processInstance.getBusinessKey();
     processDefinitionId = processInstance.getProcessDefinitionId();
     startTime = ClockUtil.getCurrentTime();
+    this.startTimeLong = this.startTime.getTime();
     startUserId = Authentication.getAuthenticatedUserId();
     startActivityId = processInstance.getActivityId();
     superProcessInstanceId = processInstance.getSuperExecution() != null ? processInstance.getSuperExecution().getProcessInstanceId() : null;

@@ -48,7 +48,9 @@ create table ACT_HI_ACTINST (
     ASSIGNEE_ varchar(64),
     START_TIME_ datetime not null,
     END_TIME_ datetime,
-    DURATION_ bigint,
+    DURATION_ bigint,    
+    START_TIME_LONG bigint,
+    END_TIME_LONG bigint,
     primary key (ID_)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
 
@@ -70,7 +72,9 @@ create table ACT_HI_TASKINST (
     DELETE_REASON_ varchar(4000),
     PRIORITY_ integer,
     DUE_DATE_ datetime,
-    FORM_KEY_ varchar(255),
+    FORM_KEY_ varchar(255),    
+    START_TIME_LONG bigint ,
+    END_TIME_LONG bigint,
     primary key (ID_)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
 

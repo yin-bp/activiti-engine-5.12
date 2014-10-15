@@ -87,6 +87,7 @@ public class HistoricTaskInstanceEntity extends HistoricScopeInstanceEntity impl
     this.owner = task.getOwner();
     this.assignee = task.getAssignee();
     this.startTime = ClockUtil.getCurrentTime();
+    this.startTimeLong = this.startTime.getTime();
     this.taskDefinitionKey = task.getTaskDefinitionKey();
 
     this.setPriority(task.getPriority());
@@ -102,6 +103,7 @@ public class HistoricTaskInstanceEntity extends HistoricScopeInstanceEntity impl
     persistentState.put("owner", owner);
     persistentState.put("assignee", assignee);
     persistentState.put("endTime", endTime);
+    persistentState.put("endTimeLong", endTimeLong);
     persistentState.put("durationInMillis", durationInMillis);
     persistentState.put("description", description);
     persistentState.put("deleteReason", deleteReason);

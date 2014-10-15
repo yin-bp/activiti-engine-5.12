@@ -35,7 +35,7 @@
         START_TIME_,
         END_TIME_,
         DURATION_,OVERTIMESEND,DURATION_NODE,ADVANCESEND,ALERTTIME,OVERTIME,NOTICERATE,IS_CONTAIN_HOLIDAY,IS_AUTO_COMPLETE,AUTO_HANDLER,
-         BUSSINESS_OP,BUSSINESS_REMARK ,DELETE_REASON_ , OWNER_,CLAIM_TIME_
+         BUSSINESS_OP,BUSSINESS_REMARK ,DELETE_REASON_ , OWNER_,CLAIM_TIME_,START_TIME_LONG,END_TIME_LONG  
       ) values (
         #{id ,jdbcType=VARCHAR},
         #{processDefinitionId, jdbcType=VARCHAR},
@@ -63,7 +63,9 @@
         #{bussinessRemark ,jdbcType=VARCHAR},
         #{deleteReason ,jdbcType=VARCHAR},
          #{owner ,jdbcType=VARCHAR},
-        #{claimTime, jdbcType=TIMESTAMP}
+        #{claimTime, jdbcType=TIMESTAMP},
+         #{startTimeLong, jdbcType=BIGINT},
+         #{endTimeLong, jdbcType=BIGINT}
          
       )
   </insert>
@@ -80,7 +82,8 @@
       BUSSINESS_REMARK=  #{bussinessRemark ,jdbcType=VARCHAR},
        DELETE_REASON_ =#{deleteReason ,jdbcType=VARCHAR},
          OWNER_= #{owner ,jdbcType=VARCHAR},
-        CLAIM_TIME_   =#{claimTime, jdbcType=TIMESTAMP}
+        CLAIM_TIME_   =#{claimTime, jdbcType=TIMESTAMP},
+      END_TIME_LONG = #{endTimeLong ,jdbcType=BIGINT}
     where ID_ = #{id}
   </update>
 
@@ -111,6 +114,8 @@
       <result property="deleteReason" column="DELETE_REASON_" jdbcType="VARCHAR" />
       <result property="owner" column="OWNER_" jdbcType="VARCHAR" />
       <result property="claimTime" column="CLAIM_TIME_" jdbcType="TIMESTAMP" />
+      <result property="startTimeLong" column="START_TIME_LONG" jdbcType="BIGINT" />
+    <result property="endTimeLong" column="END_TIME_LONG" jdbcType="BIGINT" />
   </resultMap>
 
   <!-- HISTORIC ACTIVITY INSTANCE SELECT -->

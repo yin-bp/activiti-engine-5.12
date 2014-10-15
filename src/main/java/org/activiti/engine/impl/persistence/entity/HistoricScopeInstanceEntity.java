@@ -32,6 +32,9 @@ public abstract class HistoricScopeInstanceEntity implements PersistentObject, S
   protected String processDefinitionId;
   protected Date startTime;
   protected Date endTime;
+  
+  protected Long startTimeLong;
+  protected Long endTimeLong;
   protected Long durationInMillis;
   protected String deleteReason;
   protected String bussinessRemark;
@@ -43,6 +46,7 @@ public abstract class HistoricScopeInstanceEntity implements PersistentObject, S
     this.endTime = ClockUtil.getCurrentTime();
 //    if(this.startTime.after(this.endTime))
 //    	this.startTime = this.endTime;
+    this.endTimeLong = this.endTime.getTime();
     this.durationInMillis = endTime.getTime() - startTime.getTime();
     this.bussinessOperation = bussinessop;
     this.bussinessRemark = bussinessRemark;
@@ -118,6 +122,18 @@ public abstract class HistoricScopeInstanceEntity implements PersistentObject, S
 	
 	public void setBussinessOperation(String bussinessOperation) {
 		this.bussinessOperation = bussinessOperation;
+	}
+	public Long getStartTimeLong() {
+		return startTimeLong;
+	}
+	public void setStartTimeLong(Long startTimeLong) {
+		this.startTimeLong = startTimeLong;
+	}
+	public Long getEndTimeLong() {
+		return endTimeLong;
+	}
+	public void setEndTimeLong(Long endTimeLong) {
+		this.endTimeLong = endTimeLong;
 	}
 
 
