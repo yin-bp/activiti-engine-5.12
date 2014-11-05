@@ -17,7 +17,7 @@ public class TaskContext {
 	private boolean returntoreject;
 	private ControlParam controlParam;
 	private ControlParam nextNodeControlParam;
-	private boolean oneassignee = true;
+	private boolean oneassignee = false;
 	private boolean nextoneassignee = true;
 	private boolean hasassignee = false;
 	private TaskRejectLog taskRejectLog;
@@ -70,7 +70,7 @@ public class TaskContext {
 	public boolean isIsmulti() {
 		if(!BeansConfigurationHelper.getProcessEngineConfiguration().enableMixMultiUserTask())
 			return false;
-		if(oneassignee)
+		if(oneassignee || !this.hasassignee)
 			return false;
 		if(controlParam != null)
 			return controlParam.getIS_MULTI() == 1;
@@ -235,6 +235,7 @@ public class TaskContext {
 	public void setTaskRejectLog(TaskRejectLog taskRejectLog) {
 		this.taskRejectLog = taskRejectLog;
 	}
+
 	
 	
 }

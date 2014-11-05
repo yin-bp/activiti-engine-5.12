@@ -162,7 +162,7 @@ public class Context {
   public static void removeJobExecutorContext() {
     jobExecutorContextThreadLocal.remove();
   }
-  private static void setTaskContextAssigneeInfo(ExecutionEntity execution,TaskContext taskContext)
+  public static void setTaskContextAssigneeInfo(ExecutionEntity execution,TaskContext taskContext)
   {
 	  ActivityBehavior activityBehavior = execution.getActivity().getActivityBehavior();
 		if(activityBehavior instanceof UserTaskActivityBehavior)
@@ -212,7 +212,7 @@ public class Context {
 				else
 				{
 					taskContext.setHasassignee(false);
-					taskContext.setOneassignee(true);
+					taskContext.setOneassignee(false);
 				}
 			}
 			else
@@ -224,7 +224,7 @@ public class Context {
 		else
 		{
 			taskContext.setHasassignee(false);
-			taskContext.setOneassignee(true);
+			taskContext.setOneassignee(false);
 		}
   }
   public static TaskContext createTaskContext(ExecutionEntity execution,String taskKey)

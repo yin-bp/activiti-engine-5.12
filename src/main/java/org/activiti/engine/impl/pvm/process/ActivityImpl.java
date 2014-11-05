@@ -123,7 +123,7 @@ public class ActivityImpl extends ScopeImpl implements PvmActivity, HasDIBounds 
    * @return
  * @throws ActivitiException 
    */
-  public boolean isMultiTask(String procinstanceid,String taskid) throws ActivitiException
+  public boolean isMultiTask(ActivityExecution execution,String procinstanceid,String taskid) throws ActivitiException
   {
 	  try {
 		boolean  isMultiTask = activityBehavior != null && activityBehavior instanceof MultiInstanceActivityBehavior;
@@ -132,10 +132,27 @@ public class ActivityImpl extends ScopeImpl implements PvmActivity, HasDIBounds 
 		  ControlParam controlParam = Context.getProcessEngineConfiguration().getKPIService().getControlParam(procinstanceid, getId());
 		  if(controlParam == null)
 			  return false;
-		  String assignee = Context.getProcessEngineConfiguration().getExtendExecutor().queryObject(String.class, "getTaskAssignees", procinstanceid, getId());
+		 
 		  TaskContext taskContext = new TaskContext();
 		  taskContext.setControlParam(controlParam);
-		  taskContext.setOneassignee(assignee != null && assignee.indexOf(",") < 0);
+		  if(execution != null && execution instanceof ExecutionEntity &&  execution.getActivity() != null && execution.getActivity().getId().equals(getId()))
+		  {
+			  Context.setTaskContextAssigneeInfo((ExecutionEntity) execution, taskContext);
+		  }
+		  else
+		  {
+			  String assignee = Context.getProcessEngineConfiguration().getExtendExecutor().queryObject(String.class, "getTaskAssignees", procinstanceid, getId() +"_users");
+			  if(assignee == null || assignee.equals(""))
+			  {
+				  taskContext.setHasassignee(false);
+				  taskContext.setOneassignee(false);
+			  }
+			  else
+			  {
+				  taskContext.setOneassignee(assignee.indexOf(",") < 0);
+				  taskContext.setHasassignee(true);
+			  }
+		  }
 		  return taskContext.isIsmulti();
 	} catch (Exception e) {
 		throw new ActivitiException("判断流程"+this.getProcessDefinition().getId()+"实例"+procinstanceid+"任务"+this.getId()+"节点是否是多实例任务失败：",e);
@@ -342,7 +359,7 @@ public class ActivityImpl extends ScopeImpl implements PvmActivity, HasDIBounds 
     return (List) incomingTransitions;
   }
 
-  private boolean _isScope(String procinstanceid)
+  private boolean _isScopeNullTaskContext(ActivityExecution execution,String procinstanceid)
   {
 	  if(StringUtil.isEmpty(procinstanceid))
 		  return this.isScope;
@@ -352,7 +369,7 @@ public class ActivityImpl extends ScopeImpl implements PvmActivity, HasDIBounds 
 		  {
 			 
 						
-						if(this.isMultiTask(procinstanceid, null))
+						if(this.isMultiTask(execution,procinstanceid, null))
 							return true;
 						else
 							return false;
@@ -379,11 +396,11 @@ public class ActivityImpl extends ScopeImpl implements PvmActivity, HasDIBounds 
 		  }
 		  else
 		  {
-			  return _isScope(execution.getProcessInstanceId());
+			  return _isScopeNullTaskContext(execution,procinstanceid);
 		  }
 	  }
 	  else
-		  return _isScope( procinstanceid);
+		  return _isScopeNullTaskContext(execution, procinstanceid);
   }
   public boolean isScope(ActivityExecution execution,String procinstanceid) {
 	  
