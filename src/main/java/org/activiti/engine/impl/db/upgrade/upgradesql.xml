@@ -180,4 +180,144 @@
 		]]>
 	</property>	
 	
+    <property name="insertcopy">
+		<![CDATA[
+			 INSERT INTO   td_wf_copytask   (
+				        ID,
+				        COPERTYPE,
+				        COPER,
+				        PROCESS_ID,
+				        PROCESS_KEY,
+				        BUSINESSKEY,
+				        COPYTIME,
+				        ACT_ID,
+				        act_name,
+				        act_instid
+				    ) VALUES  (
+				         #[id],
+					     #[copertype],
+					     #[coper],
+					     #[process_id],
+					     #[process_key],
+					     #[businesskey],
+					     #[copytime],
+					     #[actid],
+					     #[actname],
+					     #[actinstid])
+		]]>
+	</property>	
+	
+    <property name="selectcopy">
+		<![CDATA[select * from td_wf_copytask  where ID=?]]>
+	</property>
+	<!-- 
+	查询用户的抄送任务，需要将部门的信息转换为用户信息
+	 -->
+	<property name="getUserCopyTasks">
+		<![CDATA[
+		select * from td_wf_copytask  where COPER=#[user] and COPERTYPE=0 ---用户抄送 
+		#if($process_key && !$process_key.equals("")) 
+			and PROCESS_KEY = #[process_key]
+	  	#end	
+	  	#if($businesskey && !$businesskey.equals("")) 
+			and BUSINESSKEY = #[businesskey]
+	  	#end		
+		
+		#if($orgs && $orgs.size()>0)  
+			union 
+			select * from td_wf_copytask  where COPER in 
+			(
+	  			#foreach($org in $orgs)
+	             #if($velocityCount == 0)
+	             	#[orgs[$velocityCount]]
+	             #else
+	                 ,#[orgs[$velocityCount]]
+	             #end
+	            #end      
+	  		)
+	  		and COPERTYPE=1 ---机构抄送
+	  		#if($process_key && !$process_key.equals("")) 
+				and PROCESS_KEY = #[process_key]
+		  	#end	
+		  	#if($businesskey && !$businesskey.equals("")) 
+				and BUSINESSKEY = #[businesskey]
+		  	#end		
+	  	#end	
+		]]>
+	</property>
+	
+	<!-- 
+	查询超级管理员的抄送任务
+	 -->
+	<property name="getAdminCopyTasks">
+		<![CDATA[
+		select * from td_wf_copytask  where 1=1 
+		#if($process_key && !$process_key.equals("")) 
+			and PROCESS_KEY = #[process_key]
+	  	#end	
+	  	#if($businesskey && !$businesskey.equals("")) 
+			and BUSINESSKEY = #[businesskey]
+	  	#end		
+		]]>
+	</property>
+		<!-- 
+	查看任务的浏览记录
+	 -->
+	<property name="getCopyTaskReadUsers">
+		<![CDATA[
+		select * from td_wf_hi_copytask  where act_instid=? and COPER is not null 
+		]]>
+	</property>
+	
+		<!-- 
+	查看任务的浏览记录
+	 -->
+	<property name="getCopyTaskReadUserNames">
+		<![CDATA[
+		select COPERCNName from td_wf_hi_copytask  where act_instid=? and COPER is not null 
+		]]>
+	</property>
+	
+    <property name="deletecopy">
+		<![CDATA[delete from td_wf_copytask  where ID=?]]>
+	</property>	
+	<property name="inserthicopy">
+		<![CDATA[
+			   INSERT
+				INTO
+				    td_wf_hi_copytask
+				    (
+				        ID,
+				        copyid,
+				        COPORG,
+				        COPER,
+				        PROCESS_ID,
+				        PROCESS_KEY,
+				        BUSINESSKEY,
+				        COPYTIME,
+				        READTIME,
+				        ACT_ID,
+				        act_name,
+				        act_instid,
+				        COPERCNName
+				    )
+				    VALUES
+				    (
+				       #[id],
+					     #[copyid],
+					     #[coperorg],
+					     #[coper],
+					     #[process_id],
+					     #[process_key],
+					     #[businesskey],
+					     #[copytime],
+					     #[readtime],
+					     #[actid],
+					     #[actname],
+					     #[actinstid],
+					     #[coperCNName]
+				    )
+		]]>
+	</property>
+  
 </properties>

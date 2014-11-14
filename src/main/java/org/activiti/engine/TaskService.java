@@ -17,6 +17,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.activiti.engine.impl.persistence.entity.CopyHistoryTaskEntity;
+import org.activiti.engine.impl.persistence.entity.CopyTaskEntity;
+import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.query.NativeQuery;
 import org.activiti.engine.task.Attachment;
@@ -28,6 +31,8 @@ import org.activiti.engine.task.IdentityLinkType;
 import org.activiti.engine.task.NativeTaskQuery;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskQuery;
+
+import com.frameworkset.util.ListInfo;
 
 /** Service which provides access to {@link Task} and form related operations.
  * 
@@ -622,4 +627,65 @@ public boolean rejecttoTask(String taskId,String rejectReason,String desttaskkey
  */
 public boolean withdrawTask(String taskId, Map<String, Object> variables,
 		String withdrawReason, String desttaskkey,String bussinessop,String bussinessRemark);
+
+/**
+ * 创建抄送和通知任务
+ * @param execution
+ */
+public void createCopyTasks(ExecutionEntity execution) ;
+/**
+ * 完成抄送/通知任务
+ * @param copytaskid
+ */
+public void completeCopyTask(String copytaskid,String copyuser);
+/**
+ * 获取用户的通知和抄送任务
+ * @param user 用户账号
+ * @param orgs 用户隶属的机构列表
+ * @param process_key
+ * @param businesskey
+ * @return
+ */
+public List<CopyTaskEntity> getUserCopyTasks(String user,List<String> orgs,String process_key,String businesskey);
+
+/**
+ * 管理员视角查看流程的阅读任务
+ * @param process_key
+ * @param businesskey
+ * @return
+ */
+public List<CopyTaskEntity> getAdminCopyTasks(String process_key,String businesskey);
+
+/**
+ * 获取任务的阅读记录
+ * @param actinstid 活动任务id
+ * @return
+ */
+public List<CopyHistoryTaskEntity> getCopyTaskReadUsers(String actinstid);
+/**
+ * 获取根据活动任务id获取任务的阅读记录中文名称
+ * @param actinstid 活动任务id
+ * @return
+ */
+public String getCopyTaskReadUserNames(String actinstid);
+/**
+ * 获取根据活动任务id获取任务的阅读记录
+ * @param actinstid 活动任务id
+ * @return
+ */
+public ListInfo getCopyTaskReadUsers(String actinstid,long offeset,int pagesize);
+/**
+ * 获取用户的通知和抄送任务
+ * @param user 用户账号
+ * @param orgs 用户隶属的机构列表（父子机构）
+ * @return
+ */
+public ListInfo getAdminCopyTasks(String process_key,String businesskey,long offeset,int pagesize);
+/**
+ * 获取用户的通知和抄送任务
+ * @param user 用户账号
+ * @param orgs 用户隶属的机构列表（父子机构）
+ * @return
+ */
+public ListInfo getUserCopyTasks(String user,List<String> orgs,String process_key,String businesskey,long offeset,int pagesize);
 }

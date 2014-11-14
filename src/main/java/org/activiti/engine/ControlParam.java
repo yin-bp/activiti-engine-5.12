@@ -22,6 +22,9 @@ public class ControlParam {
 	private String NODE_NAME;// 节点名称
 	private String PROCESS_KEY;// 流程key
 	private String PROCESS_ID;// 流程实例id
+	private String copyUsers;
+	private String copyOrgs;
+	private String copyersCNName;
 	public String getID() {
 		return ID;
 	}
@@ -93,5 +96,23 @@ public class ControlParam {
 	}
 	public void setPROCESS_ID(String pROCESS_ID) {
 		PROCESS_ID = pROCESS_ID;
+	}
+	public String getCopyUsers() {
+		return copyUsers;
+	}
+	public void setCopyUsers(String copyUsers) {
+		this.copyUsers = copyUsers;
+	}
+	public String getCopyOrgs() {
+		return copyOrgs;
+	}
+	public void setCopyOrgs(String copyOrgs) {
+		this.copyOrgs = copyOrgs;
+	}
+	public String getCopyersCNName() {
+		return copyersCNName;
+	}
+	public void setCopyersCNName(String copyersCNName) {
+		this.copyersCNName = copyersCNName;
 	}
 }

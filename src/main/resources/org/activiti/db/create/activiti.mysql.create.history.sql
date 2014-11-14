@@ -251,3 +251,52 @@ ALTER TABLE ACT_HI_ACTINST
  ADD COLUMN (optype  decimal(1)  NULL DEFAULT 0); 
  ALTER TABLE TD_WF_REJECTLOG
  ADD (PROCESS_ID  VARCHAR(100));
+ 
+ # -----------------------------------------------------------------------
+# TD_WF_COPYTASK
+# -----------------------------------------------------------------------
+drop table if exists TD_WF_COPYTASK;
+
+CREATE TABLE TD_WF_COPYTASK
+(
+    ID VARCHAR(100) NOT NULL,
+    COPERTYPE DECIMAL(1) default 0,
+    COPER VARCHAR(255),
+    PROCESS_ID VARCHAR(100),
+    PROCESS_KEY VARCHAR(200),
+    BUSINESSKEY VARCHAR(255),
+    COPYTIME TIMESTAMP NULL DEFAULT NULL,
+    ACT_ID VARCHAR(64),
+    ACT_NAME VARCHAR(255),
+    ACT_INSTID VARCHAR(64),
+    PRIMARY KEY(ID)) ENGINE=InnoDB;
+
+
+# -----------------------------------------------------------------------
+# TD_WF_HI_COPYTASK
+# -----------------------------------------------------------------------
+drop table if exists TD_WF_HI_COPYTASK;
+
+CREATE TABLE TD_WF_HI_COPYTASK
+(
+    ID VARCHAR(100) NOT NULL,
+    copyid VARCHAR(100),
+    COPORG VARCHAR(255),
+    COPER VARCHAR(255),
+    PROCESS_ID VARCHAR(100),
+    PROCESS_KEY VARCHAR(200),
+    BUSINESSKEY VARCHAR(255),
+    COPYTIME TIMESTAMP NULL DEFAULT NULL,
+    READTIME TIMESTAMP NULL DEFAULT NULL,
+    ACT_ID VARCHAR(64),
+    ACT_NAME VARCHAR(255),
+    ACT_INSTID VARCHAR(64),
+    COPERCNNAME VARCHAR(255),
+    PRIMARY KEY(ID)) ENGINE=InnoDB;
+
+create index IDX_HI_COPYTASK on TD_WF_HI_COPYTASK(ACT_INSTID);    
+create index IDX_COPYTASK on TD_WF_COPYTASK(COPER,COPERTYPE);  
+create index IDX_HI_COPYTASK_BKEY on TD_WF_HI_COPYTASK(BUSINESSKEY);    
+create index IDX_COPYTASK_BKEY on TD_WF_COPYTASK(BUSINESSKEY);  
+create index IDX_HI_COPYTASK_PKEY on TD_WF_HI_COPYTASK(PROCESS_KEY);    
+create index IDX_COPYTASK_PKEY on TD_WF_COPYTASK(PROCESS_KEY);  

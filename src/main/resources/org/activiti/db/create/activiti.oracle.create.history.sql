@@ -323,3 +323,64 @@ create table td_wf_hi_rejectlog
 -- Create/Recreate primary, unique and foreign key constraints 
 alter table td_wf_hi_rejectlog
   add constraint hi_rejectlog_pk primary key (NEWTASKID);
+
+
+-----------------------------------------------------------------------------
+-- TD_WF_COPYTASK
+-----------------------------------------------------------------------------
+DROP TABLE TD_WF_COPYTASK CASCADE CONSTRAINTS;
+
+CREATE TABLE TD_WF_COPYTASK
+(
+    ID VARCHAR2(100) NOT NULL,
+    COPERTYPE NUMBER(1) default 0,
+    COPER VARCHAR2(255),
+    PROCESS_ID NVARCHAR2(100),
+    PROCESS_KEY NVARCHAR2(200),
+    BUSINESSKEY NVARCHAR2(255),
+    COPYTIME TIMESTAMP,
+    ACT_ID NVARCHAR2(64),
+    ACT_NAME NVARCHAR2(255),
+    ACT_INSTID NVARCHAR2(64)
+);
+
+ALTER TABLE TD_WF_COPYTASK
+    ADD CONSTRAINT TD_WF_COPYTASK_PK
+PRIMARY KEY (ID);
+
+
+
+
+
+
+-----------------------------------------------------------------------------
+-- TD_WF_HI_COPYTASK
+-----------------------------------------------------------------------------
+DROP TABLE TD_WF_HI_COPYTASK CASCADE CONSTRAINTS;
+
+CREATE TABLE TD_WF_HI_COPYTASK
+(
+    ID VARCHAR2(100) NOT NULL,
+    copyid VARCHAR2(100),
+    COPORG VARCHAR2(255),
+    COPER VARCHAR2(255),
+    PROCESS_ID NVARCHAR2(100),
+    PROCESS_KEY NVARCHAR2(200),
+    BUSINESSKEY NVARCHAR2(255),
+    COPYTIME TIMESTAMP,
+    READTIME TIMESTAMP,
+    ACT_ID NVARCHAR2(64),
+    ACT_NAME NVARCHAR2(255),
+    ACT_INSTID NVARCHAR2(64),
+    COPERCNNAME NVARCHAR2(255)
+);
+
+ALTER TABLE TD_WF_HI_COPYTASK
+    ADD CONSTRAINT TD_WF_HI_COPYTASK_PK
+PRIMARY KEY (ID);
+create index IDX_HI_COPYTASK on TD_WF_HI_COPYTASK(ACT_INSTID);    
+create index IDX_COPYTASK on TD_WF_COPYTASK(COPER,COPERTYPE);  
+create index IDX_HI_COPYTASK_BKEY on TD_WF_HI_COPYTASK(BUSINESSKEY);    
+create index IDX_COPYTASK_BKEY on TD_WF_COPYTASK(BUSINESSKEY);  
+create index IDX_HI_COPYTASK_PKEY on TD_WF_HI_COPYTASK(PROCESS_KEY);    
+create index IDX_COPYTASK_PKEY on TD_WF_COPYTASK(PROCESS_KEY);   

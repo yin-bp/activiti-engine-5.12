@@ -1,3 +1,6 @@
+抄送和通知任务改造：
+
+
 AtomicOperationTransitionDestroyScope
 
 流程自动过，没有设置处理人时，根据配置执行业务处理回调函数，然后自动往前执行流程

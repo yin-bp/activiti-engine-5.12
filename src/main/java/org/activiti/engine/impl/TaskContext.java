@@ -16,11 +16,18 @@ public class TaskContext {
 	private int rejecttype;
 	private boolean returntoreject;
 	private ControlParam controlParam;
-	private ControlParam nextNodeControlParam;
+	
 	private boolean oneassignee = false;
-	private boolean nextoneassignee = true;
+	
 	private boolean hasassignee = false;
 	private TaskRejectLog taskRejectLog;
+	
+	public static final int TYPE_COPY = 1;
+	public static final int TYPE_NOTIFY = 2;
+	public static final int TYPE_TASK = 0;
+	public static final int COPER_TYPE_USER = 0;
+	public static final int COPER_TYPE_ORG = 1;
+	public static final String CopyTaskBehavior = "org.activiti.engine.impl.bpmn.behavior.CopyTaskBehavior";
 	/**
 	 * 标识任务是否来自驳回
 	 */
@@ -114,9 +121,23 @@ public class TaskContext {
 			return false;
 	}
 
+	/**
+	 * 抄送节点
+	 * @return
+	 */
 	public boolean isCOPY() {
 		if(controlParam != null)
-			return controlParam.getIS_COPY() != 0;
+			return controlParam.getIS_COPY() == TYPE_COPY;
+		else
+			return false;
+	}
+	/**
+	 * 通知节点
+	 * @return
+	 */
+	public boolean isNotify() {
+		if(controlParam != null)
+			return controlParam.getIS_COPY() == TYPE_NOTIFY;
 		else
 			return false;
 	}
@@ -126,79 +147,14 @@ public class TaskContext {
 	public void setControlParam(ControlParam controlParam) {
 		this.controlParam = controlParam;
 	}
-	public ControlParam getNextNodeControlParam() {
-		return nextNodeControlParam;
-	}
-	public void setNextNodeControlParam(ControlParam nextNodeControlParam) {
-		this.nextNodeControlParam = nextNodeControlParam;
-	}
 	
-	
-	public boolean nextisIsmulti() {
-		if(!BeansConfigurationHelper.getProcessEngineConfiguration().enableMixMultiUserTask())
-			return false;
-		if(nextoneassignee)
-			return false;
-		if(nextNodeControlParam != null)
-			return nextNodeControlParam.getIS_MULTI() == 1;
-		else
-			return true;
-	}
-	
-	public boolean nextisIsparrel() {
-		if(nextNodeControlParam != null)
-			return nextNodeControlParam.getIS_SEQUENTIAL() == 0;
-		else
-			return true;
-	}
-	
-	
-	public boolean nextisValidate() {
-		if(nextNodeControlParam != null)
-			return nextNodeControlParam.getIS_VALID() != 0;
-		else
-			return true;
-	}
-	
-	public boolean nextisAuto() {
-		if(nextNodeControlParam != null)
-			return nextNodeControlParam.getIS_AUTO() != 0;
-		else
-			return true;
-	}
-	
-	public String getNextBUSSINESSCONTROLCLASS() {
-		if(nextNodeControlParam != null)
-			return nextNodeControlParam.getBUSSINESSCONTROLCLASS();
-		else
-			return null;
-	}
-	
-	public boolean nextisAUTOAFTER() {
-		if(nextNodeControlParam != null)
-			return nextNodeControlParam.getIS_AUTOAFTER() != 0;
-		else
-			return false;
-	}
-
-	public boolean nextisCOPY() {
-		if(nextNodeControlParam != null)
-			return nextNodeControlParam.getIS_COPY() != 0;
-		else
-			return false;
-	}
 	public boolean isOneassignee() {
 		return oneassignee;
 	}
 	public void setOneassignee(boolean oneassignee) {
 		this.oneassignee = oneassignee;
 	}
-	public boolean isNextoneassignee() {
-		return nextoneassignee;
-	}
-	public void setNextoneassignee(boolean nextoneassignee) {
-		this.nextoneassignee = nextoneassignee;
-	}
+	
 	public boolean isHasassignee() {
 		return hasassignee;
 	}
@@ -234,6 +190,24 @@ public class TaskContext {
 	}
 	public void setTaskRejectLog(TaskRejectLog taskRejectLog) {
 		this.taskRejectLog = taskRejectLog;
+	}
+	public String getCopyUsers() {
+		if(controlParam != null)
+			return controlParam.getCopyUsers();
+		else
+			return null;
+	}
+	public String getCopyOrgs() {
+		if(controlParam != null)
+			return controlParam.getCopyOrgs();
+		else
+			return null;
+	}
+	public String getCopyersCNName() {
+		if(controlParam != null)
+			return controlParam.getCopyersCNName();
+		else
+			return null;
 	}
 
 	

@@ -153,9 +153,21 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
   }
   
   public void execute(ActivityExecution execution,boolean fromsequence) throws Exception {
-	  if(execution.getTaskContext().isHasassignee())
+	  if(execution.getTaskContext().isCOPY() || execution.getTaskContext().isNotify())
+	  {
+		  Context.getCommandContext().getHistoryManager()
+	      .recordUseTaskActivityAutoComplete((ExecutionEntity) execution);
+			String BUSSINESSCONTROLCLASS = TaskContext.CopyTaskBehavior;
+			JavaDelegate javaDelegate = Context.getJavaDelegate(BUSSINESSCONTROLCLASS);
+			super.execute(execution, javaDelegate);
+			
+			super.leave(execution);
+	  }
+	  else if(execution.getTaskContext().isHasassignee())
 		{
+		  
 		  	_execute(execution,fromsequence);
+		  
 		}
 		else
 		{

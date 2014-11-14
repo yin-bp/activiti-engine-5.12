@@ -13,8 +13,10 @@
 package org.activiti.engine.impl;
 
 import java.io.InputStream;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +52,10 @@ import org.activiti.engine.impl.cmd.SaveAttachmentCmd;
 import org.activiti.engine.impl.cmd.SaveTaskCmd;
 import org.activiti.engine.impl.cmd.SetTaskPriorityCmd;
 import org.activiti.engine.impl.cmd.SetTaskVariablesCmd;
+import org.activiti.engine.impl.context.Context;
+import org.activiti.engine.impl.persistence.entity.CopyHistoryTaskEntity;
+import org.activiti.engine.impl.persistence.entity.CopyTaskEntity;
+import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
@@ -65,7 +71,10 @@ import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskQuery;
 
 import com.frameworkset.common.poolman.ConfigSQLExecutor;
+import com.frameworkset.common.poolman.Record;
+import com.frameworkset.common.poolman.handle.NullRowHandler;
 import com.frameworkset.orm.transaction.TransactionManager;
+import com.frameworkset.util.ListInfo;
 
 
 /**
@@ -925,5 +934,310 @@ public boolean withdrawTask(String taskId, Map<String, Object> variables,
 	  	}
 }
 
+	/**
+	 * 创建抄送/通知任务
+	 */
+	public void createCopyTasks(ExecutionEntity execution)
+	{
+		TransactionManager tm = new TransactionManager();
+		try {
+			tm.begin();
+			ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
+			String users = execution.getTaskContext().getCopyUsers();
+			String orgs = execution.getTaskContext().getCopyOrgs();
+			String process_id = execution.getProcessInstanceId();
+			String process_key = execution.getProcessDefinitionId();
+			process_key = process_key.substring(0,process_key.indexOf(":"));
+			String businesskey = execution.getProcessBusinessKey();
+			Timestamp copytime = new Timestamp(new Date().getTime());
+			String actid = execution.getCurrentActivityId();
+			String actname = execution.getCurrentActivityName();
+			String actinstid = Context.getCommandContext().getHistoryManager().findActivityInstance(execution).getId();
+			if(users != null)
+			{
+				String[] users_ = users.split("\\,");
+				CopyTaskEntity copyTaskEntity = null;
+				List<CopyTaskEntity> tasks = new ArrayList<CopyTaskEntity>();
+				for(String user:users_)
+				{
+					copyTaskEntity = new CopyTaskEntity();
+					copyTaskEntity.setActid(actid);
+					copyTaskEntity.setActinstid(actinstid);
+					copyTaskEntity.setActname(actname);
+					copyTaskEntity.setCopytime(copytime);
+					copyTaskEntity.setBusinesskey(businesskey);
+					copyTaskEntity.setProcess_key(process_key);
+					copyTaskEntity.setProcess_id(process_id);
+					copyTaskEntity.setCoper(user);
+					copyTaskEntity.setCopertype(TaskContext.COPER_TYPE_USER);
+					tasks.add(copyTaskEntity);
+				}
+				executor.insertBeans("insertcopy",tasks);
+			}
+			if(orgs != null)
+			{
+				String[] orgs_ = orgs.split("\\,");
+				CopyTaskEntity copyTaskEntity = null;
+				List<CopyTaskEntity> tasks = new ArrayList<CopyTaskEntity>();
+				for(String org:orgs_)
+				{
+					copyTaskEntity = new CopyTaskEntity();
+					copyTaskEntity.setActid(actid);
+					copyTaskEntity.setActinstid(actinstid);
+					copyTaskEntity.setActname(actname);
+					copyTaskEntity.setCopytime(copytime);
+					copyTaskEntity.setBusinesskey(businesskey);
+					copyTaskEntity.setProcess_key(process_key);
+					copyTaskEntity.setProcess_id(process_id);
+					copyTaskEntity.setCoper(org);
+					copyTaskEntity.setCopertype(TaskContext.COPER_TYPE_ORG);
+					tasks.add(copyTaskEntity);
+				}
+				executor.insertBeans("insertcopy",tasks);
+			}
+			tm.commit();
+		} catch (Exception e) {
+			throw new ActivitiException("createCopyTasks failed:",e);
+		}
+		finally
+		{
+			tm.release();
+		}
+	}
+	/**
+	 * 完成抄送/通知任务
+	 * @param copytaskid
+	 */
+	public void completeCopyTask(String copytaskid,String copyuser)
+	{
+		TransactionManager tm = new TransactionManager();
+		try {
+			tm.begin();
+			ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
+			
+			CopyTaskEntity copyTaskEntity = executor.queryObject(CopyTaskEntity.class, "selectcopy", copytaskid);
+			if(copyTaskEntity == null)
+			{
+				tm.commit();
+				throw new ActivitiException("completeCopyTask["+copytaskid+"] failed:copy task do not exist.");
+			}
+			CopyHistoryTaskEntity copyHistoryTaskEntity = new CopyHistoryTaskEntity();
+			copyHistoryTaskEntity.setActid(copyTaskEntity.getActid());
+			copyHistoryTaskEntity.setActinstid(copyTaskEntity.getActinstid());
+			copyHistoryTaskEntity.setActname(copyTaskEntity.getActname());
+			copyHistoryTaskEntity.setCopytime(copyTaskEntity.getCopytime());
+			copyHistoryTaskEntity.setBusinesskey(copyTaskEntity.getBusinesskey());
+			copyHistoryTaskEntity.setProcess_key(copyTaskEntity.getProcess_key());
+			copyHistoryTaskEntity.setProcess_id(copyTaskEntity.getProcess_id());
+			
+			if(copyTaskEntity.getCopertype() == TaskContext.COPER_TYPE_ORG)
+			{
+				String coperCNName = null;
+		    	try
+		    	{
+		    		coperCNName = Context.getProcessEngineConfiguration().getUserInfoMap().getUserName(copyuser);
+		    		copyHistoryTaskEntity.setCoperCNName(coperCNName);
+		    	}
+		    	catch(Exception e)
+		    	{
+		//    		e.printStackTrace();
+		    	};
+				copyHistoryTaskEntity.setCoper(copyuser);
+				
+				copyHistoryTaskEntity.setCoperorg(copyTaskEntity.getCoper());
+			}
+			else
+			{
+				if(copyuser.equals(copyTaskEntity.getCoper()))
+				{
+					String coperCNName = null;
+			    	try
+			    	{
+			    		coperCNName = Context.getProcessEngineConfiguration().getUserInfoMap().getUserName(copyTaskEntity.getCoper());
+			    		copyHistoryTaskEntity.setCoperCNName(coperCNName);
+			    	}
+			    	catch(Exception e)
+			    	{
+			//    		e.printStackTrace();
+			    	};
+					copyHistoryTaskEntity.setCoper(copyTaskEntity.getCoper());
+				}
+				else
+				{
+					String coperCNName = null;
+			    	try
+			    	{
+			    		coperCNName = Context.getProcessEngineConfiguration().getUserInfoMap().getUserName(copyuser);
+			    		copyHistoryTaskEntity.setCoperCNName(coperCNName);
+			    	}
+			    	catch(Exception e)
+			    	{
+			//    		e.printStackTrace();
+			    	};
+					copyHistoryTaskEntity.setCoper(copyuser);
+				}
+			}
+			copyHistoryTaskEntity.setReadtime(new Timestamp(new Date().getTime()));
+			copyHistoryTaskEntity.setCopyid(copytaskid);
+			executor.insertBean("inserthicopy", copyHistoryTaskEntity);
+			if(copyTaskEntity.getCopertype() == TaskContext.COPER_TYPE_USER)
+			{
+				if(copyuser.equals(copyTaskEntity.getCoper()))
+					executor.delete("deletecopy", copytaskid);
+			}
+			tm.commit();
+		} catch (ActivitiException e) {
+			throw e;
+		}catch (Exception e) {
+			throw new ActivitiException("completeCopyTask["+copytaskid+"] failed:",e);
+		}
+		finally
+		{
+			tm.release();
+		}
+	}
+	/**
+	 * 获取用户的通知和抄送任务
+	 * @param user 用户账号
+	 * @param orgs 用户隶属的机构列表（父子机构）
+	 * @return
+	 */
+	public List<CopyTaskEntity> getUserCopyTasks(String user,List<String> orgs,String process_key,String businesskey)
+	{
+		try {
+			ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
+			Map params = new HashMap();
+			params.put("user", user);
+			params.put("orgs", orgs);
+			params.put("process_key", process_key);
+			params.put("businesskey", businesskey);
+			return executor.queryListBean(CopyTaskEntity.class, "getUserCopyTasks", params);
+		} catch (Exception e) {
+			throw new ActivitiException("getUserCopyTasks["+user+"] failed:",e);
+		}
+		
+		
+	}
+	
+	/**
+	 * 获取用户的通知和抄送任务
+	 * @param user 用户账号
+	 * @param orgs 用户隶属的机构列表（父子机构）
+	 * @return
+	 */
+	public ListInfo getUserCopyTasks(String user,List<String> orgs,String process_key,String businesskey,long offeset,int pagesize)
+	{
+		try {
+			ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
+			Map params = new HashMap();
+			params.put("user", user);
+			params.put("orgs", orgs);
+			params.put("process_key", process_key);
+			params.put("businesskey", businesskey);
+			return executor.queryListInfoBean(CopyTaskEntity.class, "getUserCopyTasks",  offeset,  pagesize, params);
+		} catch (Exception e) {
+			throw new ActivitiException("getUserCopyTasks["+user+"] failed:",e);
+		}
+		
+		
+	}
+	/**
+	 * 获取用户的通知和抄送任务
+	 * @param user 用户账号
+	 * @param orgs 用户隶属的机构列表（父子机构）
+	 * @return
+	 */
+	public List<CopyTaskEntity> getAdminCopyTasks(String process_key,String businesskey)
+	{
+		try {
+			ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
+			Map params = new HashMap();
+			params.put("process_key", process_key);
+			params.put("businesskey", businesskey);
+			return executor.queryListBean(CopyTaskEntity.class, "getAdminCopyTasks" , params);
+		} catch (Exception e) {
+			throw new ActivitiException("getAdminCopyTasks[process_key="+process_key+",businesskey="+businesskey+"] failed:",e);
+		}
+		
+		
+	}
+	/**
+	 * 获取用户的通知和抄送任务
+	 * @param user 用户账号
+	 * @param orgs 用户隶属的机构列表（父子机构）
+	 * @return
+	 */
+	public ListInfo getAdminCopyTasks(String process_key,String businesskey,long offeset,int pagesize)
+	{
+		try {
+			ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
+			Map params = new HashMap();
+			params.put("process_key", process_key);
+			params.put("businesskey", businesskey);
+			return executor.queryListInfoBean(CopyTaskEntity.class, "getAdminCopyTasks",  offeset,  pagesize, params);
+		} catch (Exception e) {
+			throw new ActivitiException("getAdminCopyTasks[process_key="+process_key+",businesskey="+businesskey+"] failed:",e);
+		}
+		
+		
+	}
+	
+	/**
+	 * 获取根据活动任务id获取任务的阅读记录
+	 * @param actinstid 活动任务id
+	 * @return
+	 */
+	public List<CopyHistoryTaskEntity> getCopyTaskReadUsers(String actinstid)
+	{
+		try {
+			ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
+			return executor.queryList(CopyHistoryTaskEntity.class, "getCopyTaskReadUsers", actinstid);
+		} catch (Exception e) {
+			throw new ActivitiException("getCopyTaskReadUsers[actinstid="+actinstid +"] failed:",e);
+		}
+	}
+	
+	/**
+	 * 获取根据活动任务id获取任务的阅读记录
+	 * @param actinstid 活动任务id
+	 * @return
+	 */
+	public ListInfo getCopyTaskReadUsers(String actinstid,long offeset,int pagesize)
+	{
+		try {
+			ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
+			return executor.queryListInfo(CopyHistoryTaskEntity.class, "getCopyTaskReadUsers",  offeset,  pagesize, actinstid);
+		} catch (Exception e) {
+			throw new ActivitiException("getCopyTaskReadUsers[actinstid="+actinstid +"] failed:",e);
+		}
+	}
 
+
+	/**
+	 * 获取根据活动任务id获取任务的阅读记录中文名称
+	 * @param actinstid 活动任务id
+	 * @return
+	 */
+	public String getCopyTaskReadUserNames(String actinstid)
+	{
+		try {
+			final StringBuffer users = new StringBuffer();
+			ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
+			executor.queryByNullRowHandler(new NullRowHandler(){
+
+				@Override
+				public void handleRow(Record origine) throws Exception {
+					if(users.length() == 0)
+						users.append(origine.getString("COPERCNName"));
+					else
+						users.append(",").append(origine.getString("COPERCNName"));
+					
+				}
+				
+			}, "getCopyTaskReadUserNames", actinstid);
+			return users.toString();
+		} catch (Exception e) {
+			throw new ActivitiException("getCopyTaskReadUsers[actinstid="+actinstid +"] failed:",e);
+		}
+	}
 }
