@@ -382,7 +382,7 @@
 	</property>
 	
 	<property name="hasread">
-		<![CDATA[select count(1) from td_wf_hi_copytask where actinstid=? and coper=?]]>
+		<![CDATA[select count(1) from td_wf_hi_copytask where act_instid=? and coper=?]]>
 	</property>	
   
 </properties>
