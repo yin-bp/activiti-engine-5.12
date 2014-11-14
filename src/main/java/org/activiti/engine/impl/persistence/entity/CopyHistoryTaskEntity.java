@@ -2,6 +2,7 @@ package org.activiti.engine.impl.persistence.entity;
 
 import java.sql.Timestamp;
 
+import com.frameworkset.orm.annotation.Column;
 import com.frameworkset.orm.annotation.PrimaryKey;
 
 public class CopyHistoryTaskEntity {
@@ -15,8 +16,11 @@ public class CopyHistoryTaskEntity {
     private String businesskey;
     private Timestamp copytime;
     private Timestamp readtime;
+    @Column(name="act_id")
     private String actid;
+    @Column(name="act_name")
     private String actname;
+    @Column(name="act_instid")
     private String actinstid;
     private String coperCNName;
 	public String getId() {

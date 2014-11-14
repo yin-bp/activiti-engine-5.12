@@ -72,6 +72,7 @@ import org.activiti.engine.task.TaskQuery;
 
 import com.frameworkset.common.poolman.ConfigSQLExecutor;
 import com.frameworkset.common.poolman.Record;
+import com.frameworkset.common.poolman.SQLExecutor;
 import com.frameworkset.common.poolman.handle.NullRowHandler;
 import com.frameworkset.orm.transaction.TransactionManager;
 import com.frameworkset.util.ListInfo;
@@ -942,7 +943,7 @@ public boolean withdrawTask(String taskId, Map<String, Object> variables,
 		TransactionManager tm = new TransactionManager();
 		try {
 			tm.begin();
-			ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
+			ConfigSQLExecutor executor = this.findProcessEngineConfigurationImpl().getExtendExecutor();
 			String users = execution.getTaskContext().getCopyUsers();
 			String orgs = execution.getTaskContext().getCopyOrgs();
 			String process_id = execution.getProcessInstanceId();
@@ -1013,7 +1014,7 @@ public boolean withdrawTask(String taskId, Map<String, Object> variables,
 		TransactionManager tm = new TransactionManager();
 		try {
 			tm.begin();
-			ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
+			ConfigSQLExecutor executor =this.findProcessEngineConfigurationImpl().getExtendExecutor();
 			
 			CopyTaskEntity copyTaskEntity = executor.queryObject(CopyTaskEntity.class, "selectcopy", copytaskid);
 			if(copyTaskEntity == null)
@@ -1035,7 +1036,7 @@ public boolean withdrawTask(String taskId, Map<String, Object> variables,
 				String coperCNName = null;
 		    	try
 		    	{
-		    		coperCNName = Context.getProcessEngineConfiguration().getUserInfoMap().getUserName(copyuser);
+		    		coperCNName = this.findProcessEngineConfigurationImpl().getUserInfoMap().getUserName(copyuser);
 		    		copyHistoryTaskEntity.setCoperCNName(coperCNName);
 		    	}
 		    	catch(Exception e)
@@ -1053,7 +1054,7 @@ public boolean withdrawTask(String taskId, Map<String, Object> variables,
 					String coperCNName = null;
 			    	try
 			    	{
-			    		coperCNName = Context.getProcessEngineConfiguration().getUserInfoMap().getUserName(copyTaskEntity.getCoper());
+			    		coperCNName = this.findProcessEngineConfigurationImpl().getUserInfoMap().getUserName(copyTaskEntity.getCoper());
 			    		copyHistoryTaskEntity.setCoperCNName(coperCNName);
 			    	}
 			    	catch(Exception e)
@@ -1067,7 +1068,7 @@ public boolean withdrawTask(String taskId, Map<String, Object> variables,
 					String coperCNName = null;
 			    	try
 			    	{
-			    		coperCNName = Context.getProcessEngineConfiguration().getUserInfoMap().getUserName(copyuser);
+			    		coperCNName =this.findProcessEngineConfigurationImpl().getUserInfoMap().getUserName(copyuser);
 			    		copyHistoryTaskEntity.setCoperCNName(coperCNName);
 			    	}
 			    	catch(Exception e)
@@ -1079,7 +1080,12 @@ public boolean withdrawTask(String taskId, Map<String, Object> variables,
 			}
 			copyHistoryTaskEntity.setReadtime(new Timestamp(new Date().getTime()));
 			copyHistoryTaskEntity.setCopyid(copytaskid);
-			executor.insertBean("inserthicopy", copyHistoryTaskEntity);
+			int exit = executor.queryObject(int.class, "hasread", copytaskid,  copyuser);
+			if(exit <= 0)
+			{
+				executor.insertBean("inserthicopy", copyHistoryTaskEntity);
+			}
+			
 			if(copyTaskEntity.getCopertype() == TaskContext.COPER_TYPE_USER)
 			{
 				if(copyuser.equals(copyTaskEntity.getCoper()))
@@ -1105,7 +1111,7 @@ public boolean withdrawTask(String taskId, Map<String, Object> variables,
 	public List<CopyTaskEntity> getUserCopyTasks(String user,List<String> orgs,String process_key,String businesskey)
 	{
 		try {
-			ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
+			ConfigSQLExecutor executor = this.findProcessEngineConfigurationImpl().getExtendExecutor();
 			Map params = new HashMap();
 			params.put("user", user);
 			params.put("orgs", orgs);
@@ -1128,7 +1134,7 @@ public boolean withdrawTask(String taskId, Map<String, Object> variables,
 	public ListInfo getUserCopyTasks(String user,List<String> orgs,String process_key,String businesskey,long offeset,int pagesize)
 	{
 		try {
-			ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
+			ConfigSQLExecutor executor = this.findProcessEngineConfigurationImpl().getExtendExecutor();
 			Map params = new HashMap();
 			params.put("user", user);
 			params.put("orgs", orgs);
@@ -1150,7 +1156,7 @@ public boolean withdrawTask(String taskId, Map<String, Object> variables,
 	public List<CopyTaskEntity> getAdminCopyTasks(String process_key,String businesskey)
 	{
 		try {
-			ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
+			ConfigSQLExecutor executor = this.findProcessEngineConfigurationImpl().getExtendExecutor();
 			Map params = new HashMap();
 			params.put("process_key", process_key);
 			params.put("businesskey", businesskey);
@@ -1170,7 +1176,7 @@ public boolean withdrawTask(String taskId, Map<String, Object> variables,
 	public ListInfo getAdminCopyTasks(String process_key,String businesskey,long offeset,int pagesize)
 	{
 		try {
-			ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
+			ConfigSQLExecutor executor = this.findProcessEngineConfigurationImpl().getExtendExecutor();
 			Map params = new HashMap();
 			params.put("process_key", process_key);
 			params.put("businesskey", businesskey);
@@ -1190,7 +1196,7 @@ public boolean withdrawTask(String taskId, Map<String, Object> variables,
 	public List<CopyHistoryTaskEntity> getCopyTaskReadUsers(String actinstid)
 	{
 		try {
-			ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
+			ConfigSQLExecutor executor = this.findProcessEngineConfigurationImpl().getExtendExecutor();
 			return executor.queryList(CopyHistoryTaskEntity.class, "getCopyTaskReadUsers", actinstid);
 		} catch (Exception e) {
 			throw new ActivitiException("getCopyTaskReadUsers[actinstid="+actinstid +"] failed:",e);
@@ -1205,7 +1211,7 @@ public boolean withdrawTask(String taskId, Map<String, Object> variables,
 	public ListInfo getCopyTaskReadUsers(String actinstid,long offeset,int pagesize)
 	{
 		try {
-			ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
+			ConfigSQLExecutor executor = this.findProcessEngineConfigurationImpl().getExtendExecutor();
 			return executor.queryListInfo(CopyHistoryTaskEntity.class, "getCopyTaskReadUsers",  offeset,  pagesize, actinstid);
 		} catch (Exception e) {
 			throw new ActivitiException("getCopyTaskReadUsers[actinstid="+actinstid +"] failed:",e);
@@ -1222,7 +1228,7 @@ public boolean withdrawTask(String taskId, Map<String, Object> variables,
 	{
 		try {
 			final StringBuffer users = new StringBuffer();
-			ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
+			ConfigSQLExecutor executor = this.findProcessEngineConfigurationImpl().getExtendExecutor();
 			executor.queryByNullRowHandler(new NullRowHandler(){
 
 				@Override

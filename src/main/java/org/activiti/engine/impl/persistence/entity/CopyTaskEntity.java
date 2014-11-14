@@ -2,6 +2,7 @@ package org.activiti.engine.impl.persistence.entity;
 
 import java.sql.Timestamp;
 
+import com.frameworkset.orm.annotation.Column;
 import com.frameworkset.orm.annotation.PrimaryKey;
 
 public class CopyTaskEntity {
@@ -13,8 +14,11 @@ public class CopyTaskEntity {
     private String process_key;
     private String businesskey;
     private Timestamp copytime;
+    @Column(name="act_id")
     private String actid;
+    @Column(name="act_name")
     private String actname;
+    @Column(name="act_instid")
     private String actinstid;
 	public String getId() {
 		return id;

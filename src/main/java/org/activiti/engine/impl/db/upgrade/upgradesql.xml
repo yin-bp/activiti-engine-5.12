@@ -215,17 +215,35 @@
 	 -->
 	<property name="getUserCopyTasks">
 		<![CDATA[
-		select * from td_wf_copytask  where COPER=#[user] and COPERTYPE=0 ---用户抄送 
-		#if($process_key && !$process_key.equals("")) 
-			and PROCESS_KEY = #[process_key]
-	  	#end	
-	  	#if($businesskey && !$businesskey.equals("")) 
-			and BUSINESSKEY = #[businesskey]
-	  	#end		
-		
 		#if($orgs && $orgs.size()>0)  
+			select t.* from (
+			select ID,
+				        COPERTYPE,
+				        COPER,
+				        PROCESS_ID,
+				        PROCESS_KEY,
+				        BUSINESSKEY,
+				        COPYTIME,
+				        ACT_ID ,
+				        act_name ,
+				        act_instid   from td_wf_copytask  where COPER=#[user] and COPERTYPE=0 -- 用户抄送 
+			#if($process_key && !$process_key.equals("")) 
+				and PROCESS_KEY = #[process_key]
+		  	#end	
+		  	#if($businesskey && !$businesskey.equals("")) 
+				and BUSINESSKEY = #[businesskey]
+		  	#end		
 			union 
-			select * from td_wf_copytask  where COPER in 
+			select ID,
+				        0 as COPERTYPE,
+				        #[user] as COPER,
+				        PROCESS_ID,
+				        PROCESS_KEY,
+				        BUSINESSKEY,
+				        COPYTIME,
+				        ACT_ID  ,
+				        act_name  ,
+				        act_instid  from td_wf_copytask orgcopy  where orgcopy.COPER in 
 			(
 	  			#foreach($org in $orgs)
 	             #if($velocityCount == 0)
@@ -235,13 +253,34 @@
 	             #end
 	            #end      
 	  		)
-	  		and COPERTYPE=1 ---机构抄送
+	  		and not exists (select u.COPER from td_wf_copytask u where u.COPER=#[user] and u.COPERTYPE=0 and orgcopy.act_instid=u.act_instid)
+	  		and not exists (select hiu.COPER from td_wf_hi_copytask hiu where hiu.COPER=#[user]  and orgcopy.act_instid=hiu.act_instid) 
+	  		and orgcopy.COPERTYPE=1 -- 机构抄送
 	  		#if($process_key && !$process_key.equals("")) 
 				and PROCESS_KEY = #[process_key]
 		  	#end	
 		  	#if($businesskey && !$businesskey.equals("")) 
 				and BUSINESSKEY = #[businesskey]
-		  	#end		
+		  	#end
+		  	)  t ORDER by t.COPYTIME desc
+		#else	
+			select ID,
+				        COPERTYPE,
+				        COPER,
+				        PROCESS_ID,
+				        PROCESS_KEY,
+				        BUSINESSKEY,
+				        COPYTIME,
+				        ACT_ID  ,
+				        act_name  ,
+				        act_instid  from td_wf_copytask  where COPER=#[user] and COPERTYPE=0 -- 用户抄送 
+			#if($process_key && !$process_key.equals("")) 
+				and PROCESS_KEY = #[process_key]
+		  	#end	
+		  	#if($businesskey && !$businesskey.equals("")) 
+				and BUSINESSKEY = #[businesskey]
+		  	#end	
+		  	ORDER by COPYTIME desc
 	  	#end	
 		]]>
 	</property>
@@ -251,13 +290,23 @@
 	 -->
 	<property name="getAdminCopyTasks">
 		<![CDATA[
-		select * from td_wf_copytask  where 1=1 
+		select ID,
+				        COPERTYPE,
+				        COPER,
+				        PROCESS_ID,
+				        PROCESS_KEY,
+				        BUSINESSKEY,
+				        COPYTIME,
+				        ACT_ID ,
+				        act_name ,
+				        act_instid  from td_wf_copytask  where 1=1 
 		#if($process_key && !$process_key.equals("")) 
 			and PROCESS_KEY = #[process_key]
 	  	#end	
 	  	#if($businesskey && !$businesskey.equals("")) 
 			and BUSINESSKEY = #[businesskey]
-	  	#end		
+	  	#end	
+	  	ORDER by COPYTIME desc	
 		]]>
 	</property>
 		<!-- 
@@ -265,7 +314,19 @@
 	 -->
 	<property name="getCopyTaskReadUsers">
 		<![CDATA[
-		select * from td_wf_hi_copytask  where act_instid=? and COPER is not null 
+		select ID,
+				        copyid,
+				        COPORG,
+				        COPER,
+				        PROCESS_ID,
+				        PROCESS_KEY,
+				        BUSINESSKEY,
+				        COPYTIME,
+				        READTIME,
+				         ACT_ID,
+				        act_name,
+				        act_instid,
+				        COPERCNName from td_wf_hi_copytask  where act_instid=? and COPER is not null  ORDER by READTIME asc
 		]]>
 	</property>
 	
@@ -274,7 +335,7 @@
 	 -->
 	<property name="getCopyTaskReadUserNames">
 		<![CDATA[
-		select COPERCNName from td_wf_hi_copytask  where act_instid=? and COPER is not null 
+		select COPERCNName from td_wf_hi_copytask  where act_instid=? and COPER is not null ORDER by READTIME asc
 		]]>
 	</property>
 	
@@ -319,5 +380,9 @@
 				    )
 		]]>
 	</property>
+	
+	<property name="hasread">
+		<![CDATA[select count(1) from td_wf_hi_copytask where actinstid=? and coper=?]]>
+	</property>	
   
 </properties>
