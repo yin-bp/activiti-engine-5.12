@@ -10,16 +10,17 @@ public class CopyTaskEntity {
 	private String id;
     private int copertype;
     private String coper;
+    private String coperCNName;
     private String process_id;
     private String process_key;
     private String businesskey;
     private Timestamp copytime;
-    @Column(name="act_id")
-    private String actid;
-    @Column(name="act_name")
-    private String actname;
-    @Column(name="act_instid")
-    private String actinstid;
+   
+    private String act_id;
+    
+    private String act_name;
+    
+    private String act_instid;
 	public String getId() {
 		return id;
 	}
@@ -62,23 +63,30 @@ public class CopyTaskEntity {
 	public void setCopytime(Timestamp copytime) {
 		this.copytime = copytime;
 	}
-	public String getActid() {
-		return actid;
+	
+	public String getCoperCNName() {
+		return coperCNName;
 	}
-	public void setActid(String actid) {
-		this.actid = actid;
+	public void setCoperCNName(String coperCNName) {
+		this.coperCNName = coperCNName;
 	}
-	public String getActname() {
-		return actname;
+	public String getAct_id() {
+		return act_id;
 	}
-	public void setActname(String actname) {
-		this.actname = actname;
+	public void setAct_id(String act_id) {
+		this.act_id = act_id;
 	}
-	public String getActinstid() {
-		return actinstid;
+	public String getAct_name() {
+		return act_name;
 	}
-	public void setActinstid(String actinstid) {
-		this.actinstid = actinstid;
+	public void setAct_name(String act_name) {
+		this.act_name = act_name;
+	}
+	public String getAct_instid() {
+		return act_instid;
+	}
+	public void setAct_instid(String act_instid) {
+		this.act_instid = act_instid;
 	}
 
 }

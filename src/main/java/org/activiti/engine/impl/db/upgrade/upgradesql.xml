@@ -201,9 +201,9 @@
 					     #[process_key],
 					     #[businesskey],
 					     #[copytime],
-					     #[actid],
-					     #[actname],
-					     #[actinstid])
+					     #[act_id],
+					     #[act_name],
+					     #[act_instid])
 		]]>
 	</property>	
 	
@@ -233,10 +233,10 @@
 		  	#if($businesskey && !$businesskey.equals("")) 
 				and BUSINESSKEY = #[businesskey]
 		  	#end		
-			union 
+			union all
 			select ID,
-				        0 as COPERTYPE,
-				        #[user] as COPER,
+				        COPERTYPE,
+				        COPER,
 				        PROCESS_ID,
 				        PROCESS_KEY,
 				        BUSINESSKEY,
@@ -330,6 +330,39 @@
 		]]>
 	</property>
 	
+	<!-- 
+	获取用户阅读记录
+	管理员查看所有用户阅读流程记录
+	 -->
+	<property name="getUserReaderCopyTasks">
+		<![CDATA[
+		select ID,
+				        copyid,
+				        COPORG,
+				        COPER,
+				        PROCESS_ID,
+				        PROCESS_KEY,
+				        BUSINESSKEY,
+				        COPYTIME,
+				        READTIME,
+				         ACT_ID,
+				        act_name,
+				        act_instid,
+				        COPERCNName from td_wf_hi_copytask  where 1=1 
+				        #if(!$isAdmin)				        
+				        	and COPER=#[user]				        
+				        #end
+				        #if($process_key && !$process_key.equals("")) 
+							and PROCESS_KEY = #[process_key]
+					  	#end	
+					  	#if($businesskey && !$businesskey.equals("")) 
+							and BUSINESSKEY = #[businesskey]
+					  	#end
+					  	ORDER by READTIME asc	
+		]]>
+	</property>
+	
+	
 		<!-- 
 	查看任务的浏览记录
 	 -->
@@ -373,9 +406,9 @@
 					     #[businesskey],
 					     #[copytime],
 					     #[readtime],
-					     #[actid],
-					     #[actname],
-					     #[actinstid],
+					     #[act_id],
+					     #[act_name],
+					     #[act_instid],
 					     #[coperCNName]
 				    )
 		]]>

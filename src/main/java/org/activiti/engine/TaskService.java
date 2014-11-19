@@ -14,6 +14,7 @@ package org.activiti.engine;
 
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +33,7 @@ import org.activiti.engine.task.NativeTaskQuery;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskQuery;
 
+import com.frameworkset.common.poolman.ConfigSQLExecutor;
 import com.frameworkset.util.ListInfo;
 
 /** Service which provides access to {@link Task} and form related operations.
@@ -688,4 +690,17 @@ public ListInfo getAdminCopyTasks(String process_key,String businesskey,long off
  * @return
  */
 public ListInfo getUserCopyTasks(String user,List<String> orgs,String process_key,String businesskey,long offeset,int pagesize);
+/**
+ * 获取用户阅读记录
+ * @param actinstid 活动任务id
+ * @return
+ */
+public ListInfo getUserReaderCopyTasks(String user,String process_key,String businesskey,long offeset,int pagesize);
+
+/**
+ * 管理员查看所有用户阅读记录
+ * @param actinstid 活动任务id
+ * @return
+ */
+public ListInfo getAdminUserReaderCopyTasks(String process_key,String businesskey,long offeset,int pagesize);
 }

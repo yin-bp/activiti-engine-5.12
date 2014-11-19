@@ -962,9 +962,9 @@ public boolean withdrawTask(String taskId, Map<String, Object> variables,
 				for(String user:users_)
 				{
 					copyTaskEntity = new CopyTaskEntity();
-					copyTaskEntity.setActid(actid);
-					copyTaskEntity.setActinstid(actinstid);
-					copyTaskEntity.setActname(actname);
+					copyTaskEntity.setAct_id(actid);
+					copyTaskEntity.setAct_instid(actinstid);
+					copyTaskEntity.setAct_name(actname);
 					copyTaskEntity.setCopytime(copytime);
 					copyTaskEntity.setBusinesskey(businesskey);
 					copyTaskEntity.setProcess_key(process_key);
@@ -983,9 +983,9 @@ public boolean withdrawTask(String taskId, Map<String, Object> variables,
 				for(String org:orgs_)
 				{
 					copyTaskEntity = new CopyTaskEntity();
-					copyTaskEntity.setActid(actid);
-					copyTaskEntity.setActinstid(actinstid);
-					copyTaskEntity.setActname(actname);
+					copyTaskEntity.setAct_id(actid);
+					copyTaskEntity.setAct_instid(actinstid);
+					copyTaskEntity.setAct_name(actname);
 					copyTaskEntity.setCopytime(copytime);
 					copyTaskEntity.setBusinesskey(businesskey);
 					copyTaskEntity.setProcess_key(process_key);
@@ -1022,10 +1022,16 @@ public boolean withdrawTask(String taskId, Map<String, Object> variables,
 				tm.commit();
 				throw new ActivitiException("completeCopyTask["+copytaskid+"] failed:copy task do not exist.");
 			}
+			int exit = executor.queryObject(int.class, "hasread", copyTaskEntity.getAct_instid(),  copyuser);
+			if(exit > 0)
+			{
+				tm.commit();
+				return;
+			}
 			CopyHistoryTaskEntity copyHistoryTaskEntity = new CopyHistoryTaskEntity();
-			copyHistoryTaskEntity.setActid(copyTaskEntity.getActid());
-			copyHistoryTaskEntity.setActinstid(copyTaskEntity.getActinstid());
-			copyHistoryTaskEntity.setActname(copyTaskEntity.getActname());
+			copyHistoryTaskEntity.setAct_id(copyTaskEntity.getAct_id());
+			copyHistoryTaskEntity.setAct_instid(copyTaskEntity.getAct_instid());
+			copyHistoryTaskEntity.setAct_name(copyTaskEntity.getAct_name());
 			copyHistoryTaskEntity.setCopytime(copyTaskEntity.getCopytime());
 			copyHistoryTaskEntity.setBusinesskey(copyTaskEntity.getBusinesskey());
 			copyHistoryTaskEntity.setProcess_key(copyTaskEntity.getProcess_key());
@@ -1054,14 +1060,14 @@ public boolean withdrawTask(String taskId, Map<String, Object> variables,
 					String coperCNName = null;
 			    	try
 			    	{
-			    		coperCNName = this.findProcessEngineConfigurationImpl().getUserInfoMap().getUserName(copyTaskEntity.getCoper());
+			    		coperCNName = this.findProcessEngineConfigurationImpl().getUserInfoMap().getUserName(copyuser);
 			    		copyHistoryTaskEntity.setCoperCNName(coperCNName);
 			    	}
 			    	catch(Exception e)
 			    	{
 			//    		e.printStackTrace();
 			    	};
-					copyHistoryTaskEntity.setCoper(copyTaskEntity.getCoper());
+					copyHistoryTaskEntity.setCoper(copyuser);
 				}
 				else
 				{
@@ -1079,13 +1085,8 @@ public boolean withdrawTask(String taskId, Map<String, Object> variables,
 				}
 			}
 			copyHistoryTaskEntity.setReadtime(new Timestamp(new Date().getTime()));
-			copyHistoryTaskEntity.setCopyid(copytaskid);
-			int exit = executor.queryObject(int.class, "hasread", copytaskid,  copyuser);
-			if(exit <= 0)
-			{
-				executor.insertBean("inserthicopy", copyHistoryTaskEntity);
-			}
-			
+			copyHistoryTaskEntity.setCopyid(copytaskid);		
+			executor.insertBean("inserthicopy", copyHistoryTaskEntity);
 			if(copyTaskEntity.getCopertype() == TaskContext.COPER_TYPE_USER)
 			{
 				if(copyuser.equals(copyTaskEntity.getCoper()))
@@ -1246,4 +1247,43 @@ public boolean withdrawTask(String taskId, Map<String, Object> variables,
 			throw new ActivitiException("getCopyTaskReadUsers[actinstid="+actinstid +"] failed:",e);
 		}
 	}
+	
+	/**
+	 * 获取用户阅读记录
+	 * @param actinstid 活动任务id
+	 * @return
+	 */
+	public ListInfo getUserReaderCopyTasks(String user,String process_key,String businesskey,long offeset,int pagesize)
+	{
+		try {
+			ConfigSQLExecutor executor = this.findProcessEngineConfigurationImpl().getExtendExecutor();
+			Map params = new HashMap();
+			params.put("process_key", process_key);
+			params.put("businesskey", businesskey);
+			params.put("user", user);
+			params.put("isAdmin", false);
+			return executor.queryListInfoBean(CopyHistoryTaskEntity.class, "getUserReaderCopyTasks",  offeset,  pagesize,params);
+		} catch (Exception e) {
+			throw new ActivitiException("Get User ["+user +"] Readed CopyTasks failed:",e);
+		}
+	}	
+	
+	/**
+	 * 管理员查看所有用户阅读记录
+	 * @param actinstid 活动任务id
+	 * @return
+	 */
+	public ListInfo getAdminUserReaderCopyTasks(String process_key,String businesskey,long offeset,int pagesize)
+	{
+		try {
+			ConfigSQLExecutor executor = this.findProcessEngineConfigurationImpl().getExtendExecutor();
+			Map params = new HashMap();
+			params.put("process_key", process_key);
+			params.put("businesskey", businesskey);
+			params.put("isAdmin", true);
+			return executor.queryListInfoBean(CopyHistoryTaskEntity.class, "getUserReaderCopyTasks",  offeset,  pagesize,params);
+		} catch (Exception e) {
+			throw new ActivitiException("getAdminUserReaderCopyTasks  failed:",e);
+		}
+	}	
 }
