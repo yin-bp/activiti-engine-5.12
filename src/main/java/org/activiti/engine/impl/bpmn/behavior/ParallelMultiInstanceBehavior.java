@@ -186,7 +186,7 @@ public void execute(ActivityExecution execution) throws Exception {
 	  {
 		 
 		  Context.getCommandContext().getHistoryManager()
-	      .recordUseTaskActivityAutoComplete((ExecutionEntity) execution);
+	      .recordCopyUseTaskActivityComplete((ExecutionEntity) execution);
 			String BUSSINESSCONTROLCLASS = TaskContext.CopyTaskBehavior;
 			JavaDelegate javaDelegate = Context.getJavaDelegate(BUSSINESSCONTROLCLASS);
 			super.execute(execution, javaDelegate);

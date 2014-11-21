@@ -211,6 +211,23 @@ public class HistoryManager extends AbstractManager {
   }
   
   /**
+   * Record the auto complete of an activitiy, if activity history is enabled.
+   */
+  public void recordCopyUseTaskActivityComplete(ExecutionEntity executionEntity) {
+    if(isHistoryLevelAtLeast(HistoryLevel.ACTIVITY)) {
+      HistoricActivityInstanceEntity historicActivityInstance = findActivityInstance(executionEntity);
+      if (historicActivityInstance!=null) {
+    	  historicActivityInstance.setAutoComplete(2);
+//    	  historicActivityInstance.setStartTime(new Date());
+    	  if(StringUtil.isNotEmpty(executionEntity.getTaskContext().getBUSSINESSCONTROLCLASS()))
+    	  {
+    		  historicActivityInstance.setAutoCompleteHandler(executionEntity.getTaskContext().getBUSSINESSCONTROLCLASS());
+    	  }
+      }
+    }
+  }
+  
+  /**
    * Record the end of a start-task, if activity history is enabled.
    */
   public void recordStartEventEnded(String executionId, String activityId) {

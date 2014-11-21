@@ -57,6 +57,7 @@ import org.activiti.engine.impl.persistence.entity.CopyHistoryTaskEntity;
 import org.activiti.engine.impl.persistence.entity.CopyTaskEntity;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
+import org.activiti.engine.impl.persistence.entity.ReadUserNames;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.repository.ProcessDefinition;
@@ -1286,4 +1287,37 @@ public boolean withdrawTask(String taskId, Map<String, Object> variables,
 			throw new ActivitiException("getAdminUserReaderCopyTasks  failed:",e);
 		}
 	}	
+	
+	/**
+	 * 获取根据活动任务id获取任务的阅读记录中文名称,只返回前limit个用户
+	 * @param actinstid 活动任务id
+	 * @return
+	 */
+	public ReadUserNames getCopyTaskReadUserNames(String actinstid,int limit)
+	{
+		try {
+			final StringBuffer users = new StringBuffer();
+			  
+			ConfigSQLExecutor executor = this.findProcessEngineConfigurationImpl().getExtendExecutor();
+			ListInfo listInfo = executor.queryListInfoByNullRowHandler(new NullRowHandler(){
+
+				@Override
+				public void handleRow(Record origine) throws Exception {
+					if(users.length() == 0)
+						users.append(origine.getString("COPERCNName"));
+					else
+						users.append(",").append(origine.getString("COPERCNName"));
+					
+				}
+				
+			}, "getCopyTaskReadUserNames", 0,limit,actinstid);
+			ReadUserNames readUserNames = new ReadUserNames();
+			readUserNames.setReadUserNames(users.toString());
+			readUserNames.setTotalsize(listInfo.getTotalSize());
+			readUserNames.setHasmoreRecord(listInfo.getTotalSize() > limit);
+			return readUserNames;
+		} catch (Exception e) {
+			throw new ActivitiException("getCopyTaskReadUsers[actinstid="+actinstid +",返回前"+limit+"条记录] failed:",e);
+		}
+	}
 }

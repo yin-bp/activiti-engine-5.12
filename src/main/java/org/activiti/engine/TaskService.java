@@ -14,13 +14,13 @@ package org.activiti.engine;
 
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.activiti.engine.impl.persistence.entity.CopyHistoryTaskEntity;
 import org.activiti.engine.impl.persistence.entity.CopyTaskEntity;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
+import org.activiti.engine.impl.persistence.entity.ReadUserNames;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.query.NativeQuery;
 import org.activiti.engine.task.Attachment;
@@ -33,7 +33,6 @@ import org.activiti.engine.task.NativeTaskQuery;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskQuery;
 
-import com.frameworkset.common.poolman.ConfigSQLExecutor;
 import com.frameworkset.util.ListInfo;
 
 /** Service which provides access to {@link Task} and form related operations.
@@ -670,6 +669,13 @@ public List<CopyHistoryTaskEntity> getCopyTaskReadUsers(String actinstid);
  * @return
  */
 public String getCopyTaskReadUserNames(String actinstid);
+
+/**
+ * 获取根据活动任务id获取任务的阅读记录中文名称,只返回前limit个用户
+ * @param actinstid 活动任务id
+ * @return
+ */
+public ReadUserNames getCopyTaskReadUserNames(String actinstid,int limit);
 /**
  * 获取根据活动任务id获取任务的阅读记录
  * @param actinstid 活动任务id

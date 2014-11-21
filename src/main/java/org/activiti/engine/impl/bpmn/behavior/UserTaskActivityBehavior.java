@@ -156,7 +156,7 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
 	  if(execution.getTaskContext().isCOPY() || execution.getTaskContext().isNotify())
 	  {
 		  Context.getCommandContext().getHistoryManager()
-	      .recordUseTaskActivityAutoComplete((ExecutionEntity) execution);
+	      .recordCopyUseTaskActivityComplete((ExecutionEntity) execution);
 			String BUSSINESSCONTROLCLASS = TaskContext.CopyTaskBehavior;
 			JavaDelegate javaDelegate = Context.getJavaDelegate(BUSSINESSCONTROLCLASS);
 			super.execute(execution, javaDelegate);
