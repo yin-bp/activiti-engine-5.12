@@ -2,7 +2,6 @@ package org.activiti.engine.impl.persistence.entity;
 
 import java.sql.Timestamp;
 
-import com.frameworkset.orm.annotation.Column;
 import com.frameworkset.orm.annotation.PrimaryKey;
 
 public class CopyTaskEntity {
@@ -15,6 +14,12 @@ public class CopyTaskEntity {
     private String process_key;
     private String businesskey;
     private Timestamp copytime;
+    /**
+     * 0:抄送任务
+     * 1：通知任务
+     * 其他：扩展任务状态
+     */
+    private int tasktype;
    
     private String act_id;
     
@@ -87,6 +92,12 @@ public class CopyTaskEntity {
 	}
 	public void setAct_instid(String act_instid) {
 		this.act_instid = act_instid;
+	}
+	public int getTasktype() {
+		return tasktype;
+	}
+	public void setTasktype(int tasktype) {
+		this.tasktype = tasktype;
 	}
 
 }

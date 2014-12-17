@@ -192,7 +192,8 @@
 				        COPYTIME,
 				        ACT_ID,
 				        act_name,
-				        act_instid
+				        act_instid,
+				        tasktype
 				    ) VALUES  (
 				         #[id],
 					     #[copertype],
@@ -203,7 +204,8 @@
 					     #[copytime],
 					     #[act_id],
 					     #[act_name],
-					     #[act_instid])
+					     #[act_instid],
+					     #[tasktype])
 		]]>
 	</property>	
 	
@@ -226,7 +228,7 @@
 				        COPYTIME,
 				        ACT_ID ,
 				        act_name ,
-				        act_instid   from td_wf_copytask  where COPER=#[user] and COPERTYPE=0 -- 用户抄送 
+				        act_instid,tasktype   from td_wf_copytask  where COPER=#[user] and COPERTYPE=0 -- 用户抄送 
 			#if($process_key && !$process_key.equals("")) 
 				and PROCESS_KEY = #[process_key]
 		  	#end	
@@ -243,7 +245,7 @@
 				        COPYTIME,
 				        ACT_ID  ,
 				        act_name  ,
-				        act_instid  from td_wf_copytask orgcopy  where orgcopy.COPER in 
+				        act_instid,tasktype  from td_wf_copytask orgcopy  where orgcopy.COPER in 
 			(
 	  			#foreach($org in $orgs)
 	             #if($velocityCount == 0)
@@ -273,7 +275,7 @@
 				        COPYTIME,
 				        ACT_ID  ,
 				        act_name  ,
-				        act_instid  from td_wf_copytask  where COPER=#[user] and COPERTYPE=0 -- 用户抄送 
+				        act_instid,tasktype  from td_wf_copytask  where COPER=#[user] and COPERTYPE=0 -- 用户抄送 
 			#if($process_key && !$process_key.equals("")) 
 				and PROCESS_KEY = #[process_key]
 		  	#end	
@@ -299,7 +301,7 @@
 				        COPYTIME,
 				        ACT_ID ,
 				        act_name ,
-				        act_instid  from td_wf_copytask  where 1=1 
+				        act_instid,tasktype  from td_wf_copytask  where 1=1 
 		#if($process_key && !$process_key.equals("")) 
 			and PROCESS_KEY = #[process_key]
 	  	#end	
@@ -326,7 +328,7 @@
 				         ACT_ID,
 				        act_name,
 				        act_instid,
-				        COPERCNName from td_wf_hi_copytask  where act_instid=? and COPER is not null  ORDER by READTIME asc
+				        COPERCNName,tasktype from td_wf_hi_copytask  where act_instid=? and COPER is not null  ORDER by READTIME asc
 		]]>
 	</property>
 	
@@ -348,7 +350,7 @@
 				         ACT_ID,
 				        act_name,
 				        act_instid,
-				        COPERCNName from td_wf_hi_copytask  where 1=1 
+				        COPERCNName,tasktype from td_wf_hi_copytask  where 1=1 
 				        #if(!$isAdmin)				        
 				        	and COPER=#[user]				        
 				        #end
@@ -393,7 +395,8 @@
 				        ACT_ID,
 				        act_name,
 				        act_instid,
-				        COPERCNName
+				        COPERCNName,
+				        tasktype
 				    )
 				    VALUES
 				    (
@@ -409,7 +412,8 @@
 					     #[act_id],
 					     #[act_name],
 					     #[act_instid],
-					     #[coperCNName]
+					     #[coperCNName],
+					     #[tasktype]
 				    )
 		]]>
 	</property>

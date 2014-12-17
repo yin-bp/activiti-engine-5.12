@@ -971,6 +971,7 @@ public boolean withdrawTask(String taskId, Map<String, Object> variables,
 					copyTaskEntity.setProcess_key(process_key);
 					copyTaskEntity.setProcess_id(process_id);
 					copyTaskEntity.setCoper(user);
+					copyTaskEntity.setTasktype( execution.getTaskContext().isNotify()?TaskContext.TYPE_NOTIFY:TaskContext.TYPE_COPY);
 					copyTaskEntity.setCopertype(TaskContext.COPER_TYPE_USER);
 					tasks.add(copyTaskEntity);
 				}
@@ -991,6 +992,7 @@ public boolean withdrawTask(String taskId, Map<String, Object> variables,
 					copyTaskEntity.setBusinesskey(businesskey);
 					copyTaskEntity.setProcess_key(process_key);
 					copyTaskEntity.setProcess_id(process_id);
+					copyTaskEntity.setTasktype( execution.getTaskContext().isNotify()?TaskContext.TYPE_NOTIFY:TaskContext.TYPE_COPY);
 					copyTaskEntity.setCoper(org);
 					copyTaskEntity.setCopertype(TaskContext.COPER_TYPE_ORG);
 					tasks.add(copyTaskEntity);
