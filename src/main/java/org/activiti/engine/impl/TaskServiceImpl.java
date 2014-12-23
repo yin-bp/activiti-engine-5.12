@@ -77,6 +77,7 @@ import com.frameworkset.common.poolman.SQLExecutor;
 import com.frameworkset.common.poolman.handle.NullRowHandler;
 import com.frameworkset.orm.transaction.TransactionManager;
 import com.frameworkset.util.ListInfo;
+import com.frameworkset.util.StringUtil;
 
 
 /**
@@ -955,7 +956,7 @@ public boolean withdrawTask(String taskId, Map<String, Object> variables,
 			String actid = execution.getCurrentActivityId();
 			String actname = execution.getCurrentActivityName();
 			String actinstid = Context.getCommandContext().getHistoryManager().findActivityInstance(execution).getId();
-			if(users != null)
+			if(!StringUtil.isEmpty(users))
 			{
 				String[] users_ = users.split("\\,");
 				CopyTaskEntity copyTaskEntity = null;
@@ -977,7 +978,7 @@ public boolean withdrawTask(String taskId, Map<String, Object> variables,
 				}
 				executor.insertBeans("insertcopy",tasks);
 			}
-			if(orgs != null)
+			if(!StringUtil.isEmpty(orgs))
 			{
 				String[] orgs_ = orgs.split("\\,");
 				CopyTaskEntity copyTaskEntity = null;
