@@ -39,19 +39,23 @@ public class CompleteTaskCmd extends NeedsActiveTaskCmd<Void> {
   protected String bussinessop;
   protected String bussinessRemark;
   protected boolean returntoreject; 
-  
+  protected boolean autocomplete;
  
   
   public CompleteTaskCmd(String taskId, Map<String, Object> variables) {
 	    super(taskId);
 	    this.variables = variables;
 	  }
-	  public CompleteTaskCmd(String taskId, String completeReason,Map<String, Object> variables,String bussinessop,String bussinessRemark) {
+  public CompleteTaskCmd(String taskId, String completeReason,Map<String, Object> variables,String bussinessop,String bussinessRemark) {
+	  this(taskId, completeReason,variables,bussinessop,bussinessRemark,false);
+  }
+	  public CompleteTaskCmd(String taskId, String completeReason,Map<String, Object> variables,String bussinessop,String bussinessRemark,boolean autocomplete) {
 	    super(taskId);
 	    this.variables = variables;
 	    this.completeReason = completeReason;
 	    this.bussinessop = bussinessop;
 	    this.bussinessRemark = bussinessRemark;
+	    this.autocomplete = autocomplete;
 	  }
   /**
    * 完成任务指定跳转目标节点
@@ -199,9 +203,11 @@ public CompleteTaskCmd(String taskId, Map<String, Object> variables,int op,int r
 	    this.bussinessRemark = bussinessRemark;
 	  }
   protected Void execute(CommandContext commandContext, TaskEntity task) {
+	
     if (variables!=null) {
       task.setExecutionVariables(variables);
     }
+   
     //task.complete();
     TaskContext taskContext = new TaskContext();
     /**
@@ -247,6 +253,10 @@ public CompleteTaskCmd(String taskId, Map<String, Object> variables,int op,int r
 	    taskContext.setRejecttype(this.rejectedtype);
 	    taskContext.setReturntoreject(returntoreject);
     }
+    if(this.autocomplete)//如果是自动完成任务，执行自动完成的任务回调处理类
+   	{
+   		task.executeAutoDelegate(taskContext);
+   	}
 //    if(completeReason == null)
 //    {
 ////	    if(this.destinationTaskKey == null || this.destinationTaskKey.equals(""))

@@ -197,6 +197,7 @@ public interface TaskService {
    */
   void complete(String taskId, Map<String, Object> variables);
   void completeWithReason(String taskId, Map<String, Object> variables,String completeReason,String bussinessop,String bussinessRemark);
+  void completeWithReason(String taskId, Map<String, Object> variables,String completeReason,String bussinessop,String bussinessRemark,boolean autocomplete);
   /**
    * Called when the task is successfully executed, 
    * and the required task parameters are given by the end-user.

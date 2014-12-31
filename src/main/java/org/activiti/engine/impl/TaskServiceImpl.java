@@ -219,6 +219,11 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
 	  commandExecutor.execute(new CompleteTaskCmd(taskId,completeReason, variables,  bussinessop,  bussinessRemark));
   }
   
+  public void completeWithReason(String taskId, Map<String, Object> variables,String completeReason,String bussinessop,String bussinessRemark,boolean autocomplete)
+  {
+	  commandExecutor.execute(new CompleteTaskCmd(taskId,completeReason, variables,  bussinessop,  bussinessRemark,autocomplete));
+  }
+  
 //  public void completeWithReason(boolean returntoreject,String taskId, Map<String, Object> variables,String completeReason)
 //  {
 //	  commandExecutor.execute(new CompleteTaskCmd(taskId,completeReason,returntoreject, variables));

@@ -25,12 +25,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.activiti.engine.ActivitiException;
-import org.activiti.engine.ControlParam;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
 import org.activiti.engine.impl.TaskContext;
-import org.activiti.engine.impl.bpmn.behavior.FlowNodeActivityBehavior;
 import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.db.DbSqlSession;
 import org.activiti.engine.impl.db.HasRevision;
@@ -45,7 +43,6 @@ import org.activiti.engine.task.DelegationState;
 import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.task.IdentityLinkType;
 import org.activiti.engine.task.Task;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -262,7 +259,7 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
 //		}
     	Context.createTaskContextControlParam(taskContext, execution, this.taskDefinitionKey);
 //    	this.execution.setTaskContext(taskContext);
-    	
+    	Context.invocationDelegate(execution);
     }
     boolean customDTask = (destinationTaskKey != null && !destinationTaskKey.equals(""));
     String dtaskName = null;
@@ -374,12 +371,8 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
     {
     	deleteReason = completeReason;
     }
-    Context
-      .getCommandContext()
-      .getTaskEntityManager()
-      .deleteTask(this, deleteReason, false,  bussinessop,  bussinessRemark);
     
-    if (execution!=null) {
+    if (execution!=null) {//执行信息设置
 //      execution = getExecution();
       if(customDTask || completeReason != null)
       {
@@ -388,7 +381,27 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
       }
       execution.setBussinessop(bussinessop);
 	  execution.setBussinessRemark(bussinessRemark);
-      
+	  if(this.autocomplete)//如果是自动完成任务则执行可能的java delegate逻辑
+	    {
+	    	Context.invocationDelegate(execution);
+	    }
+    }
+    
+    Context
+      .getCommandContext()
+      .getTaskEntityManager()
+      .deleteTask(this, deleteReason, false,  bussinessop,  bussinessRemark);
+    
+    if (execution!=null) {
+    	/**自动处理任务时，回调业务处理类需要相关信息，因此将下面的代码放到删除任务之前设置，特此注释*/
+//      if(customDTask || completeReason != null)
+//      {
+//    	  execution.setDeleteReason(deleteReason);
+//    	 
+//      }
+//      execution.setBussinessop(bussinessop);
+//	  execution.setBussinessRemark(bussinessRemark);
+    	/**自动处理任务时，回调业务处理类需要相关信息，因此将下面的代码放到删除任务之前设置，注释结束 2014 12-31 by biaoping.yin*/
       execution.removeTask(this);
 //      execution.signal(null, null);
 //      if(destinationTaskKey == null || "".equals(destinationTaskKey))
@@ -1022,5 +1035,18 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
 	public void setHistoricActivityInstanceEntity(
 			HistoricActivityInstanceEntity historicActivityInstanceEntity) {
 		this.historicActivityInstanceEntity = historicActivityInstanceEntity;
+	}
+	 protected boolean autocomplete;
+	public void executeAutoDelegate(TaskContext taskContext) {
+		this.autocomplete = true;
+		
+	}
+
+	public boolean isAutocomplete() {
+		return autocomplete;
+	}
+
+	public void setAutocomplete(boolean autocomplete) {
+		this.autocomplete = autocomplete;
 	}
 }

@@ -27,6 +27,7 @@ import org.activiti.engine.impl.bpmn.behavior.MultiInstanceActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.UserTaskActivityBehavior;
 import org.activiti.engine.impl.cfg.BeansConfigurationHelper;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
+import org.activiti.engine.impl.delegate.JavaDelegateInvocation;
 import org.activiti.engine.impl.interceptor.CommandContext;
 import org.activiti.engine.impl.jobexecutor.JobExecutorContext;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
@@ -259,5 +260,23 @@ public class Context {
 			log.error("",e);
 		}
 			
+  }
+  
+  public static void invocationDelegate(ExecutionEntity execution) throws ActivitiException
+  {
+	  String BUSSINESSCONTROLCLASS = execution.getTaskContext().getBUSSINESSCONTROLCLASS();
+		if(StringUtil.isNotEmpty(BUSSINESSCONTROLCLASS))
+		{
+			JavaDelegate javaDelegate = Context.getJavaDelegate(BUSSINESSCONTROLCLASS);
+			 try {
+				Context.getProcessEngineConfiguration()
+				  .getDelegateInterceptor()
+				  .handleInvocation(new JavaDelegateInvocation(javaDelegate, execution));
+			} catch (ActivitiException e) {
+				throw e;
+			} catch (Exception e) {
+				throw new ActivitiException("invocationDelegate["+BUSSINESSCONTROLCLASS+"] failed for task["+execution.getCurrentActivityId()+"]:",e);
+			}    
+		}
   }
 }
