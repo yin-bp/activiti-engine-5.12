@@ -383,7 +383,7 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
 	  execution.setBussinessRemark(bussinessRemark);
 	  if(this.autocomplete)//如果是自动完成任务则执行可能的java delegate逻辑
 	    {
-	    	Context.invocationDelegate(execution);
+	    	Context.invocationAutoDelegate(execution);
 	    }
     }
     

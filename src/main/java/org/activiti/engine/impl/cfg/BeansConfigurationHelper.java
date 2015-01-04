@@ -26,6 +26,7 @@ import org.frameworkset.spi.DefaultApplicationContext;
 public class BeansConfigurationHelper {
 	private static BaseApplicationContext  configBeanFactory = null; 
 	private static ProcessEngineConfiguration  processEngineConfiguration = null;
+	private static BaseApplicationContext beanFactory;
 	public static BaseApplicationContext getConfigBeanFactory() {
 		return configBeanFactory;
 	}
@@ -55,6 +56,7 @@ public class BeansConfigurationHelper {
 	    {
 	    	processEngineConfiguration.setBeans(new SpringBeanFactoryProxyMap(beanFactory,null));
 	    }
+	    BeansConfigurationHelper.beanFactory = beanFactory_;
 	    return BeansConfigurationHelper.processEngineConfiguration = processEngineConfiguration;
 	  }
 //  public static ProcessEngineConfiguration parseProcessEngineConfigurationFromInputStream(InputStream inputStream, String beanName) {
@@ -74,6 +76,7 @@ public class BeansConfigurationHelper {
 	 	    {
 	 	    	processEngineConfiguration.setBeans(new SpringBeanFactoryProxyMap(beanFactory,null));
 	 	    }
+	 	   BeansConfigurationHelper.beanFactory = beanFactory_;
 	 	    return processEngineConfiguration;
 //	     return parseProcessEngineConfiguration(springResource, beanName);
 	   }
@@ -86,6 +89,11 @@ public class BeansConfigurationHelper {
 
 	public static ProcessEngineConfiguration getProcessEngineConfiguration() {
 		return processEngineConfiguration;
+	}
+
+
+	public static BaseApplicationContext getBeanFactory() {
+		return beanFactory;
 	}
 
 }

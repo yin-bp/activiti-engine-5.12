@@ -21,12 +21,14 @@ import java.util.Stack;
 
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.ControlParam;
+import org.activiti.engine.delegate.AutoJavaDelegate;
 import org.activiti.engine.delegate.JavaDelegate;
 import org.activiti.engine.impl.TaskContext;
 import org.activiti.engine.impl.bpmn.behavior.MultiInstanceActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.UserTaskActivityBehavior;
 import org.activiti.engine.impl.cfg.BeansConfigurationHelper;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
+import org.activiti.engine.impl.delegate.AutoJavaDelegateInvocation;
 import org.activiti.engine.impl.delegate.JavaDelegateInvocation;
 import org.activiti.engine.impl.interceptor.CommandContext;
 import org.activiti.engine.impl.jobexecutor.JobExecutorContext;
@@ -71,9 +73,9 @@ public class Context {
 			if(idx > 0)
 			{
 				javaDelegateClass = javaDelegateClass.substring(idx+1,javaDelegateClass.length() -1);
-				temp = BeansConfigurationHelper.getConfigBeanFactory().getTBeanObject(javaDelegateClass, JavaDelegate.class);
+				temp = BeansConfigurationHelper.getBeanFactory().getTBeanObject(javaDelegateClass, JavaDelegate.class);
 				if(temp == null)
-					throw new ActivitiException("Get JavaDelegate for "+javaDelegateClass + " from BeanFactory Container ["+BeansConfigurationHelper.getConfigBeanFactory().getConfigfile()+ "] failed:"+javaDelegateClass + "未定义.");
+					throw new ActivitiException("Get JavaDelegate for "+javaDelegateClass + " from BeanFactory Container ["+BeansConfigurationHelper.getBeanFactory().getConfigfile()+ "] failed:"+javaDelegateClass + "未定义.");
 				else
 				{
 					bussinessClassHandle.put(javaDelegateClass, temp);
@@ -272,6 +274,34 @@ public class Context {
 				Context.getProcessEngineConfiguration()
 				  .getDelegateInterceptor()
 				  .handleInvocation(new JavaDelegateInvocation(javaDelegate, execution));
+			} catch (ActivitiException e) {
+				throw e;
+			} catch (Exception e) {
+				throw new ActivitiException("invocationDelegate["+BUSSINESSCONTROLCLASS+"] failed for task["+execution.getCurrentActivityId()+"]:",e);
+			}    
+		}
+  }
+  
+  public static void invocationAutoDelegate(ExecutionEntity execution) throws ActivitiException
+  {
+	  String BUSSINESSCONTROLCLASS = execution.getTaskContext().getBUSSINESSCONTROLCLASS();
+		if(StringUtil.isNotEmpty(BUSSINESSCONTROLCLASS))
+		{
+			JavaDelegate javaDelegate = Context.getJavaDelegate(BUSSINESSCONTROLCLASS);
+			
+			 try {
+				 if(!(javaDelegate instanceof AutoJavaDelegate))
+				{
+					Context.getProcessEngineConfiguration()
+					  .getDelegateInterceptor()
+					  .handleInvocation(new JavaDelegateInvocation(javaDelegate, execution));
+				}
+				 else
+				 {
+					 Context.getProcessEngineConfiguration()
+					  .getDelegateInterceptor()
+					  .handleInvocation(new AutoJavaDelegateInvocation((AutoJavaDelegate)javaDelegate, execution));
+				 }
 			} catch (ActivitiException e) {
 				throw e;
 			} catch (Exception e) {
