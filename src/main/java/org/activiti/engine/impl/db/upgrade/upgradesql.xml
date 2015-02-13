@@ -384,7 +384,7 @@
 	<property name="getCopyTaskReadUserNamesWithLimit-oracle">
 		<![CDATA[
 		select tt1.* from (
-		select * from td_wf_hi_copytask  where act_instid=?  ORDER by READTIME asc) tt1 
+		select COPERCNName from td_wf_hi_copytask  where act_instid=?  ORDER by READTIME asc) tt1 
 		where rownum <= (?+1) 
 		]]>
 	</property>
