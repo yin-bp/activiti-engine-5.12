@@ -1307,22 +1307,25 @@ public boolean withdrawTask(String taskId, Map<String, Object> variables,
 			final StringBuffer users = new StringBuffer();
 			  
 			ConfigSQLExecutor executor = this.findProcessEngineConfigurationImpl().getExtendExecutor();
-			ListInfo listInfo = executor.queryListInfoByNullRowHandler(new NullRowHandler(){
+			executor.queryByNullRowHandler(new NullRowHandler(){
 
 				@Override
 				public void handleRow(Record origine) throws Exception {
-					if(users.length() == 0)
-						users.append(origine.getString("COPERCNName"));
-					else
-						users.append(",").append(origine.getString("COPERCNName"));
+					String name = origine.getString("COPERCNName");
+					if(name != null)
+					{
+						if(users.length() == 0)
+							users.append(origine.getString("COPERCNName"));
+						else
+							users.append(",").append(origine.getString("COPERCNName"));
+					}
 					
 				}
 				
-			}, "getCopyTaskReadUserNames", 0,limit,actinstid);
+			}, "getCopyTaskReadUserNamesWithLimit",actinstid, limit);
 			ReadUserNames readUserNames = new ReadUserNames();
 			readUserNames.setReadUserNames(users.toString());
-			readUserNames.setTotalsize(listInfo.getTotalSize());
-			readUserNames.setHasmoreRecord(listInfo.getTotalSize() > limit);
+			readUserNames.setHasmoreRecord(true);
 			return readUserNames;
 		} catch (Exception e) {
 			throw new ActivitiException("getCopyTaskReadUsers[actinstid="+actinstid +",返回前"+limit+"条记录] failed:",e);

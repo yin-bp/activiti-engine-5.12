@@ -370,10 +370,24 @@
 	 -->
 	<property name="getCopyTaskReadUserNames">
 		<![CDATA[
-		select COPERCNName from td_wf_hi_copytask  where act_instid=? and COPER is not null ORDER by READTIME asc
+		select COPERCNName from td_wf_hi_copytask  where act_instid=? ORDER by READTIME asc
 		]]>
 	</property>
-	
+		<!-- 
+	查看任务的浏览记录
+	 -->
+	<property name="getCopyTaskReadUserNamesWithLimit-mysql">
+		<![CDATA[
+		select COPERCNName from td_wf_hi_copytask  where act_instid=? ORDER by READTIME asc limit 0,?
+		]]>
+	</property>
+	<property name="getCopyTaskReadUserNamesWithLimit-oracle">
+		<![CDATA[
+		select tt1.* from (
+		select * from td_wf_hi_copytask  where act_instid=?  ORDER by READTIME asc) tt1 
+		where rownum <= (?+1) 
+		]]>
+	</property>
     <property name="deletecopy">
 		<![CDATA[delete from td_wf_copytask  where ID=?]]>
 	</property>	
