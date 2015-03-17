@@ -255,7 +255,6 @@ ALTER TABLE ACT_HI_ACTINST
  # -----------------------------------------------------------------------
 # TD_WF_COPYTASK
 # -----------------------------------------------------------------------
-drop table if exists TD_WF_COPYTASK;
 
 CREATE TABLE TD_WF_COPYTASK
 (
@@ -276,7 +275,6 @@ CREATE TABLE TD_WF_COPYTASK
 # -----------------------------------------------------------------------
 # TD_WF_HI_COPYTASK
 # -----------------------------------------------------------------------
-drop table if exists TD_WF_HI_COPYTASK;
 
 CREATE TABLE TD_WF_HI_COPYTASK
 (

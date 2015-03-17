@@ -328,7 +328,6 @@ alter table td_wf_hi_rejectlog
 -----------------------------------------------------------------------------
 -- TD_WF_COPYTASK
 -----------------------------------------------------------------------------
-DROP TABLE TD_WF_COPYTASK CASCADE CONSTRAINTS;
 
 CREATE TABLE TD_WF_COPYTASK
 (
@@ -357,7 +356,6 @@ PRIMARY KEY (ID);
 -----------------------------------------------------------------------------
 -- TD_WF_HI_COPYTASK
 -----------------------------------------------------------------------------
-DROP TABLE TD_WF_HI_COPYTASK CASCADE CONSTRAINTS;
 
 CREATE TABLE TD_WF_HI_COPYTASK
 (
