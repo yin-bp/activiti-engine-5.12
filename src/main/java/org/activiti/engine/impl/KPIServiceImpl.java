@@ -12,6 +12,7 @@ import org.activiti.engine.KPI;
 import org.activiti.engine.KPIService;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.impl.context.Context;
+import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 
 import com.frameworkset.common.poolman.ConfigSQLExecutor;
 import com.frameworkset.orm.transaction.TransactionManager;
@@ -59,13 +60,23 @@ public class KPIServiceImpl implements KPIService {
 		TransactionManager tm = new TransactionManager();
 		try {
 			tm.begin();
-			Map condition = new HashMap();
-			condition.put("processId", processInstanceID);
-			
-			condition.put("backuptime", new Timestamp(new Date().getTime()));
-			
 			 ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
-			  executor.insertBean("backuprejectlogToHi_wf", condition);
+			if(currentexecution instanceof ExecutionEntity && ((ExecutionEntity)currentexecution).getDeleteReason().equals("deleted deployment"))
+			{
+				
+
+				
+			}
+			else
+			{
+				Map condition = new HashMap();
+				condition.put("processId", processInstanceID);
+				
+				condition.put("backuptime", new Timestamp(new Date().getTime()));
+				
+				
+				  executor.insertBean("backuprejectlogToHi_wf", condition);
+			}
 			  executor.delete("deleterejectlog", processInstanceID);
 
 			tm.commit();
@@ -79,10 +90,19 @@ public class KPIServiceImpl implements KPIService {
 		}finally {
 			tm.release();
 		}
-	
-		if(KPIService != null)
-			 KPIService.archiveProcessRuntimedata(  currentexecution,
-					  processInstanceID);
+		if(currentexecution instanceof ExecutionEntity && ((ExecutionEntity)currentexecution).getDeleteReason().equals("deleted deployment"))
+		{
+			
+
+			
+		}
+		else
+		{
+			if(KPIService != null)
+				 KPIService.archiveProcessRuntimedata(  currentexecution,
+						  processInstanceID);
+		}
+		
 			
 		
 	}
