@@ -11,6 +11,18 @@ sourceSets {
         }
          
     }
+    test {
+        java {
+            srcDir 'test/java'
+            
+          
+        }
+        resources {
+           srcDir 'test/java'  exclude '**/*.java'
+           srcDir 'test/resources' 
+        }
+         
+    }
     
     
 }
