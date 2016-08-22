@@ -1,0 +1,5 @@
+rootProject.name = 'activiti-engine-5.12'
+include 'activiti-engine'
+include 'activiti-bpmn-converter'
+include 'activiti-bpmn-layout'
+include 'activiti-bpmn-model'

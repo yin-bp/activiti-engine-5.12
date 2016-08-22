@@ -1,2 +1,6 @@
 /bin
 /distrib
+/.gradle/
+/.classpath
+/.project
+/.settings/
