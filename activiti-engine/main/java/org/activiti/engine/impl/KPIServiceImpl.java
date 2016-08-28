@@ -58,10 +58,12 @@ public class KPIServiceImpl implements KPIService {
 		
 		
 		TransactionManager tm = new TransactionManager();
+		String deleteReason = ((ExecutionEntity)currentexecution).getDeleteReason();
 		try {
 			tm.begin();
+			
 			 ConfigSQLExecutor executor = Context.getProcessEngineConfiguration().getExtendExecutor();
-			if(currentexecution instanceof ExecutionEntity && ((ExecutionEntity)currentexecution).getDeleteReason().equals("deleted deployment"))
+			if(currentexecution instanceof ExecutionEntity && deleteReason != null && deleteReason.equals("deleted deployment"))
 			{
 				
 
@@ -90,7 +92,7 @@ public class KPIServiceImpl implements KPIService {
 		}finally {
 			tm.release();
 		}
-		if(currentexecution instanceof ExecutionEntity && ((ExecutionEntity)currentexecution).getDeleteReason().equals("deleted deployment"))
+		if(currentexecution instanceof ExecutionEntity && deleteReason != null &&deleteReason.equals("deleted deployment"))
 		{
 			
 
