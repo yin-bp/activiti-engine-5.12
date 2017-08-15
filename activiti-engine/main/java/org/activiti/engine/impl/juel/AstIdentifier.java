@@ -26,13 +26,14 @@ import org.activiti.engine.impl.javax.el.MethodNotFoundException;
 import org.activiti.engine.impl.javax.el.PropertyNotFoundException;
 import org.activiti.engine.impl.javax.el.ValueExpression;
 import org.activiti.engine.impl.javax.el.ValueReference;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class AstIdentifier extends AstNode implements IdentifierNode {
 	private final String name;
 	private final int index;
-	private static Logger log = Logger.getLogger(AstIdentifier.class);
+	private static Logger log = LoggerFactory.getLogger(AstIdentifier.class);
 
 	public AstIdentifier(String name, int index) {
 		this.name = name;

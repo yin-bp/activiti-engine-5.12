@@ -35,7 +35,8 @@ import org.activiti.engine.impl.jobexecutor.JobExecutorContext;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.pvm.delegate.ActivityBehavior;
 import org.activiti.engine.impl.pvm.runtime.InterpretableExecution;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.frameworkset.util.StringUtil;
 
@@ -50,7 +51,7 @@ public class Context {
   protected static ThreadLocal<Stack<ProcessEngineConfigurationImpl>> processEngineConfigurationStackThreadLocal = new ThreadLocal<Stack<ProcessEngineConfigurationImpl>>();
   protected static ThreadLocal<Stack<ExecutionContext>> executionContextStackThreadLocal = new ThreadLocal<Stack<ExecutionContext>>();
   protected static ThreadLocal<JobExecutorContext> jobExecutorContextThreadLocal = new ThreadLocal<JobExecutorContext>();
-  private static Logger log = Logger.getLogger(Context.class);
+  private static Logger log = LoggerFactory.getLogger(Context.class);
   private static Map<String,JavaDelegate> bussinessClassHandle = new HashMap<String,JavaDelegate>();
   
   public static JavaDelegate getJavaDelegate(String javaDelegateClass)

@@ -23,10 +23,11 @@ import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.impl.cfg.BeansConfigurationHelper;
 import org.activiti.engine.repository.Deployment;
-import org.apache.log4j.Logger;
 import org.frameworkset.spi.BaseApplicationContext;
 import org.frameworkset.spi.assemble.Pro;
 import org.frameworkset.spi.assemble.ProList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.frameworkset.common.poolman.ConfigSQLExecutor;
 import com.frameworkset.common.poolman.Record;
@@ -51,7 +52,7 @@ public class InstanceUpgrade {
 	private TaskService taskService;
 	private RuntimeService runtimeService;
 	private List<DeployPolicyBean> deployPolicyBeans;
-	private static Logger log = Logger.getLogger(InstanceUpgrade.class);
+	private static Logger log = LoggerFactory.getLogger(InstanceUpgrade.class);
 	/**
 	 * 流程实例版本升级
 	 * @param processKey 要升级的流程

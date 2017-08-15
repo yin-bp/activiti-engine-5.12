@@ -33,7 +33,8 @@ import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.persistence.entity.TaskRejectLog;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
 import org.activiti.engine.impl.task.TaskDefinition;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.frameworkset.common.poolman.ConfigSQLExecutor;
 import com.frameworkset.util.StringUtil;
@@ -44,7 +45,7 @@ import com.frameworkset.util.StringUtil;
  * @author Joram Barrez
  */
 public class UserTaskActivityBehavior extends TaskActivityBehavior {
-  private static Logger log = Logger.getLogger(UserTaskActivityBehavior.class);
+  private static Logger log = LoggerFactory.getLogger(UserTaskActivityBehavior.class);
 
 
   public UserTaskActivityBehavior(TaskDefinition taskDefinition) {

@@ -43,7 +43,8 @@ import org.activiti.engine.task.DelegationState;
 import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.task.IdentityLinkType;
 import org.activiti.engine.task.Task;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Tom Baeyens
@@ -56,7 +57,7 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
 //  public static final String DELETE_REASON_DELETED = "deleted";
   public static final String DELETE_REASON_COMPLETED = "完成";
   public static final String DELETE_REASON_DELETED = "删除";
-  private static Logger log = Logger.getLogger(TaskEntity.class);
+  private static Logger log = LoggerFactory.getLogger(TaskEntity.class);
   private static final long serialVersionUID = 1L;
 
   protected int revision;
