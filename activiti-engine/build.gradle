@@ -35,7 +35,7 @@ dependencies {
     		 [group: 'com.bbossgroups', name: 'bboss-core', version: "${PROJ_BBOSS_VERSION}", transitive: false],
             
             [group: 'com.bbossgroups', name: 'bboss-util', version: "${PROJ_BBOSS_VERSION}", transitive: false],
-            [group: 'com.bbossgroups', name: 'bboss-persistent', version: "${PROJ_BBOSS_VERSION}", transitive: false],
+            [group: 'com.bbossgroups', name: 'bboss-persistent', version: "${PROJ_BBOSS_VERSION}", transitive: true],
              [group: 'com.bbossgroups', name: 'bboss-velocity', version: "${PROJ_BBOSS_VERSION}", transitive: false],
              [group: 'com.fasterxml.uuid', name: 'java-uuid-generator', version: '3.1.2', transitive: false],
                   
@@ -72,4 +72,27 @@ dependencies {
     		 [group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.2', transitive: false],
             
     )
+
+    task copyJarFiles(type: Sync,dependsOn:'jar'){
+        from configurations.compile
+        from jar.outputs
+        exclude { details -> details.file.name.startsWith('bboss-rt')  }
+        into 'build/dist/lib'
+
+    }
+
+
+    task copyResourcesfiles(type: Sync )  {
+        from fileTree(dir: 'src/test/resources')
+        filteringCharset = 'UTF-8'
+        into 'build/dist/resources'
+    }
+
+    task releaseVersion(type: Zip,dependsOn:['copyJarFiles','copyResourcesfiles']) {
+
+        //appendix = 'wrapper'
+        classifier = 'released'
+        from 'build/dist/'
+
+    }
 }
