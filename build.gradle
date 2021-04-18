@@ -8,7 +8,7 @@ configure(allprojects) { project ->
 	apply plugin: "eclipse"
 	apply plugin: "idea"
 	apply plugin: "signing"
-	apply plugin: "maven"
+	apply plugin: "java-library"
 	eclipse {
 		jdt {
 			//if you want to alter the java versions (by default they are configured with gradle java plugin settings):
@@ -52,13 +52,13 @@ configure(allprojects) { project ->
 
 
 	dependencies {
-		testCompile 'junit:junit:4.12'
+		testImplementation 'junit:junit:4.12'
 	}
 
 	repositories {
 		mavenLocal()
 		maven {
-			url "http://maven.aliyun.com/nexus/content/groups/public"
+			url "https://maven.aliyun.com/nexus/content/groups/public"
 		}
 		mavenCentral()
 		
@@ -76,91 +76,95 @@ configure(allprojects) { project ->
  
 configure(subprojects) { subproject ->
 	task sourcesJar(type: Jar) {
-		classifier = "sources"	
+		archiveClassifier = "sources"
 		from sourceSets.main.allJava
+		duplicatesStrategy = DuplicatesStrategy.INCLUDE
 	}
-	
+	processResources{
+		duplicatesStrategy = DuplicatesStrategy.INCLUDE
+	}
 	task javaDocJar(type: Jar, dependsOn: javadoc) {
-		classifier = "javadoc"
+		archiveClassifier = "javadoc"
 		from javadoc.destinationDir
 	}
 	artifacts {
-	    archives sourcesJar, javaDocJar
+		archives sourcesJar, javaDocJar
 	}
-	
- 
-ext.uploadtocenter=uploadArchivesToMavenCenter.equals("true")
-if(uploadtocenter)
-{
-	signing {
-	        //required { uploadtocenter }
-	        sign configurations.archives
-	 }
-}
-uploadArchives {
-	  repositories {
-	   
-		    mavenDeployer {
-		     
-				  
-				
-			beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-	     	repository(url: sonatype_url) {
-	     		
-			         authentication(userName: sonatype_username, password: sonatype_password)
-			}
-			
-			
-			
-			
-			 	
-	      pom.project {
-	        name project.name
-	        packaging 'jar'
-	        // optionally artifactId can be defined here 
-	        description PROJ_DESCRIPTION
-	        url PROJ_WEBSITEURL
-
-	        scm {
-	          connection scm_connection
-	          developerConnection scm_developerConnection
-	          url scm_url
-	        }
-
-	        licenses {
-	          license {
-	            name PROJ_LICENCE_NAME
-	            url PROJ_LICENCE_URL
-	          }
-	        }
-
-	        developers {
-	          developer {
-	            id DEVELOPER_ID
-	            name DEVELOPER_NAME
-	            email DEVELOPER_EMAIL
-	          }
-	        }
-	      }
-	    }
-	  }
-	}
-	
 	publishing {
 		publications {
 			mavenJava(MavenPublication) {
-				
+				groupId project.group
+				artifactId project.name
+				version "${version}"
 				from components.java
-				
 				artifact sourcesJar
 				artifact javaDocJar
-				
+//				versionMapping {
+//					usage('java-api') {
+//						fromResolutionOf('runtimeClasspath')
+//					}
+//					usage('java-runtime') {
+//						fromResolutionResult()
+//					}
+//				}
+//				from components.java
+				pom {
+					name = project.name
+					packaging = 'jar'
+					// optionally artifactId can be defined here
+					description = PROJ_DESCRIPTION
+					url = PROJ_WEBSITEURL
+
+					scm {
+						connection = scm_connection
+						developerConnection = scm_developerConnection
+						url = scm_url
+					}
+
+					licenses {
+						license {
+							name = PROJ_LICENCE_NAME
+							url = PROJ_LICENCE_URL
+						}
+					}
+
+					developers {
+						developer {
+							id = DEVELOPER_ID
+							name = DEVELOPER_NAME
+							email = DEVELOPER_EMAIL
+						}
+					}
+
+				}
 			}
 		}
 		repositories {
-	       
-	        mavenLocal()    
-	    }
-		
+//			maven {
+//				// change URLs to point to your repos, e.g. http://my.org/repo
+//				def releasesRepoUrl = layout.buildDirectory.dir('repos/releases')
+//				def snapshotsRepoUrl = layout.buildDirectory.dir('repos/snapshots')
+//				url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+//			}
+			maven {
+				// change URLs to point to your repos, e.g. http://my.org/repo
+				allowInsecureProtocol = true
+				url = sonatype_url
+				credentials {
+					username = sonatype_username
+					password = sonatype_password
+				}
+
+			}
+
+
+		}
 	}
+
+	signing {
+		sign publishing.publications.mavenJava
+//		sign configurations.archives
+	}
+ 
+
 }

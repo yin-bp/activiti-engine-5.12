@@ -26,12 +26,12 @@ sourceSets {
     
     
 }
-project.tasks.compileJava.dependsOn(project(':activiti-bpmn-converter').tasks.install)
-project.tasks.compileJava.dependsOn(project(':activiti-bpmn-layout').tasks.install)
-project.tasks.compileJava.dependsOn(project(':activiti-bpmn-model').tasks.install)
+project.tasks.compileJava.dependsOn(project(':activiti-bpmn-converter').tasks.publishToMavenLocal)
+project.tasks.compileJava.dependsOn(project(':activiti-bpmn-layout').tasks.publishToMavenLocal)
+project.tasks.compileJava.dependsOn(project(':activiti-bpmn-model').tasks.publishToMavenLocal)
 dependencies {
 	
-    compile (
+    api (
     		 [group: 'com.bbossgroups', name: 'bboss-core', version: "${PROJ_BBOSS_VERSION}", transitive: false],
             
             [group: 'com.bbossgroups', name: 'bboss-util', version: "${PROJ_BBOSS_VERSION}", transitive: false],
@@ -68,13 +68,15 @@ dependencies {
      
 
     )
-    testCompile(
+    testImplementation(
     		 [group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.2', transitive: false],
             
     )
 
     task copyJarFiles(type: Sync,dependsOn:'jar'){
-        from configurations.compile
+        from configurations.api{
+            canBeResolved=true
+        }
         from jar.outputs
         exclude { details -> details.file.name.startsWith('bboss-rt')  }
         into 'build/dist/lib'

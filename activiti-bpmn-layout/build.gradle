@@ -13,10 +13,10 @@ sourceSets {
     
     
 }
-project.tasks.compileJava.dependsOn(project(':activiti-bpmn-model').tasks.install)
+project.tasks.compileJava.dependsOn(project(':activiti-bpmn-model').tasks.publishToMavenLocal)
 dependencies {
 	
-   compile (
+   api (
     		         
                 [group: 'commons-lang', name: 'commons-lang', version: '2.4', transitive: false],
            	[group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.25', transitive: true],
@@ -28,7 +28,7 @@ dependencies {
      
 
     )
-    testCompile(
+    testImplementation(
     		 [group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.2', transitive: false],
             
     )

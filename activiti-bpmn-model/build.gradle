@@ -16,7 +16,7 @@ sourceSets {
 }
 dependencies {
 	
-    compile (
+    api (
     		     [group: 'commons-lang', name: 'commons-lang', version: '2.4', transitive: false],
    	 [group: 'org.codehaus.jackson', name: 'jackson-core-asl', version: '1.9.13', transitive: false],
     
