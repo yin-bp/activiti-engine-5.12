@@ -1,3 +1,11 @@
+# 版本构建方法
+
+gradle clean publishToMavenLocal
+
+需要通过gradle构建发布版本,gradle安装配置参考文档：
+
+https://esdoc.bbossgroups.com/#/bboss-build
+
 抄送和通知任务改造：
 
 
