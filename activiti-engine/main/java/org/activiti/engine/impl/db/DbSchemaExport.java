@@ -86,7 +86,6 @@ public class DbSchemaExport {
         for (String indexName: indexNames) {
           System.out.println(indexName);
         }
-        System.out.println();
       }
 
 

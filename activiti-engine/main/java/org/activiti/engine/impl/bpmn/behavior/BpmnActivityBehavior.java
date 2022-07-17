@@ -13,11 +13,6 @@
 
 package org.activiti.engine.impl.bpmn.behavior;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.impl.Condition;
 import org.activiti.engine.impl.TaskContext;
@@ -30,6 +25,11 @@ import org.activiti.engine.impl.pvm.process.TransitionImpl;
 import org.activiti.engine.impl.pvm.runtime.InterpretableExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Helper class for implementing BPMN 2.0 activities, offering convenience
@@ -111,8 +111,7 @@ public class BpmnActivityBehavior implements Serializable {
     TaskContext taskContext = execution.getTaskContext();
     if(taskContext!=null &&  taskContext.getDestinationTaskKey() != null)
     {
-//    	System.out.println();
-    	TransitionImpl transition = ((ActivityImpl)execution.getActivity()).createCustomOutgoingTransition(null, taskContext.getDestinationTaskKey());    	
+    	TransitionImpl transition = ((ActivityImpl)execution.getActivity()).createCustomOutgoingTransition(null, taskContext.getDestinationTaskKey());
     	execution.take(transition);
     }
     else
