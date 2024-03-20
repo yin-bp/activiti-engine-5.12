@@ -19,7 +19,7 @@ dependencies {
    api (
     		         
                 [group: 'commons-lang', name: 'commons-lang', version: '2.4', transitive: false],
-           	[group: 'org.slf4j', name: 'slf4j-log4j12', version: '2.0.12', transitive: true],
+           	[group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.36', transitive: true],
             [group: 'org.tinyjee.jgraphx', name: 'jgraphx', version: "1.10.4.1", transitive: false],
             
               [group: 'com.bbossgroups.activiti', name: 'activiti-bpmn-model', version: "${PROJ_VERSION}", transitive: false],
@@ -29,7 +29,7 @@ dependencies {
 
     )
     testImplementation(
-    		 [group: 'org.slf4j', name: 'slf4j-log4j12', version: '2.0.12', transitive: false],
+    		 [group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.36', transitive: false],
             
     )
 }
