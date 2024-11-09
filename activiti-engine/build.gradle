@@ -93,7 +93,7 @@ dependencies {
     task releaseVersion(type: Zip,dependsOn:['copyJarFiles','copyResourcesfiles']) {
 
         //appendix = 'wrapper'
-        classifier = 'released'
+        archiveClassifier = 'released'
         from 'build/dist/'
 
     }
