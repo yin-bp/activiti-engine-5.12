@@ -248,10 +248,10 @@
 				        act_instid,tasktype  from td_wf_copytask orgcopy  where orgcopy.COPER in 
 			(
 	  			#foreach($org in $orgs)
-	             #if($velocityCount == 0)
-	             	#[orgs[$velocityCount]]
+	             #if($foreach.index == 0)
+	             	#[orgs[$foreach.index]]
 	             #else
-	                 ,#[orgs[$velocityCount]]
+	                 ,#[orgs[$foreach.index]]
 	             #end
 	            #end      
 	  		)
