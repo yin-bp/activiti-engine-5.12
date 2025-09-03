@@ -59,7 +59,6 @@ protected MultiInstanceActivityBehavior multiInstanceActivityBehavior;
   /**
    * added by biaoping.yin
    * @param execution
-   * @param destinationTaskKey
    */
   protected void leave(ActivityExecution execution) {
 	    if(hasCompensationHandler(execution)) {
