@@ -46,7 +46,7 @@ dependencies {
             [group: 'oro', name: 'oro', version: '2.0.8', transitive: false],         
             [group: 'cglib', name: 'cglib-nodep', version: '3.3.0', transitive: false],
             [group: 'org.apache.commons', name: 'commons-email', version: '1.2', transitive: false],
-              [group: 'commons-lang', name: 'commons-lang', version: '2.4', transitive: false],
+              [group: 'org.apache.commons', name: 'commons-lang3', version: '3.18.0', transitive: false],
          [group: 'commons-logging', name: 'commons-logging', version: '1.1', transitive: false],
            [group: 'commons-collections', name: 'commons-collections', version: '3.2.2', transitive: false],
            [group: 'joda-time', name: 'joda-time', version: '2.1', transitive: false],
