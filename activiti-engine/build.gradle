@@ -29,6 +29,46 @@ sourceSets {
 project.tasks.compileJava.dependsOn(project(':activiti-bpmn-converter').tasks.publishToMavenLocal)
 project.tasks.compileJava.dependsOn(project(':activiti-bpmn-layout').tasks.publishToMavenLocal)
 project.tasks.compileJava.dependsOn(project(':activiti-bpmn-model').tasks.publishToMavenLocal)
+// 创建可解析的配置
+configurations {
+    apiResolvable {
+        canBeResolved = true
+        extendsFrom api
+    }
+    compileOnlyResolvable {
+        canBeResolved = true
+        extendsFrom compileOnly
+    }
+
+    runtimeOnlyResolvable {
+        canBeResolved = true
+        extendsFrom runtimeOnly
+    }
+}
+tasks.register('copyJarFiles', Sync) {
+    dependsOn 'jar'
+    from configurations.apiResolvable {
+    }
+    from jar.outputs
+    exclude { details -> details.file.name.startsWith('bboss-rt') }
+    into 'build/dist/lib'
+
+}
+
+
+tasks.register('copyResourcesfiles', Sync )  {
+    from fileTree(dir: 'src/test/resources')
+    filteringCharset = 'UTF-8'
+    into 'build/dist/resources'
+}
+tasks.register('releaseVersion', Zip) {
+    dependsOn 'copyJarFiles','copyResourcesfiles'
+
+    //appendix = 'wrapper'
+    archiveClassifier = 'released'
+    from 'build/dist/'
+
+}
 dependencies {
     api(
             [group: 'org.apache.logging.log4j', name: 'log4j-api', version: "${log4j2_version}", transitive: false],
@@ -79,28 +119,5 @@ dependencies {
                     [group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: "${log4j2_version}", transitive: true],
     )
 
-    task copyJarFiles(type: Sync,dependsOn:'jar'){
-        from configurations.api{
-            canBeResolved=true
-        }
-        from jar.outputs
-        exclude { details -> details.file.name.startsWith('bboss-rt')  }
-        into 'build/dist/lib'
-
-    }
-
-
-    task copyResourcesfiles(type: Sync )  {
-        from fileTree(dir: 'src/test/resources')
-        filteringCharset = 'UTF-8'
-        into 'build/dist/resources'
-    }
-
-    task releaseVersion(type: Zip,dependsOn:['copyJarFiles','copyResourcesfiles']) {
-
-        //appendix = 'wrapper'
-        archiveClassifier = 'released'
-        from 'build/dist/'
-
-    }
+    
 }
