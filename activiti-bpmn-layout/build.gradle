@@ -16,9 +16,9 @@ sourceSets {
 project.tasks.compileJava.dependsOn(project(':activiti-bpmn-model').tasks.publishToMavenLocal)
 dependencies {
     api(
-            [group: 'org.apache.logging.log4j', name: 'log4j-api', version: "${log4j2_version}", transitive: false],
-            [group: 'org.apache.logging.log4j', name: 'log4j-core', version: "${log4j2_version}", transitive: false],
-            [group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: "${log4j2_version}", transitive: true],
+            [group: 'org.apache.logging.log4j', name: 'log4j-api', version: log4j2_version, transitive: false],
+            [group: 'org.apache.logging.log4j', name: 'log4j-core', version: log4j2_version, transitive: false],
+            [group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: log4j2_version, transitive: true],
     )
    api (
 
@@ -34,8 +34,8 @@ dependencies {
     )
     testImplementation(
 //    		 [group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.36', transitive: false],
-                    [group: 'org.apache.logging.log4j', name: 'log4j-api', version: "${log4j2_version}", transitive: false],
-                    [group: 'org.apache.logging.log4j', name: 'log4j-core', version: "${log4j2_version}", transitive: false],
-                    [group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: "${log4j2_version}", transitive: true],
+                    [group: 'org.apache.logging.log4j', name: 'log4j-api', version: log4j2_version, transitive: false],
+                    [group: 'org.apache.logging.log4j', name: 'log4j-core', version: log4j2_version, transitive: false],
+                    [group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: log4j2_version, transitive: true],
     )
 }
