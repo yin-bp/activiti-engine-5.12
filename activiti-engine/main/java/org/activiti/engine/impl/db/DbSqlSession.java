@@ -878,10 +878,9 @@ public class DbSqlSession implements Session {
       if(schema == null)
       {
     	  try {
-			schema = ((TXDataSource)dbSqlSessionFactory.getDataSource()).getDatabaseSchema(databaseMetaData);
+			schema = ((TXDataSource)dbSqlSessionFactory.getDataSource()).getDatabaseSchema(databaseMetaData,connection);
 		} catch (Throwable e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
       }
       
